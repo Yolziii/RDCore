@@ -1,0 +1,5 @@
+{
+    "name": "main",
+    "protocolId": 100,
+    "allowed-states": ["game"]
+}
