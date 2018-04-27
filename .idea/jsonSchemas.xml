@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="schema-06">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="schema-06" />
+              <option name="relativePathToSchema" value="schemas\schema-06.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="schemas" />
+                    <option name="directory" value="true" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+        <entry key="state.schema">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="state.schema" />
+              <option name="relativePathToSchema" value="schemas\state.schema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="data\states" />
+                    <option name="directory" value="true" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>
