@@ -5,12 +5,14 @@ export let Config = {
     CostSmallStraight: 30,
     CostLargeStraight: 30,
     CostRoyalDice: 50,
+    CostBonus63: 35,
+    CostRoyalBonusPerItem: 100,
 };
 
 /**
- * Перечисляет виды ячеек в карточке игрока
+ * Виды ячеек в карточке игрока
  */
-export const enum FieldType {
+export const enum CellType {
     Ones = "Ones",
     Twos = "Twos",
     Threes = "Threes",
@@ -18,17 +20,25 @@ export const enum FieldType {
     Fives = "Fives",
     Sixes = "Sixes",
 
-    Kind3 = "",
-    Kind4 = "",
-    FullHouse = "",
+    Kind3 = "Kind3",
+    Kind4 = "Kind4",
+    FullHouse = "FullHouse",
     SmallStraight = "SmallStraight",
     LargeStraight = "LargeStraight",
     RoyalDice = "RoyalDice",
-    "Chance" = "Chance",
+    Chance = "Chance",
 
     ServiceTotalNumbers = "ServiceTotalNumbers",
-    ServiceTotalCombinations = "ServiceTotalCombinations",
-    ServiceTotalCard = "ServiceTotalCard"
+    ServiceBonus63 = "ServiceBonus63",
+    ServiceTotalNumbersWithBonus = "ServiceTotalNumbersWithBonus",
+
+    ServiceTopPoints = "ServiceTopPoints",
+    ServiceBottomPoints = "ServiceBottomPoints",
+
+    ServiceBonusRoyal = "ServiceBonusRoyal",
+    ServiceTotalBonuses = "ServiceTotalBonuses",
+
+    ServiceFinalScore = "ServiceFinalScore",
 }
 
 /**
@@ -73,22 +83,28 @@ export interface IDice {
     get(index):IDie;
 }
 
-export interface ICardField {
-    type:FieldType;
+export interface ICardCell {
+    type:CellType;
     value():number;
 }
 
-export interface IPlayableCardField extends ICardField {
+export interface IPlayableCardCell extends ICardCell {
+    isFull():Boolean;
     dice():IDice;
     setDice(dice:IDice):void;
 }
 
-export interface IServiceCardField extends ICardField {
+export interface IServiceCardCell extends ICardCell {
     linkCard(card:IPlayerCard):void;
 }
 
 export interface IPlayerCard {
-    fields:ICardField[];
+    finished();
+
+    hasCell(type:CellType):boolean;
+    getCell(type:CellType):IPlayableCardCell | IServiceCardCell;
+    getCellPlayable(type:CellType):IPlayableCardCell;
+    getCellService(type:CellType):IServiceCardCell;
 }
 
 export interface IPlayer {
@@ -97,5 +113,9 @@ export interface IPlayer {
 }
 
 export interface IRound {
-    players():IPlayer[];
+    finished();
+}
+
+export interface IPlayerCommand {
+    execute();
 }

@@ -1,12 +1,12 @@
-import {IDice, IDie} from "../gameplay";
+import {Config, IDice, IDie} from "../gameplay";
 import RDError, {RDErrorCode} from "./RDError";
 
 export class Dice implements IDice{
     protected dice:IDie[] = [];
     protected _max:number;
 
-    constructor(max:number, ...dice:IDie[]) {
-        this._max = max;
+    constructor(...dice:IDie[]) {
+        this._max =  Config.DefaultDiceSize;
         for (let i=0; i<this._max; i++) {
             if (i < dice.length) {
                 this.dice[i] = dice[i];
