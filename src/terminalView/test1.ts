@@ -4,7 +4,7 @@ const ansiEsc = require('ansi-escapes');
 const log = console.log;
 
 process.stdout.write(ansiEsc.clearScreen);
-//ansiEsc.cursorTo(1, 1);
+ansiEsc.cursorTo(1, 1);
 process.stdout.write(ansiEsc.cursorSavePosition);
 
 // Combine styled and normal strings
@@ -38,6 +38,27 @@ log(chalk.keyword('orange')('Yay for orange colored text!'));
 log(chalk.rgb(123, 45, 67).underline('Underlined reddish color'));
 log(chalk.hex('#DEADED').bold('Bold gray!'));
 
+
+
+// without this, we would only get streams once enter is pressed
+process.stdin.setRawMode( true );
+
+// resume stdin in the parent process (node app won't quit all by itself
+// unless an error or process.exit() happens)
+process.stdin.resume();
+
+// i don't want binary, do you?
+process.stdin.setEncoding( 'utf8' );
+
+// on any data into stdin
+process.stdin.on( 'data', function( key ){
+    // ctrl-c ( end of text )
+    if ( key === '\u0003' ) {
+        process.exit();
+    }
+    // write the key to stdout all normal like
+    process.stdout.write( key );
+});
 
 
 

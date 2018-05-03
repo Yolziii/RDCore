@@ -1,17 +1,23 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es5",
-        "outDir": "dist",
-        "sourceMap": true
-        /*"paths": {
-            "*": [
-                "node_modules/*",
-                "src/types/*"
-            ]
-        }*/
+        "module": "umd", //"commonjs",
+        "target": "es6",
+        "sourceMap": true,
+        "noImplicitAny": false,
+
+        "strictNullChecks": false, /* Не дает присваивать null, undefined кому попало:
+            let s = "foo";
+            s = null; // error
+            let sn: string | null = "bar";
+            sn = null; // ol
+        */
+
+        "removeComments": false,
+        "moduleResolution": "node"
     },
     "exclude": [
-        "node_modules"
+        "src",
+        "node_modules",
+        "dist"
     ]
 }

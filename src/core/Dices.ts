@@ -1,13 +1,14 @@
-import {Config, IDice, IDie} from "../gameplay";
-import RDError, {RDErrorCode} from "./RDError";
+import {Config} from "./Config";
+import {IDice, IDie} from "./gameplay";
+import {RDError, RDErrorCode} from "./RDError";
 
-export class Dice implements IDice{
-    protected dice:IDie[] = [];
-    protected _max:number;
+export class Dice implements IDice {
+    protected dice: IDie[] = [];
+    protected maxDies: number;
 
-    constructor(...dice:IDie[]) {
-        this._max =  Config.DefaultDiceSize;
-        for (let i=0; i<this._max; i++) {
+    constructor(...dice: IDie[]) {
+        this.maxDies = Config.DefaultDiceSize;
+        for (let i = 0; i < this.maxDies; i++) {
             if (i < dice.length) {
                 this.dice[i] = dice[i];
             } else {
@@ -16,49 +17,55 @@ export class Dice implements IDice{
         }
     }
 
-    max():number {
-        return this._max;
+    public max(): number {
+        return this.maxDies;
     }
 
-    total():number {
+    public total(): number {
         let res = 0;
-        for (let i=0; i<this._max; i++) {
-            if (this.dice[i] != null) res++;
+        for (let i = 0; i < this.maxDies; i++) {
+            if (this.dice[i] != null) {
+                res++;
+            }
         }
         return res;
     }
 
-    isFull():Boolean {
-        for (let i=0; i<this._max; i++) {
-            if (this.dice[i] == null) return false;
+    public isFull(): boolean {
+        for (let i = 0; i < this.maxDies; i++) {
+            if (this.dice[i] == null) {
+                return false;
+            }
         }
         return true;
     }
 
-    pop(index):IDie {
-        let die:IDie = this.get(index);
+    public pop(index): IDie {
+        const die: IDie = this.get(index);
         this.dice[index] = null;
         return die;
     }
 
-    get(index):IDie {
-        let die:IDie = this.dice[index];
+    public get(index): IDie {
+        const die: IDie = this.dice[index];
         if (die == null) {
-            throw new RDError(RDErrorCode.DICE_INDEX_EMPTY, `Can't get() die at [${index}]`)
+            throw new RDError(RDErrorCode.DICE_INDEX_EMPTY, `Can't get() die at [${index}]`);
         }
         return die;
     }
 
-    put(die:IDie, index:number = -1):void {
-        if (index != -1) {
+    public put(die: IDie, index: number = -1): void {
+        if (index !== -1) {
             if (this.dice[index] != null) {
-                throw new RDError(RDErrorCode.DICE_INDEX_FULL, `Dice already contains die at - ${index}`)
+                throw new RDError(RDErrorCode.DICE_INDEX_FULL, `Dice already contains die at - ${index}`);
             }
             this.dice[index] = die;
         } else {
             let finded = false;
-            for (let i=0; i<this._max; i++) {
-                if (this.dice[i] != null) continue;
+            for (let i = 0; i < this.maxDies; i++) {
+                if (this.dice[i] != null) {
+                    continue;
+                }
 
                 this.dice[i] = die;
                 finded = true;
@@ -66,46 +73,46 @@ export class Dice implements IDice{
             }
 
             if (!finded) {
-                throw new RDError(RDErrorCode.DICE_IF_FULL, `Dice is full, can't add the new one - ${die}`)
+                throw new RDError(RDErrorCode.DICE_IF_FULL, `Dice is full, can't add the new one - ${die}`);
             }
         }
     }
 }
 
 export abstract class DiceDecorator implements IDice {
-    protected dice:IDice;
+    protected dice: IDice;
 
-    constructor(dice:IDice) {
+    constructor(dice: IDice) {
         this.dice = dice;
     }
 
-    max():number {
+    public max(): number {
         return this.dice.max();
     }
 
-    total():number {
+    public total(): number {
         return this.dice.total();
     }
 
-    isFull():Boolean {
+    public isFull(): boolean {
         return this.dice.isFull();
     }
 
-    pop(index):IDie {
+    public pop(index): IDie {
         return this.dice.pop(index);
     }
 
-    get(index):IDie {
+    public get(index): IDie {
         return this.dice.get(index);
     }
 
-    put(die:IDie, index:number):void {
+    public put(die: IDie, index: number): void {
         this.dice.put(die, index);
     }
 }
 
 export class FullDiceDecorator extends DiceDecorator {
-    get(index):IDie {
+    public get(index): IDie {
         if (!this.isFull()) {
             throw new RDError(RDErrorCode.DICE_NOT_FULL, "Dice not full!");
         }

@@ -1,20 +1,25 @@
-import {CellType, ICardCell, IPlayableCardCell, IPlayerCard, IServiceCardCell} from "../gameplay";
+import {CellType, ICardCell, IPlayableCardCell, IPlayerCard, IServiceCardCell} from "./gameplay";
 import {Dictionary} from "../util/Dictionary";
+import {RDError, RDErrorCode} from "./RDError";
 
 export class PlayerCard implements IPlayerCard {
-    private fields:Dictionary<ICardCell> = {};
+    private static isPlayableCell(cell: IPlayableCardCell | IServiceCardCell): cell is IPlayableCardCell {
+        return (cell as IPlayableCardCell).dice !== undefined;
+    }
 
-    constructor(fields:ICardCell[]) {
-        if (fields == undefined) {
+    private cells: Dictionary<ICardCell> = {};
+
+    constructor(cells: ICardCell[]) {
+        if (cells === undefined) {
             // TODO: Выкидывать исключение
         }
-        if (fields.length == 0) {
+        if (cells.length === 0) {
             // TODO: Выкидывать исключение
         }
 
-        for (let i = 0; i < fields.length; i++) {
-            let cell:IPlayableCardCell | IServiceCardCell = fields[i] as IPlayableCardCell | IServiceCardCell;
-            if (this.fields[cell.type] != null) {
+        for (const someCell of cells) {
+            const cell: IPlayableCardCell | IServiceCardCell = someCell as IPlayableCardCell | IServiceCardCell;
+            if (this.cells[cell.type] != null) {
                 // TODO: Выкидывать исключение
             }
 
@@ -22,53 +27,56 @@ export class PlayerCard implements IPlayerCard {
                 cell.linkCard(this);
             }
 
-            this.fields[cell.type] = cell;
+            this.cells[cell.type] = cell;
         }
 
         // TODO: Должно быть поле Total
     }
 
-    finished() {
-        for (let type in this.fields) {
-            let cell:IPlayableCardCell | IServiceCardCell = this.getCell(<CellType>type);
+    public finished() {
+        for (const type in this.cells) {
+            if (!this.cells.hasOwnProperty(type)) {
+                continue;
+            }
+            const cell: IPlayableCardCell | IServiceCardCell = this.getCell(type as CellType);
             if (PlayerCard.isPlayableCell(cell)) {
-                if (!cell.isFull()) return false;
+                if (!cell.isFull()) {
+                    return false;
+                }
             }
         }
         return true;
     }
 
-    private static isPlayableCell(cell:IPlayableCardCell | IServiceCardCell):cell is IPlayableCardCell {
-        return (<IPlayableCardCell>cell).dice != undefined;
+    public hasCell(type: CellType): boolean {
+        return this.cells[type] !== undefined;
     }
 
-    hasCell(type:CellType):boolean {
-        return this.fields[type] != undefined;
-    }
-
-    getCell(type:CellType):IPlayableCardCell | IServiceCardCell {
-        let cell:ICardCell = this.fields[type];
-        if (cell == undefined) {
+    public getCell(type: CellType): IPlayableCardCell | IServiceCardCell {
+        const cell: ICardCell = this.cells[type];
+        if (cell === undefined) {
             // TODO: Выкидывать исключение
         }
         return cell as IPlayableCardCell | IServiceCardCell;
     }
 
-    getCellPlayable(type:CellType):IPlayableCardCell {
-        let cell = this.getCell(type);
+    public getCellPlayable(type: CellType): IPlayableCardCell {
+        const cell = this.getCell(type);
         if (PlayerCard.isPlayableCell(cell)) {
             return cell;
         } else {
             // TODO: Выкидывать исключение
+            throw new RDError(RDErrorCode.UNDEFINED);
         }
     }
 
-    getCellService(type:CellType):IServiceCardCell {
-        let cell = this.getCell(type);
+    public getCellService(type: CellType): IServiceCardCell {
+        const cell = this.getCell(type);
         if (!PlayerCard.isPlayableCell(cell)) {
             return cell;
         } else {
             // TODO: Выкидывать исключение
+            throw new RDError(RDErrorCode.UNDEFINED);
         }
     }
 }

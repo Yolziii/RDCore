@@ -1,6 +1,7 @@
-import {CellType, IDice, IRound} from "../gameplay";
+import {CellType, IDice, IRound} from "../core/gameplay";
 import {PlayerCard} from "../core/PlayerCard";
 
+/*
 export class SingleRound implements IRound {
     private _holder:IDice;
 
@@ -36,3 +37,4 @@ export class SingleRound implements IRound {
         return false;
     }
 }
+*/

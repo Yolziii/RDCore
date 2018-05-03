@@ -1,17 +1,3 @@
-export let Config = {
-    DefaultDiceSize: 5,
-
-    CostFullHouse: 25,
-    CostSmallStraight: 30,
-    CostLargeStraight: 30,
-    CostRoyalDice: 50,
-    CostBonus63: 35,
-    CostRoyalBonusPerItem: 100,
-};
-
-/**
- * Виды ячеек в карточке игрока
- */
 export const enum CellType {
     Ones = "Ones",
     Twos = "Twos",
@@ -41,81 +27,85 @@ export const enum CellType {
     ServiceFinalScore = "ServiceFinalScore",
 }
 
-/**
- * Виды костей
- */
 export const enum DieType {
     Value = "Value",
     Jocker = "Jocker",
     Unknown = "Unknown",
-    Blocked = "Blocked"
+    Blocked = "Blocked",
 }
 
-/**
- * Места, где могут находиться кости
- */
 export const enum DicePlaceType {
     Nowhere = "Nowhere",
     Table = "Table",
     Slot = "Slot",
-    CardField = "CardField"
+    CardField = "CardField",
 }
 
-/**
- * Одна кость
- */
 export interface IDie {
-    type:DieType;
-    value:number;
+    type: DieType;
+    value: number;
 }
 
-/**
- * Набор костей
- */
 export interface IDice {
-    max():number;
-    total():number;
+    max(): number;
 
-    isFull():Boolean;
+    total(): number;
 
-    put(die:IDie, index:number):void;
-    pop(index):IDie;
-    get(index):IDie;
+    isFull(): boolean;
+
+    put(die: IDie, index: number): void;
+
+    pop(index): IDie;
+
+    get(index): IDie;
 }
 
 export interface ICardCell {
-    type:CellType;
-    value():number;
+    type: CellType;
+
+    value(): number;
 }
 
 export interface IPlayableCardCell extends ICardCell {
-    isFull():Boolean;
-    dice():IDice;
-    setDice(dice:IDice):void;
+    isFull(): boolean;
+
+    dice(): IDice;
+
+    setDice(dice: IDice): void;
 }
 
 export interface IServiceCardCell extends ICardCell {
-    linkCard(card:IPlayerCard):void;
+    linkCard(card: IPlayerCard): void;
 }
 
 export interface IPlayerCard {
     finished();
 
-    hasCell(type:CellType):boolean;
-    getCell(type:CellType):IPlayableCardCell | IServiceCardCell;
-    getCellPlayable(type:CellType):IPlayableCardCell;
-    getCellService(type:CellType):IServiceCardCell;
+    hasCell(type: CellType): boolean;
+
+    getCell(type: CellType): IPlayableCardCell | IServiceCardCell;
+
+    getCellPlayable(type: CellType): IPlayableCardCell;
+
+    getCellService(type: CellType): IServiceCardCell;
 }
 
 export interface IPlayer {
-    id():number;
-    name():string;
+    id(): number;
+
+    name(): string;
+}
+
+export interface ITeam {
+    color(): number;
+
+    totalPlayers(): number;
 }
 
 export interface IRound {
     finished();
 }
 
-export interface IPlayerCommand {
+export interface ICommand {
     execute();
 }

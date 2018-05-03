@@ -3,32 +3,15 @@
   <component name="JsonSchemaMappingsProjectConfiguration">
     <state>
       <map>
-        <entry key="schema-06">
+        <entry key="tslint.schema">
           <value>
             <SchemaInfo>
-              <option name="name" value="schema-06" />
-              <option name="relativePathToSchema" value="schemas\schema-06.json" />
+              <option name="name" value="tslint.schema" />
+              <option name="relativePathToSchema" value="tslint.schema.json" />
               <option name="patterns">
                 <list>
                   <Item>
-                    <option name="path" value="schemas" />
-                    <option name="directory" value="true" />
-                  </Item>
-                </list>
-              </option>
-            </SchemaInfo>
-          </value>
-        </entry>
-        <entry key="state.schema">
-          <value>
-            <SchemaInfo>
-              <option name="name" value="state.schema" />
-              <option name="relativePathToSchema" value="schemas\state.schema.json" />
-              <option name="patterns">
-                <list>
-                  <Item>
-                    <option name="path" value="data\states" />
-                    <option name="directory" value="true" />
+                    <option name="path" value="tslint.json" />
                   </Item>
                 </list>
               </option>

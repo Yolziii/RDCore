@@ -1,44 +1,44 @@
-import {Config, DieType, CellType, IDice, IDie, IPlayableCardCell, IServiceCardCell, IPlayerCard} from "../gameplay";
+import {Config} from "./Config";
 import {Dice} from "./Dices";
+import {CellType, DieType, IDice, IDie, IPlayableCardCell, IPlayerCard, IServiceCardCell} from "./gameplay";
+const emptyDice = new Dice();
 
-let emptyDice = new Dice();
+export abstract class APlayableCardCell implements IPlayableCardCell {
+    public type: CellType;
 
-export abstract class PlayableCardCell implements IPlayableCardCell {
-    type:CellType;
+    protected cellDice: IDice = emptyDice;
 
-    protected _dice:IDice = emptyDice;
-
-    isFull() {
-        return this._dice != emptyDice;
+    public isFull() {
+        return this.cellDice !== emptyDice;
     }
 
-    value():number {
+    public value(): number {
         return 0;
     }
 
-    dice():IDice {
-        return this._dice;
+    public dice(): IDice {
+        return this.cellDice;
     }
 
-    setDice(dice:IDice):void {
-        this._dice = dice;
+    public setDice(dice: IDice): void {
+        this.cellDice = dice;
     }
 }
 
-export class NumberCell extends PlayableCardCell {
-    private _value:number;
+export class NumberCell extends APlayableCardCell {
+    private cellValue: number;
 
-    constructor(type:CellType, value:number) {
+    constructor(type: CellType, value: number) {
         super();
         this.type = type;
-        this._value = value;
+        this.cellValue = value;
     }
 
-    value():number {
+    public value(): number {
         let res = 0;
-        for (let i=0; i<this._dice.total(); i++) {
-            let die:IDie = this._dice.get(i);
-            if (die.type == DieType.Value && die.value == this._value) {
+        for (let i = 0; i < this.cellDice.total(); i++) {
+            const die: IDie = this.cellDice.get(i);
+            if (die.type === DieType.Value && die.value === this.cellValue) {
                 res += die.value;
             }
         }
@@ -46,79 +46,85 @@ export class NumberCell extends PlayableCardCell {
     }
 }
 
-export class RoyalDiceCell extends PlayableCardCell implements  IPlayableCardCell {
+export class RoyalDiceCell extends APlayableCardCell implements IPlayableCardCell {
     constructor() {
         super();
         this.type = CellType.RoyalDice;
     }
 
-    value():number {
-        return pointsAsRoyalDice(this._dice);
+    public value(): number {
+        return pointsAsRoyalDice(this.cellDice);
     }
 }
 
-export class ChanceCell extends PlayableCardCell implements IPlayableCardCell {
+export class ChanceCell extends APlayableCardCell implements IPlayableCardCell {
     constructor() {
         super();
         this.type = CellType.Chance;
     }
 
-    value():number {
+    public value(): number {
         let res = 0;
-        for (let i=0; i<this._dice.total(); i++) {
-            let die:IDie = this._dice.get(i);
+        for (let i = 0; i < this.cellDice.total(); i++) {
+            const die: IDie = this.cellDice.get(i);
             res += die.value;
         }
         return res;
     }
 }
 
-export class KindCell extends PlayableCardCell implements IPlayableCardCell {
-    private total:number;
+export class KindCell extends APlayableCardCell implements IPlayableCardCell {
+    private total: number;
 
-    constructor(type:CellType, total:number) {
+    constructor(type: CellType, total: number) {
         super();
         this.type = type;
         this.total = total;
     }
 
-    value():number {
-        let totals:number[] = [];
-        let sum:number = 0;
-        for (let i = 0; i<this._dice.total(); i++) {
-            let die:IDie = this._dice.get(i);
-            if (die.type != DieType.Value) continue;
+    public value(): number {
+        const totals: number[] = [];
+        let sum: number = 0;
+        for (let i = 0; i < this.cellDice.total(); i++) {
+            const die: IDie = this.cellDice.get(i);
+            if (die.type !== DieType.Value) {
+                continue;
+            }
 
             sum += die.value;
-            let index:number = die.value - 1;
-            if (totals[index] != undefined) {
+            const index: number = die.value - 1;
+            if (totals[index] !== undefined) {
                 totals[index]++;
             } else {
                 totals[index] = 1;
             }
         }
 
-        for (let i=0; i<totals.length; i++) {
-            if (totals[i] >= this.total) return sum;
+        for (const total of totals) {
+            if (total >= this.total) {
+                return sum;
+            }
         }
         return 0;
     }
 }
 
-export class FullHouseCell extends PlayableCardCell implements IPlayableCardCell {
+export class FullHouseCell extends APlayableCardCell implements IPlayableCardCell {
     constructor() {
         super();
         this.type = CellType.FullHouse;
     }
 
-    value():number {
-        let totals:number[] = [];
-        for (let i = 0; i < this._dice.total(); i++) {
-            let die:IDie = this._dice.get(i);
-            if (die.type != DieType.Value) continue;
+    public value(): number {
+        const totals: number[] = [];
+        for (let i = 0; i < this.cellDice.total(); i++) {
+            const die: IDie = this.cellDice.get(i);
+            if (die.type !== DieType.Value) {
+                continue;
+            }
 
-            let index:number = die.value - 1;
-            if (totals[index] != undefined) {
+            const index: number = die.value - 1;
+            if (totals[index] !== undefined) {
                 totals[index]++;
             } else {
                 totals[index] = 1;
@@ -127,31 +133,42 @@ export class FullHouseCell extends PlayableCardCell implements IPlayableCardCell
 
         let was2 = false;
         let was3 = false;
-        for (let i=0; i<totals.length; i++) {
-            if (totals[i] == 2) was2 = true;
-            if (totals[i] == 3) was3 = true;
+        for (const total of totals) {
+            if (total === 2) {
+                was2 = true;
+            }
+            if (total === 3) {
+                was3 = true;
+            }
         }
 
         return was2 && was3 ? Config.CostFullHouse : 0;
     }
 }
 
-export class StraightCell extends PlayableCardCell implements IPlayableCardCell {
-    total:number;
-    cost:number;
+export class StraightCell extends APlayableCardCell implements IPlayableCardCell {
+    private static compare(a: number, b: number): number {
+        if (a === b) {
+            return 0;
+        }
+        return a > b ? 1 : -1;
+    }
 
-    constructor(type:CellType, cost:number, total:number) {
+    public total: number;
+    public cost: number;
+
+    constructor(type: CellType, cost: number, total: number) {
         super();
         this.type = type;
         this.cost = cost;
         this.total = total;
     }
 
-    value():number {
-        let values:number[] = [];
-        for (let i = 0; i < this._dice.total(); i++) {
-            let die:IDie = this._dice.get(i);
-            if (die.type == DieType.Value) {
+    public value(): number {
+        const values: number[] = [];
+        for (let i = 0; i < this.cellDice.total(); i++) {
+            const die: IDie = this.cellDice.get(i);
+            if (die.type === DieType.Value) {
                 values[i] = die.value;
             } else {
                 values[i] = 0;
@@ -160,92 +177,95 @@ export class StraightCell extends PlayableCardCell implements IPlayableCardCell 
 
         values.sort(StraightCell.compare);
         let count = 1;
-        for (let i=1; i<values.length; i++) {
-            if (values[i] == values[i-1] + 1) {
+        for (let i = 1; i < values.length; i++) {
+            if (values[i] === values[i - 1] + 1) {
                 count++;
-                if (count == this.total) return this.cost;
-            }  else {
+                if (count === this.total) {
+                    return this.cost;
+                }
+            } else {
                 count = 1;
             }
         }
 
         return 0;
     }
-
-    private static compare(a:number, b:number):number {
-        if (a == b) return 0;
-        return a > b ? 1 : -1;
-    }
 }
 
 export class TotalNumbersCell implements IServiceCardCell {
-    type:CellType;
-    private card:IPlayerCard;
+    public type: CellType;
+    private card: IPlayerCard;
 
     constructor() {
         this.type = CellType.ServiceTotalNumbers;
     }
 
-    linkCard(card:IPlayerCard):void {
+    public linkCard(card: IPlayerCard): void {
         this.card = card;
     }
 
-    value():number {
-        return sumPoints(this.card, [CellType.Ones, CellType.Twos, CellType.Threes, CellType.Fours, CellType.Fives, CellType.Sixes]);
+    public value(): number {
+        const numberTypes = [
+            CellType.Ones, CellType.Twos, CellType.Threes, CellType.Fours, CellType.Fives, CellType.Sixes];
+        return sumPoints(this.card, numberTypes);
     }
 }
 
 export class Bonus63Cell implements IServiceCardCell {
-    type:CellType;
-    private card:IPlayerCard;
+    public type: CellType;
+    private card: IPlayerCard;
 
     constructor() {
         this.type = CellType.ServiceBonus63;
     }
 
-    linkCard(card:IPlayerCard):void {
+    public linkCard(card: IPlayerCard): void {
         this.card = card;
     }
 
-    value():number {
-        let sum = sumPoints(this.card, [CellType.Ones, CellType.Twos, CellType.Threes, CellType.Fours, CellType.Fives, CellType.Sixes]);
+    public value(): number {
+        const numberTypes = [
+            CellType.Ones, CellType.Twos, CellType.Threes, CellType.Fours, CellType.Fives, CellType.Sixes];
+        const sum = sumPoints(this.card, numberTypes);
         return (sum >= 63) ? Config.CostBonus63 : 0;
     }
 }
 
-export class TotalNumbersWithBonusCell implements  IServiceCardCell {
-    type:CellType;
-    private card:IPlayerCard;
+export class TotalNumbersWithBonusCell implements IServiceCardCell {
+    public type: CellType;
+    private card: IPlayerCard;
 
     constructor() {
         this.type = CellType.ServiceTotalNumbersWithBonus;
     }
 
-    linkCard(card:IPlayerCard):void {
+    public linkCard(card: IPlayerCard): void {
         this.card = card;
     }
 
-    value():number {
-        let numbers:IServiceCardCell = this.card.getCellService(CellType.ServiceTotalNumbers);
-        let bonus:IServiceCardCell = this.card.getCellService(CellType.ServiceBonus63);
+    public value(): number {
+        const numbers: IServiceCardCell = this.card.getCellService(CellType.ServiceTotalNumbers);
+        const bonus: IServiceCardCell = this.card.getCellService(CellType.ServiceBonus63);
         return numbers.value() + bonus.value();
     }
 }
 
 export class TopPointsCell implements IServiceCardCell {
-    type:CellType;
-    private card:IPlayerCard;
+    public type: CellType;
+    private card: IPlayerCard;
 
     constructor() {
         this.type = CellType.ServiceTopPoints;
     }
 
-    linkCard(card:IPlayerCard):void {
+    public linkCard(card: IPlayerCard): void {
         this.card = card;
     }
 
-    value():number {
-        let sum = sumPoints(this.card, [CellType.Ones, CellType.Twos, CellType.Threes, CellType.Fours, CellType.Fives, CellType.Sixes]);
+    public value(): number {
+        const numberTypes = [
+            CellType.Ones, CellType.Twos, CellType.Threes, CellType.Fours, CellType.Fives, CellType.Sixes];
+        let sum = sumPoints(this.card, numberTypes);
         if (this.card.hasCell(CellType.ServiceBonus63)) {
             sum += this.card.getCellService(CellType.ServiceBonus63).value();
         }
@@ -254,108 +274,118 @@ export class TopPointsCell implements IServiceCardCell {
 }
 
 export class BottomPointsCell implements IServiceCardCell {
-    type:CellType;
-    private card:IPlayerCard;
+    public type: CellType;
+    private card: IPlayerCard;
 
     constructor() {
         this.type = CellType.ServiceBottomPoints;
     }
 
-    linkCard(card:IPlayerCard):void {
+    public linkCard(card: IPlayerCard): void {
         this.card = card;
     }
 
-    value():number {
-        return sumPoints(this.card, [CellType.Kind3, CellType.Kind4, CellType.FullHouse, CellType.SmallStraight, CellType.LargeStraight, CellType.RoyalDice, CellType.Chance]);
+    public value(): number {
+        const types = [
+            CellType.Kind3, CellType.Kind4, CellType.FullHouse, CellType.SmallStraight, CellType.LargeStraight,
+            CellType.RoyalDice, CellType.Chance];
+        return sumPoints(this.card, types);
     }
 }
 
 export class BonusRoyalCell implements IServiceCardCell {
-    type:CellType;
-    private card:IPlayerCard;
+    public type: CellType;
+    private card: IPlayerCard;
 
     constructor() {
         this.type = CellType.ServiceBonusRoyal;
     }
 
-    linkCard(card:IPlayerCard):void {
+    public linkCard(card: IPlayerCard): void {
         this.card = card;
     }
 
-    value():number {
-        let valuableTypes = [
+    public value(): number {
+        const valuableTypes = [
             CellType.Ones, CellType.Twos, CellType.Threes, CellType.Fours, CellType.Fives, CellType.Sixes,
-            CellType.Kind3, CellType.Kind4, CellType.FullHouse, CellType.SmallStraight, CellType.LargeStraight, CellType.RoyalDice, CellType.Chance
-        ];
+            CellType.Kind3, CellType.Kind4, CellType.FullHouse, CellType.SmallStraight, CellType.LargeStraight,
+            CellType.RoyalDice, CellType.Chance];
 
         let totalRoyalDices = 0;
-        for (let i = 0; i < valuableTypes.length; i++) {
-            let type:CellType = valuableTypes[i];
-            if (!this.card.hasCell(type)) continue;
+        for (const type of valuableTypes) {
+            if (!this.card.hasCell(type)) {
+                continue;
+            }
 
-            let dice = this.card.getCellPlayable(type).dice();
-            if (pointsAsRoyalDice(dice) != 0) totalRoyalDices++;
+            const dice = this.card.getCellPlayable(type).dice();
+            if (pointsAsRoyalDice(dice) !== 0) {
+                totalRoyalDices++;
+            }
         }
 
-        return totalRoyalDices > 1 ? (totalRoyalDices-1) * Config.CostRoyalBonusPerItem: 0;
+        return totalRoyalDices > 1 ? (totalRoyalDices - 1) * Config.CostRoyalBonusPerItem : 0;
     }
 }
 
 export class TotalBonusesCell implements IServiceCardCell {
-    type:CellType;
-    private card:IPlayerCard;
+    public type: CellType;
+    private card: IPlayerCard;
 
     constructor() {
         this.type = CellType.ServiceTotalBonuses;
     }
 
-    linkCard(card:IPlayerCard):void {
+    public linkCard(card: IPlayerCard): void {
         this.card = card;
     }
 
-    value():number {
-       return sumPoints(this.card, [CellType.ServiceBonus63, CellType.ServiceBonusRoyal]);
+    public value(): number {
+        return sumPoints(this.card, [CellType.ServiceBonus63, CellType.ServiceBonusRoyal]);
     }
 }
 
 export class FinalScoreCell implements IServiceCardCell {
-    type:CellType;
-    private card:IPlayerCard;
+    public type: CellType;
+    private card: IPlayerCard;
 
     constructor() {
         this.type = CellType.ServiceFinalScore;
     }
 
-    linkCard(card:IPlayerCard):void {
+    public linkCard(card: IPlayerCard): void {
         this.card = card;
     }
 
-    value():number {
+    public value(): number {
         return sumPoints(this.card, [
             CellType.Ones, CellType.Twos, CellType.Threes, CellType.Fours, CellType.Fives, CellType.Sixes,
-            CellType.Kind3, CellType.Kind4, CellType.FullHouse, CellType.SmallStraight, CellType.LargeStraight, CellType.RoyalDice, CellType.Chance,
+            CellType.Kind3, CellType.Kind4, CellType.FullHouse, CellType.SmallStraight, CellType.LargeStraight,
+            CellType.RoyalDice, CellType.Chance,
             CellType.ServiceBonus63, CellType.ServiceBonusRoyal]);
     }
 }
 
-function pointsAsRoyalDice(dice:IDice) {
-    if (dice.total() == 0) return 0;
+function pointsAsRoyalDice(dice: IDice) {
+    if (dice.total() === 0) {
+        return 0;
+    }
 
-    let first:IDie = dice.get(0);
-    for (let i=1; i<dice.total(); i++) {
-        let die:IDie = dice.get(i);
-        if (die.type != DieType.Value || die.value != first.value) {
+    const first: IDie = dice.get(0);
+    for (let i = 1; i < dice.total(); i++) {
+        const die: IDie = dice.get(i);
+        if (die.type !== DieType.Value || die.value !== first.value) {
             return 0;
         }
     }
     return Config.CostRoyalDice;
 }
 
-function sumPoints(card:IPlayerCard, types:CellType[]):number {
+function sumPoints(card: IPlayerCard, types: CellType[]): number {
     let sum = 0;
-    for (let i = 0; i < types.length; i++) {
-        let type:CellType = types[i];
-        if (!card.hasCell(type)) continue;
+    for (const type of types) {
+        if (!card.hasCell(type)) {
+            continue;
+        }
 
         sum += card.getCell(type).value();
     }

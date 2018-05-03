@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "outDir": "../dist",
+        "module": "commonjs",
+        "target": "es6",
+        "sourceMap": true,
+        //"noImplicitAny": true, // Чтобы можно было задавать произвольные символы в качестве свойств
+
+        "strictNullChecks": false,
+        "removeComments": true,
+        "moduleResolution": "node",
+        "declaration": true
+    }
+}
