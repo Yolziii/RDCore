@@ -1,15 +1,15 @@
 import * as assert from "assert";
 import "mocha";
+import {CellType, DieType, IDie, IPlayableCardCell, IPlayerCard, IServiceCardCell} from "../src/core/gameplay";
+import {Dice} from "../src/core/Dices";
 import {
     Bonus63Cell, BonusRoyalCell, BottomPointsCell,
     ChanceCell, FinalScoreCell, FullHouseCell, KindCell, NumberCell, RoyalDiceCell, StraightCell, TopPointsCell,
     TotalBonusesCell,
     TotalNumbersCell, TotalNumbersWithBonusCell,
-} from "../dist/core/Cells";
-import {Config} from "../dist/core/Config";
-import {Dice} from "../dist/core/Dices";
-import {CellType, DieType, IDie, IPlayableCardCell, IPlayerCard, IServiceCardCell} from "../dist/core/gameplay";
-import {PlayerCard} from "../dist/core/PlayerCard";
+} from "../src/core/Cells";
+import {Config} from "../src/core/Config";
+import {PlayerCard} from "../src/core/PlayerCard";
 
 describe("Cells", () => {
     function die1(): IDie {

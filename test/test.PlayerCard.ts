@@ -1,9 +1,9 @@
 import * as assert from "assert";
 import "mocha";
-import {Dice} from "../dist/core/Dices";
-import {CellType, DieType, IDie, IPlayableCardCell, IPlayerCard} from "../dist/core/gameplay";
-import {NumberCell} from "../dist/core/Cells";
-import {PlayerCard} from "../dist/core/PlayerCard";
+import {CellType, DieType, IDie, IPlayableCardCell, IPlayerCard} from "../src/core/gameplay";
+import {NumberCell} from "../src/core/Cells";
+import {PlayerCard} from "../src/core/PlayerCard";
+import {Dice} from "../src/core/Dices";
 
 describe("CardField", () => {
     let card: IPlayerCard;

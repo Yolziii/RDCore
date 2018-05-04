@@ -1,9 +1,9 @@
 import * as assert from "assert";
 import "mocha";
-import {Config} from "../dist/core/Config";
-import {Dice, FullDiceDecorator} from "../dist/core/Dices";
-import {DieType, IDice, IDie} from "../dist/core/gameplay";
-import {RDError, RDErrorCode} from "../dist/core/RDError";
+import {DieType, IDice, IDie} from "../src/core/gameplay";
+import {Dice, FullDiceDecorator} from "../src/core/Dices";
+import {Config} from "../src/core/Config";
+import {RDError, RDErrorCode} from "../src/core/RDError";
 
 describe("Dices", () => {
     function die1(): IDie {

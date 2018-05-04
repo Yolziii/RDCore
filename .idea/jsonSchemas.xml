@@ -3,6 +3,24 @@
   <component name="JsonSchemaMappingsProjectConfiguration">
     <state>
       <map>
+        <entry key="tsconfig.shema">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="tsconfig.shema" />
+              <option name="relativePathToSchema" value="tsconfig.shema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="src\tsconfig.json" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="tsconfig.json" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
         <entry key="tslint.schema">
           <value>
             <SchemaInfo>
