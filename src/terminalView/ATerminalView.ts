@@ -1,25 +1,29 @@
-const ansiEsc = require('ansi-escapes');
+// tslint:disable-next-line:no-var-requires
+const ansiEsc = require("ansi-escapes");
+// tslint:disable-next-line:no-var-requires
+const readline = require("readline");
 
 export abstract class ATerminalView {
-    protected _x:number;
-    protected _y:number;
-    private lineOffset:number = 0;
+    protected x: number;
+    protected y: number;
+    private lineOffset: number = 0;
 
-    constructor(x:number, y:number) {
-        this._x = x;
-        this._y = x;
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
     }
 
-    abstract draw():void;
+    public abstract draw(): void;
 
-    protected  startDraw() {
-        ansiEsc.cursorTo(this._x, this._y);
+    protected startDraw() {
+        readline.cursorTo(process.stdout, this.x, this.y);
         this.lineOffset = 0;
     }
 
-    protected line(string) {
-        console.log(string);
+    protected line(str: string) {
+        const log = console.log;
+        log(str);
         this.lineOffset++;
-        ansiEsc.cursorTo(this._x, this._y + this.lineOffset);
+        readline.cursorTo(process.stdout, this.x, this.y + this.lineOffset);
     }
 }

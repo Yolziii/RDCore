@@ -1,6 +1,4 @@
 export class Client {
-
-
     start() {
 
     }
