@@ -1,5 +1,6 @@
 export let Config = {
     DefaultDiceSize: 5,
+    DefaultThrows: 3,
 
     CostBonus63: 35,
     CostFullHouse: 25,

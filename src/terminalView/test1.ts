@@ -46,7 +46,7 @@ log(chalk.hex("#DEADED").bold("Bold gray!"));
 const throwButton: ThrowButton = new ThrowButton(20, 1 );
 throwButton.draw();
 
-// without this, we would only get streams once enter is pressed
+// without this, we would only getFrom streams once enter is pressed
 process.stdin.setRawMode( true );
 
 // resume stdin in the parent process (node app won"t quit all by itself

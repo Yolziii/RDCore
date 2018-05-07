@@ -1,5 +1,3 @@
-import {CellType, IDice, IRound} from "../core/gameplay";
-import {PlayerCard} from "../core/PlayerCard";
 
 /*
 export class SingleRound implements IRound {
@@ -25,7 +23,7 @@ export class SingleRound implements IRound {
 
     }
 
-    fillCell(card:PlayerCard, type:CellType, dice:IDice) {
+    fillCell(card:Card, type:CellType, dice:IDice) {
 
     }
 

@@ -1,13 +1,6 @@
-export const enum RDErrorCode {
-    UNDEFINED = "UNDEFINED",
+import {RDErrorCode} from "./RDErrorCode";
 
-    DICE_INDEX_EMPTY = "DICE_INDEX_EMPTY",
-    DICE_IF_FULL = "DICE_IF_FULL",
-    DICE_INDEX_FULL = "DICE_INDEX_FULL",
-    DICE_NOT_FULL = "DICE_NOT_FULL",
-}
-
-export class RDError {
+export default class RDError {
     private errCode: RDErrorCode;
     private errMessage: string;
 

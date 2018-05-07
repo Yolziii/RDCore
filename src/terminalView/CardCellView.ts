@@ -1,12 +1,12 @@
 import {ATerminalView} from "./ATerminalView";
 import chalk from "chalk";
-import {ICardCell, IPlayableCardCell} from "../core/gameplay";
+import {IPlayableCell} from "../core/Cells";
 
 export class CardCellView extends ATerminalView {
-    private cell: IPlayableCardCell;
+    private cell: IPlayableCell;
     private key: string;
 
-    public init(key: string, cell: IPlayableCardCell) {
+    public init(key: string, cell: IPlayableCell) {
         this.key = key;
         this.cell = cell;
     }
@@ -15,7 +15,7 @@ export class CardCellView extends ATerminalView {
         this.startDraw();
 
         let value = " - ";
-        if (this.cell.isFull()) {
+        if (this.cell.isFull) {
             value = this.cell.value().toString();
         }
 

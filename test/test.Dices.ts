@@ -1,9 +1,9 @@
 import * as assert from "assert";
 import "mocha";
-import {DieType, IDice, IDie} from "../src/core/gameplay";
-import {Dice, FullDiceDecorator} from "../src/core/Dices";
+import {IDie, Dice, DieType, FullDiceDecorator, IDice} from "../src/core/Dices";
 import {Config} from "../src/core/Config";
-import {RDError, RDErrorCode} from "../src/core/RDError";
+import {RDErrorCode} from "../src/core/RDErrorCode";
+import RDError from "../src/core/RDError";
 
 describe("Dices", () => {
     function die1(): IDie {
@@ -30,63 +30,65 @@ describe("Dices", () => {
         return {type: DieType.Value, value: 6};
     }
 
+    // TODO copy();
+
     it("Max", () => {
-        const dice: Dice = new Dice();
-        assert.equal(dice.max(), Config.DefaultDiceSize);
+        const dice: IDice = new Dice();
+        assert.equal(dice.max, Config.DefaultDiceSize);
     });
 
     it("Zero total", () => {
-        const dice: Dice = new Dice();
-        assert.equal(dice.total(), 0);
+        const dice: IDice = new Dice();
+        assert.equal(dice.total, 0);
     });
 
     it("Not full", () => {
         const dice: Dice = new Dice();
-        assert.equal(dice.isFull(), false);
+        assert.equal(dice.isFull, false);
     });
 
     it("One total", () => {
-        const dice: Dice = new Dice(die1());
-        assert.equal(dice.total(), 1);
+        const dice: IDice = new Dice(die1());
+        assert.equal(dice.total, 1);
     });
 
     it("Full", () => {
-        const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
-        assert.equal(dice.isFull(), true);
+        const dice: IDice = new Dice(die1(), die2(), die3(), die4(), die5());
+        assert.equal(dice.isFull, true);
     });
 
     it("value()", () => {
-        const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
-        assert.equal(dice.total(), 5);
+        const dice: IDice = new Dice(die1(), die2(), die3(), die4(), die5());
+        assert.equal(dice.total, 5);
     });
 
-    it("get()", () => {
-        const dice: Dice = new Dice(die1());
-        const die: IDie = dice.get(0);
+    it("getFrom()", () => {
+        const dice: IDice = new Dice(die1());
+        const die: IDie = dice.getFrom(0);
         assert.equal(die.value, 1);
-        assert.equal(dice.total(), 1);
+        assert.equal(dice.total, 1);
     });
 
-    it("pop()", () => {
-        const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
-        const die: IDie = dice.pop(0);
+    it("popFrom()", () => {
+        const dice: IDice = new Dice(die1(), die2(), die3(), die4(), die5());
+        const die: IDie = dice.popFrom(0);
         assert.equal(die.value, 1);
-        assert.equal(dice.total(), 4);
+        assert.equal(dice.total, 4);
     });
 
-    it("Dice.put()", () => {
+    it("Dice.putTo()", () => {
         const dice: Dice = new Dice();
 
-        dice.put(die1());
-        assert.equal(dice.total(), 1);
+        dice.putTo(die1());
+        assert.equal(dice.total, 1);
 
     });
 
-    it("get() unknown", () => {
-        const dice: Dice = new Dice();
+    it("getFrom() unknown", () => {
+        const dice: IDice = new Dice();
         try {
-            dice.get(0);
-            assert.fail("Dice.get() don't throw exception!");
+            dice.getFrom(0);
+            assert.fail("Dice.getFrom() don't throw exception!");
         } catch (e) {
             if (e instanceof RDError) {
                 assert.equal(e.code, RDErrorCode.DICE_INDEX_EMPTY);
@@ -96,11 +98,11 @@ describe("Dices", () => {
         }
     });
 
-    it("get() unknown", () => {
-        const dice: Dice = new Dice();
+    it("getFrom() unknown", () => {
+        const dice: IDice = new Dice();
         try {
-            dice.pop(0);
-            assert.fail("Dice.pop() don't throw exception!");
+            dice.popFrom(0);
+            assert.fail("Dice.popFrom() don't throw exception!");
         } catch (e) {
             if (e instanceof RDError) {
                 assert.equal(e.code, RDErrorCode.DICE_INDEX_EMPTY);
@@ -110,11 +112,11 @@ describe("Dices", () => {
         }
     });
 
-    it("DiceArray.put() full", () => {
+    it("DiceArray.putTo() full", () => {
         const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
         try {
-            dice.put({type: DieType.Value, value: 1});
-            assert.fail("Dice.put() don't throw exception!");
+            dice.putTo({type: DieType.Value, value: 1});
+            assert.fail("Dice.putTo() don't throw exception!");
         } catch (e) {
             if (e instanceof RDError) {
                 assert.equal(e.code, RDErrorCode.DICE_IF_FULL);
@@ -124,11 +126,11 @@ describe("Dices", () => {
         }
     });
 
-    it("DiceSlotable.put() full", () => {
+    it("DiceSlotable.putTo() full", () => {
         const dice: Dice = new Dice({type: DieType.Value, value: 1});
         try {
-            dice.put({type: DieType.Value, value: 1}, 0);
-            assert.fail("DiceSlotable.put() don't throw exception!");
+            dice.putTo({type: DieType.Value, value: 1}, 0);
+            assert.fail("DiceSlotable.putTo() don't throw exception!");
         } catch (e) {
             if (e instanceof RDError) {
                 assert.equal(e.code, RDErrorCode.DICE_INDEX_FULL);
@@ -141,8 +143,8 @@ describe("Dices", () => {
     it("FullDiceDecorator exeption", () => {
         const dice: IDice = new FullDiceDecorator(new Dice({type: DieType.Value, value: 1}));
         try {
-            dice.get(0);
-            assert.fail("FullDiceDecorator.get() don't throw exception!");
+            dice.getFrom(0);
+            assert.fail("FullDiceDecorator.getFrom() don't throw exception!");
         } catch (e) {
             if (e instanceof RDError) {
                 assert.equal(e.code, RDErrorCode.DICE_NOT_FULL);
@@ -157,7 +159,7 @@ describe("Dices", () => {
             new Dice(die1(), die2(), die3(), die4(), die5()),
         );
 
-        const die: IDie = dice.get(0);
+        const die: IDie = dice.getFrom(0);
         assert.equal(die.value, 1);
     });
 });

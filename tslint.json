@@ -6,7 +6,13 @@
     "jsRules": {},
     "rules": {
         "max-classes-per-file": false,
-        "ordered-imports": false
+        "ordered-imports": false,
+        "typedef-whitespace": false,
+        "whitespace": false,
+        "no-trailing-whitespace": false,
+        "variable-name": false,
+        "max-line-length": false,
+        "trailing-comma": false
     },
     "rulesDirectory": []
 }
