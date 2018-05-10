@@ -2,7 +2,7 @@ import {IViewFactory} from "../application/IViewFactory";
 import {IMainScreenView} from "../application/mainScreen/MainScreenController";
 import {TerminalMainScreenView} from "./TerminalMainScreenView";
 import {IRoundView} from "../application/round/RoundController";
-import {TerminalRoundView} from "./TerminalRoundView";
+import {TerminalSingleRoundView} from "./roundView/TerminalSingleRoundView";
 
 export class TerminalViewFactory implements IViewFactory {
     public createMainScreenView():IMainScreenView {
@@ -10,6 +10,6 @@ export class TerminalViewFactory implements IViewFactory {
     }
 
     public createRoundView():IRoundView {
-        return new TerminalRoundView(0, 0);
+        return new TerminalSingleRoundView(0, 0);
     }
 }

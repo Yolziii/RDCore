@@ -4,7 +4,7 @@ import {RDErrorCode} from "./RDErrorCode";
 
 export interface IDie {
     readonly type: DieType;
-    readonly value: number;
+    readonly value?: number;
 }
 
 export const enum DieType {
@@ -12,6 +12,7 @@ export const enum DieType {
     Jocker = "Jocker",
     Unknown = "Unknown",
     Blocked = "Blocked",
+    Empty = "Empty"
 }
 
 export const NullDie:IDie = {type: DieType.Unknown, value: 0 };

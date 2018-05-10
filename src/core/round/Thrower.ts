@@ -9,7 +9,7 @@ export class Thrower {
     }
 
     public throwTemplate() {
-        const dice: IDice = this.diceFactory();
+        let dice: IDice = this.diceFactory();
         for (let i = 0; i < dice.max; i++) {
             this.fillDie(dice, i);
 
@@ -33,6 +33,7 @@ export class Thrower {
 
     protected dieFactory(): IDie {
         const random = Math.floor(Math.random() * 6) + 1;
-        return {type: DieType.Value, value: random};
+        let die = {type: DieType.Value, value: random};
+        return die;
     }
 }

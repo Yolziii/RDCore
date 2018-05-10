@@ -1,8 +1,8 @@
 import {Config} from "./Config";
 import {ICard} from "./Cards";
-import {IDice, IDie, DieType, NullDice} from "./Dices";
+import {IDice, IDie, DieType, NullDice, Dice} from "./Dices";
 
-export const enum CellType {
+export enum CellType {
     Ones = "Ones",
     Twos = "Twos",
     Threes = "Threes",
@@ -66,7 +66,10 @@ export abstract class APlayableCell implements IPlayableCell {
     }
 
     public fill(dice: IDice): void {
-        this.cellDice = dice;
+        this.cellDice = new Dice();
+        for (let i = 0; i<dice.max; i++) {
+            this.cellDice.put(dice.getFrom(i));
+        }
     }
 
     public abstract valueFor(dice: IDice):void;

@@ -11,13 +11,19 @@ export interface IRoundPlayer extends IRoundObserverSubject {
     readonly throwed:IDice;
     readonly holded:IDice;
 
+    readonly totalCards:number;
+
     canHoldDie(index:number);
-    canFreeDice(index:number);
+    canFreeDie(index:number);
 
     holdDie(index:number);
     freeDie(index:number);
 
     throwDice();
+
+    setActiveCard(index:number); // Если карт несколько, то API работает с активной
+    getCard():ICard;
+    fillCell(type:CellType);
 }
 
 export interface ISingleCardPlayer {
@@ -28,24 +34,30 @@ export interface ISingleCardPlayer {
 export interface IRound extends IRoundPlayer, IRoundObserverSubject {
     readonly finished: boolean;
     readonly totalPlayers:number;
-    getPlayer(index):IRoundPlayer;
 
-    setActivePlayer(player:IRoundPlayer);
+    setActivePlayer(index:number);
+    getPlayer():IRoundPlayer;
 }
 
 export class SingleRound implements IRound {
     public readonly totalPlayers:number = 1;
+    public readonly totalCards:number = 1;
+
     private player:RoundPlayerCard1;
 
     constructor(player:RoundPlayerCard1) {
         this.player = player;
     }
 
-    public getPlayer(index):IRoundPlayer {
+    public getPlayer():IRoundPlayer {
         return this.player;
     }
 
-    public setActivePlayer(player:IRoundPlayer) {/**/}
+    public getCard():ICard {
+        return this.player.getCard();
+    }
+
+    public setActivePlayer(index:number) {/**/}
 
     public get finished() {
         const card:ICard = this.player.getCard();
@@ -59,12 +71,15 @@ export class SingleRound implements IRound {
     public get holded():IDice {return this.player.holded;}
 
     public canHoldDie(index:number):boolean {return this.player.canHoldDie(index);}
-    public canFreeDice(index:number):boolean {return this.player.canFreeDice(index);}
+    public canFreeDie(index:number):boolean {return this.player.canFreeDie(index);}
 
     public holdDie(index:number) {return this.player.holdDie(index);}
     public freeDie(index:number) {return this.player.freeDie(index);}
 
     public throwDice() {this.player.throwDice();}
+    public fillCell(type:CellType) {
+        this.player.fillCell(type);
+    }
 
     public registerObserver(observer:IRoundPlayerThrowObserver | IRoundPlayerHoldObserver | IRoundPlayerFreeObserver | IRoundPlayerFillObserver) {
         this.player.registerObserver(observer);
@@ -73,6 +88,8 @@ export class SingleRound implements IRound {
     public unregisterObserver(observer:IRoundPlayerThrowObserver | IRoundPlayerHoldObserver | IRoundPlayerFreeObserver | IRoundPlayerFillObserver) {
         this.player.unregisterObserver(observer);
     }
+
+    public setActiveCard() {/**/}
 
 }
 
@@ -171,6 +188,8 @@ export class RoundPlayerObserverSubject implements IRoundObserverSubject {
 }
 
 export class RoundPlayerCard1 implements IRoundPlayer, ISingleCardPlayer {
+    public readonly totalCards:number = 1;
+
     private _throwsLeft:number = 0;
     private _holdedDice:IDice = new Dice();
     private _throwedDice:IDice = new Dice();
@@ -203,9 +222,10 @@ export class RoundPlayerCard1 implements IRoundPlayer, ISingleCardPlayer {
         this._mixedDice.clear();
         for (let i=0; i<Config.DefaultDiceSize; i++) {  // TODO: Возможность изменения количества собираемых и учитываемых костей
             if (this._holdedDice.hasAt(i)) {
-                this._mixedDice.putTo(this._holdedDice.getFrom(i), i);
-            } else {
-                this._mixedDice.putTo(this._throwedDice.getFrom(i), i);
+                this._mixedDice.put(this._holdedDice.getFrom(i));
+            }
+            if (this._throwedDice.hasAt(i)) {
+                this._mixedDice.put(this._throwedDice.getFrom(i));
             }
         }
         return this._mixedDice;
@@ -215,7 +235,7 @@ export class RoundPlayerCard1 implements IRoundPlayer, ISingleCardPlayer {
        return this._throwedDice.hasAt(index);
     }
 
-    public canFreeDice(index:number):boolean {
+    public canFreeDie(index:number):boolean {
         return this._holdedDice.hasAt(index);
     }
 
@@ -236,7 +256,9 @@ export class RoundPlayerCard1 implements IRoundPlayer, ISingleCardPlayer {
     public fillCell(type:CellType) {
         this._card.fillCell(type, this.dice);
         this._throwsLeft = Config.DefaultThrows; // TODO: Возможность изменения количества попыток
+
         this._throwedDice.clear();
+        this._holdedDice.clear();
 
         this._observable.onPlayerFill();
     }
@@ -258,4 +280,6 @@ export class RoundPlayerCard1 implements IRoundPlayer, ISingleCardPlayer {
     public unregisterObserver(observer:IRoundPlayerThrowObserver | IRoundPlayerHoldObserver | IRoundPlayerFreeObserver | IRoundPlayerFillObserver) {
         this._observable.unregisterObserver(observer);
     }
+
+    public setActiveCard() {/**/}
 }

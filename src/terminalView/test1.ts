@@ -1,9 +1,9 @@
 import chalk from "chalk";
+import {TerminalThrowButton} from "./roundView/TerminalThrowButton";
 // tslint:disable-next-line:no-var-requires
 const readline = require("readline");
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");
-import {TerminalThrowButton} from "./ThrowButton";
 
 const log = console.log;
 

@@ -97,22 +97,22 @@ describe("RoundPlayerCard1", () => {
 
     it("can'tFreeDice()", () => {
         roundPlayer.throwDice();
-        assert.equal(roundPlayer.canFreeDice(0),false);
-        assert.equal(roundPlayer.canFreeDice(1),false);
-        assert.equal(roundPlayer.canFreeDice(2),false);
-        assert.equal(roundPlayer.canFreeDice(3),false);
-        assert.equal(roundPlayer.canFreeDice(4),false);
+        assert.equal(roundPlayer.canFreeDie(0),false);
+        assert.equal(roundPlayer.canFreeDie(1),false);
+        assert.equal(roundPlayer.canFreeDie(2),false);
+        assert.equal(roundPlayer.canFreeDie(3),false);
+        assert.equal(roundPlayer.canFreeDie(4),false);
     });
 
     it("holdDie()", () => {
         roundPlayer.throwDice();
         roundPlayer.holdDie(2);
         assert.equal(roundPlayer.canHoldDie(2),false);
-        assert.equal(roundPlayer.canFreeDice(0),true);
+        assert.equal(roundPlayer.canFreeDie(0),true);
 
         roundPlayer.holdDie(4);
         assert.equal(roundPlayer.canHoldDie(4),false);
-        assert.equal(roundPlayer.canFreeDice(1),true);
+        assert.equal(roundPlayer.canFreeDie(1),true);
 
     });
 
@@ -121,11 +121,11 @@ describe("RoundPlayerCard1", () => {
         roundPlayer.holdDie(2);
         roundPlayer.holdDie(4);
         assert.equal(roundPlayer.canHoldDie(2),false);
-        assert.equal(roundPlayer.canFreeDice(0),true);
+        assert.equal(roundPlayer.canFreeDie(0),true);
 
         roundPlayer.freeDie(0);
         assert.equal(roundPlayer.canHoldDie(2),true);
-        assert.equal(roundPlayer.canFreeDice(0),false);
+        assert.equal(roundPlayer.canFreeDie(0),false);
 
     });
 
