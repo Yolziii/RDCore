@@ -1,4 +1,4 @@
-import {Dictionary} from "../util/Dictionary";
+import {IDictionary} from "../util/Dictionaries";
 import {RDErrorCode} from "./RDErrorCode";
 import RDError from "./RDError";
 import {CellType, ICell, IPlayableCell, IServiceCell} from "./Cells";
@@ -21,7 +21,7 @@ export class Card implements ICard {
         return (cell as IPlayableCell).dice !== undefined;
     }
 
-    private cells: Dictionary<ICell> = {};
+    private cells: IDictionary<ICell> = {};
 
     constructor(cells: ICell[]) {
         if (cells === undefined  || cells.length === 0) {

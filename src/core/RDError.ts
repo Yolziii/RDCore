@@ -6,7 +6,7 @@ export default class RDError {
 
     constructor(code: RDErrorCode, message: string = "") {
         this.errCode = code;
-        this.errMessage = message;
+        this.errMessage = `[${RDErrorCode[code]}]: ${message}`;
     }
 
     get code() {

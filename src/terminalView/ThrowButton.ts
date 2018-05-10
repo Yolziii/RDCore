@@ -1,7 +1,7 @@
 import {ATerminalView} from "./ATerminalView";
 import chalk from "chalk";
 
-export class ThrowButton extends ATerminalView {
+export class TerminalThrowButton extends ATerminalView {
     public draw() {
         this.startDraw();
         this.line(chalk.gray("|---------|"));

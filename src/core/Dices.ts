@@ -26,6 +26,8 @@ export interface IDice {
     popFrom(index:number): IDie;
     getFrom(index:number): IDie;
     hasAt(index:number):boolean;
+
+    clear();
 }
 
 export class Dice implements IDice {
@@ -112,6 +114,14 @@ export class Dice implements IDice {
             }
         }
     }
+
+    public clear() {
+        for (let i = 0; i < this.maxDies; i++) {
+            if (this.hasAt(i)) {
+                this.popFrom(i);
+            }
+        }
+    }
 }
 
 export const NullDice: IDice = new Dice();
@@ -153,6 +163,10 @@ export abstract class ADiceDecorator implements IDice {
 
     public hasAt(index:number):boolean {
         return this.dice.hasAt(index);
+    }
+
+    public clear() {
+        this.dice.clear();
     }
 }
 

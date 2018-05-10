@@ -16,7 +16,7 @@ export class CardCellView extends ATerminalView {
 
         let value = " - ";
         if (this.cell.isFull) {
-            value = this.cell.value().toString();
+            value = this.cell.value.toString();
         }
 
         this.line(chalk.gray(`[${this.key}] `));

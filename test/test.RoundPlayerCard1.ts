@@ -1,16 +1,16 @@
 import * as assert from "assert";
 import "mocha";
-import {IRoundPlayer, IRoundPlayerThrowObserver, RoundPlayerCard1} from "../src/core/Rounds";
+import {IRoundPlayerThrowObserver, RoundPlayerCard1} from "../src/core/Rounds";
 import {Card, ICard} from "../src/core/Cards";
-import {CellType, FinalScoreCell, NumberCell} from "../src/core/Cells";
+import {CellType, FinalScoreCell, NumberCell, RoyalDiceCell} from "../src/core/Cells";
 import {Config} from "../src/core/Config";
 import {Thrower} from "../src/core/round/Thrower";
 import {Dice, DieType, IDice, IDie} from "../src/core/Dices";
 
 describe("RoundPlayerCard1", () => {
+    let DIE1:IDie;
     class TestThrower extends Thrower {
         protected diceFactory() {
-            const DIE1:IDie = {type:DieType.Value, value: 1};
             return new Dice(DIE1, DIE1, DIE1, DIE1, DIE1);
         }
 
@@ -25,12 +25,15 @@ describe("RoundPlayerCard1", () => {
     beforeEach(() => {
         const card:ICard = new Card([
             new NumberCell(CellType.Ones, 1),
+            new RoyalDiceCell(),
 
             new FinalScoreCell()
         ]);
 
         roundPlayer = new RoundPlayerCard1();
         roundPlayer.init(card, testThrower);
+
+        DIE1 = {type:DieType.Value, value: 1};
     });
 
     it("Throws 3", () => {
@@ -71,6 +74,18 @@ describe("RoundPlayerCard1", () => {
         assert.equal(card.getCell(CellType.ServiceFinalScore).value, 0);
     });
 
+    it("Fill number", () => {
+        roundPlayer.throwDice();
+        roundPlayer.fillCell(CellType.Ones);
+
+        assert.equal(roundPlayer.throwed.total,0);
+        assert.equal(roundPlayer.holded.total,0);
+
+        const playerCard = roundPlayer.getCard();
+        assert.equal(playerCard.getCell(CellType.ServiceFinalScore).value, 5);
+
+    });
+
     it("canHoldDie()", () => {
         roundPlayer.throwDice();
         assert.equal(roundPlayer.canHoldDie(0),true);
@@ -101,7 +116,7 @@ describe("RoundPlayerCard1", () => {
 
     });
 
-    it("holdDie()", () => {
+    it("freeDie()", () => {
         roundPlayer.throwDice();
         roundPlayer.holdDie(2);
         roundPlayer.holdDie(4);
