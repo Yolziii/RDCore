@@ -4,7 +4,7 @@ import {TermninalCellView} from "./TerminalCellView";
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");
 
-import {IRoundView, RoundController} from "../../application/round/RoundController";
+import {IRoundView, RoundController} from "../../client/round/RoundController";
 import {
     IRound, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
     IRoundPlayerThrowObserver
@@ -36,7 +36,7 @@ const keyForType:IDictionary<string> = {
 };
 
 const keyForHold:string[] = ["y", "u", "i", "o", "p"];
-const keyForFree:string[] = ["h", "j", "k", "l", ";"];
+const keyForFree:string[] = ["n", "m", ",", ".", "/"];
 
 const typeForKey:IDictionary<CellType> = {};
 for (const type in keyForType) {
@@ -153,7 +153,7 @@ export class TerminalSingleRoundView extends ATerminalView implements
             }
             this.throwedViews[i].draw();
 
-            const X = DICE_X + 2 + i * 6;
+            const X = DICE_X + 1 + i * 7;
             if (throwed.hasAt(i)) {
                 this.place(chalk.yellowBright(`[${keyForHold[i].toUpperCase()}]`), X, THROWED_DICE_Y+3);
             } else {
@@ -170,7 +170,7 @@ export class TerminalSingleRoundView extends ATerminalView implements
             }
             this.holdedViews[i].draw();
 
-            const X = DICE_X + 2 + i * 6;
+            const X = DICE_X + 1 + i * 7;
             if (holded.hasAt(i)) {
                 this.place(chalk.yellowBright(`[${keyForFree[i].toUpperCase()}]`), X, HOLDED_DICE_Y+3);
             } else {

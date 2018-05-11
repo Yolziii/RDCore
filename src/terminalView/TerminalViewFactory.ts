@@ -1,7 +1,7 @@
-import {IViewFactory} from "../application/IViewFactory";
-import {IMainScreenView} from "../application/mainScreen/MainScreenController";
+import {IViewFactory} from "../client/IViewFactory";
+import {IMainScreenView} from "../client/mainScreen/MainScreenController";
 import {TerminalMainScreenView} from "./TerminalMainScreenView";
-import {IRoundView} from "../application/round/RoundController";
+import {IRoundView} from "../client/round/RoundController";
 import {TerminalSingleRoundView} from "./roundView/TerminalSingleRoundView";
 
 export class TerminalViewFactory implements IViewFactory {

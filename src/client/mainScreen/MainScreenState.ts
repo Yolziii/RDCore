@@ -1,6 +1,7 @@
-import {AppState} from "../Application";
+import {AppState} from "../../application/Application";
 import {Logger} from "../../util/Logger";
 import {MainScreenController} from "./MainScreenController";
+import {Protocol} from "../Protocol";
 
 export class MainScreenState extends AppState {
     private controller:MainScreenController;
@@ -9,10 +10,9 @@ export class MainScreenState extends AppState {
         return false;
     }
 
-    public activate() {
-        this.controller = new MainScreenController(this.app, this.app.viewFactory.createMainScreenView());
+    public init() {
+        this.controller = new MainScreenController(this, this.app.viewFactory.createMainScreenView());
         this.controller.activate();
-
     }
 
     public wakeup() {
@@ -21,5 +21,9 @@ export class MainScreenState extends AppState {
 
     public sleep() {
         this.controller.sleep();
+    }
+
+    public toSinglePlayer() {
+        this.app.toState(Protocol.StartRound);
     }
 }

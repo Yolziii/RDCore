@@ -1,38 +1,96 @@
-import {Protocol} from "./Protocol";
+import {Protocol} from "../client/Protocol";
 import {IDictionaryInt} from "../util/Dictionaries";
 import {RDErrorCode} from "../core/RDErrorCode";
 import RDError from "../core/RDError";
-import {IViewFactory} from "./IViewFactory";
+import {IViewFactory} from "../client/IViewFactory";
+
+/**
+ * Интерфейс для состояний, которые динамически управляют слотами приложения
+ */
+export interface IDynamicGraphState extends IAppState { // TODO: Вызывать методы перед активацией и после выхода
+    /** Добавить новые состояния в слоты приложения */
+    fillStates();
+
+    /** Очистить ранее добавленные состояния из слотов приложения */
+    clearStates();
+}
+function isDynamicGraphState(state:IAppState):state is IDynamicGraphState {
+    return (state as IDynamicGraphState).fillStates !== undefined;
+}
+
+export interface IApplication {
+    /** Текущее состояние */
+    readonly activeState:IAppState;
+
+    /** Заполняет указанный слот указанным состоянием */
+    fillSlot(slot:Protocol, state: IAppState);
+
+    /** Освобождает указанный слот состояния */
+    clearSlot(slot:Protocol);
+
+    /**
+     * Переводит приложение в указанное состояние
+     * @param {Protocol} slot Идентификатор состояния
+     * @param {IAppEvent} event Параметры перехода, которіе передаются состоянию при активации
+     */
+    toState(slot:Protocol, event:IAppEvent);
+
+    /**
+     * Выходит из текущего активного состояния и переходит в указанное
+     * @param {Protocol} slot
+     * @param {IAppEvent} event
+     */
+    exitToState(slot:Protocol, event:IAppEvent);
+
+    /**
+     * Переводит приложение в описанное событием состояние
+     * @param {IAppEvent} event
+     */
+    onEvent(event:IAppEvent);
+
+    /**
+     * Выходит ищ текущего состояние и переводит приложение в описанное событием состояние
+     * @param {IAppEvent} event
+     */
+    onExitEvent(event:IAppEvent);
+}
+
+export interface IClientApplication {
+    /** Фабрика, создающая представления */
+    readonly viewFactory:IViewFactory;
+}
 
 /**
  * Каркас для приложений проекта (клиента, сервера, утилит и тестовых окружений)
  */
-export class Application {
-    private _activeState:AppState = null;
-    private stateFactories:IDictionaryInt<(id:Protocol, app:Application) => AppState> = {};
-    private pool:IDictionaryInt<AppState> = {};
+export class Application implements IApplication {
+    private _activeState:IAppState = null;
     private _viewFactory:IViewFactory;
+
+    private slots:IDictionaryInt<IAppState> = {};
+    private stack:IAppState[] = [];
 
     constructor(viewFactory:IViewFactory) {
         this._viewFactory = viewFactory;
     }
 
-    /** Сопоставляет идентификатор состояния с фабричным методом, который создает экземпляр этого состояния */
-    public addStateFactory(id:Protocol, stateFactory: (id:Protocol, app:Application) => AppState):void {
-        if (this.stateFactories[id] !== undefined) {
-            throw new RDError(RDErrorCode.STATE_ID_ALREADY_USED, `State ${Protocol[id]} already registered!`);
+    public fillSlot(slot:Protocol, state: IAppState):void {
+        if (this.slots[slot] !== undefined) {
+            throw new RDError(RDErrorCode.SLOT_ALREADY_FILLED, `Slot ${slot} is already filled!`);
         }
-        this.stateFactories[id] = stateFactory;
+        state.link(slot, this);
+        state.init();
+        this.slots[slot] = state;
     }
 
-    /** Освобождает указанный идентификатор состояния, и удаляет состояние их пула, если он там есть */
-    public removeStateAndFactory(id:Protocol) {
-        delete this.stateFactories[id];
-        delete this.pool[id];
+    public clearSlot(slot:Protocol):void {
+        if (this.slots[slot] === undefined) {
+            throw new RDError(RDErrorCode.UNREGISTERED_SLOT, `Slot ${slot} is not filled!`);
+        }
+        delete(this.slots[slot]);
     }
 
-    /** Текущее состояние */
-    public get activeState():AppState {
+    public get activeState():IAppState {
         return this._activeState;
     }
 
@@ -40,164 +98,165 @@ export class Application {
         return this._viewFactory;
     }
 
-    /**
-     * Переходит к указанному состоянию
-     * @param {Protocol} id Идентификатор состояния
-     * @param {IAppEvent} event Параметры для перехода
-     */
-    public toState(id:Protocol, event:IAppEvent = null) {
-        if (this.stateFactories[id] === undefined) {
-            // TODO: Debug message UNREGISTERED_PROTOCOL_ID
+    public toState(slot:Protocol, event:IAppEvent = null) {
+        if (this.slots[slot] === undefined) {
+            // TODO: Debug message UNREGISTERED_SLOT
             return;
         }
 
-        let state:AppState;
-        const hasSate:boolean = this.activeState !== null && this.activeState.hasParent(id);
-        if (hasSate) {
-            state = this.activeState.backToParent(id);
-        } else if (this.pool[id] !== undefined) {
-            state = this.pool[id];
-            state.activate(event);
-            delete this.pool[id];
-        } else {
-            state = this.stateFactories[id](id, this);
-            state.activate(event);
+        const targetState: IAppState = this.slots[slot];
+        if (this.activeState === targetState) {
+            throw new RDError(RDErrorCode.STATE_ALREADY_ACTIVE, `State for slot ${slot} is already active!`);
+        }
 
-            if (this._activeState != null) {
-                this._activeState.sleep();
+        let ai = this.stack.indexOf(targetState);
+        if (ai !== -1) { // Если состояние, в которое нужно перейти находится в стеке, то выходим из всех других состояний по дороге к нему
+            while (ai !== -1) {
+                const state = this.stack.pop();
+                if (state === targetState) {
+                    break;
+                }
+
+                this.exit(state);
+
+                ai = this.stack.indexOf(targetState);
             }
-        }
+            this._activeState = targetState;
+            targetState.wakeup(event);
+        } else {
+            this.holdActive(targetState.doesPutActiveToSleep);
 
-        if (this._activeState != null) {
-            state.linkParent(this.activeState);
+            this._activeState = targetState;
+            if (isDynamicGraphState(targetState)) {
+                targetState.fillStates();
+            }
+            targetState.activate(event);
         }
-        this._activeState = state;
     }
 
     public onEvent(event:IAppEvent) {
         this.toState(event.id, event);
     }
 
-    public holdState(state:AppState) {
-        this.pool[state.id] = state;
+    public exitToState(slot:Protocol, event:IAppEvent) {
+        this.exit(this._activeState);
+        this._activeState = null;
+        this.toState(slot, event);
+    }
+
+    public onExitEvent(event:IAppEvent) {
+        this.exit(this._activeState);
+        this._activeState = null;
+        this.toState(event.id, event);
+    }
+
+    private exit(state:IAppState) {
+        if (isDynamicGraphState(state)) {
+            state.clearStates();
+        }
+        state.sleep();
+        state.exit();
+
+        if (state.clearSlotAfterExit) {
+            this.clearSlot(state.slot);
+        }
+    }
+
+    private holdActive(sleep) {
+        if (this._activeState == null) {
+            return;
+        }
+
+        if (sleep) {
+            this._activeState.sleep();
+        }
+        this.stack.push(this._activeState);
     }
 }
 
 export interface IAppEvent {
     readonly id: Protocol;
-    readonly version: number;
 }
 
 export class AppEvent implements IAppEvent {
     protected _id:Protocol;
-    protected _version:number;
 
     public get id():Protocol {
         return this._id;
-    }
-
-    public get version():number {
-        return this._version;
     }
 
     constructor(id:Protocol) {
         this._id = id;
-        this._version = 1;
     }
 }
 
-export class AppState implements AppState {
-    protected _id:Protocol;
+/**
+ * Определяет интерфейс для состояний приложения.
+ */
+export interface IAppState {
+    /** Приложение, для которого состояние было создано */
+    readonly app:Application;
+
+    /** Слот состояния приложения, в который будет помещено состояние */
+    readonly slot:Protocol;
+
+    /** Должен ли переход в это состояние приводить к приостановке текущего состояния */
+    readonly doesPutActiveToSleep:boolean;
+
+    /** Определяет, должно ли приложение очистить слот после выхода из состочния  */
+    readonly clearSlotAfterExit:boolean;
+
+    /** Привязывает состояние к слоту и приложению */
+    link(slot:Protocol, app:Application);
+
+    /** Инициализирует состояние до его активации */
+    init();
+
+    /** Активирует состояние и добавляет его в стек текущих состояний */
+    activate(event:IAppEvent);
+
+    /** Выходит из состояние и освобождает его ресурсы */
+    exit();
+
+    /** Приостанавливает состояние, но оставляет его в стеке текущих состояний */
+    sleep();
+
+    /** Снова делает активным приостановленное ранее состояние */
+    wakeup(event:IAppEvent);
+}
+
+export class AppState implements IAppState {
+    protected _slot:Protocol;
     protected _app:Application;
-    protected _parent:AppState = null;
 
-    private _active:boolean = false;
-
-    public get destroyable():boolean {
-        return true;
-    }
-
-    constructor(id:Protocol, app:Application) {
-        this._id = id;
+    public link(slot:Protocol, app:Application) {
+        this._slot = slot;
         this._app = app;
-        this.init();
     }
 
-    public get id():Protocol {
-        return this._id;
+    public get slot():Protocol {
+        return this._slot;
     }
 
     public get app():Application {
         return this._app;
     }
 
-    public linkParent(parent:AppState) {
-        this._parent = parent;
-    }
+    public sleep() {/**/}
 
-    public unlinkParent() {
-        this._parent = null;
-    }
+    public wakeup() {/**/}
 
-    public hasParent(id:Protocol):boolean {
-        if (id === this.id) {
-            return true;
-        } else if (this._parent != null) {
-            return this._parent.hasParent(id);
-        }
+    public activate(event:IAppEvent = null) {/**/}
+
+    public exit() {/**/}
+
+    public init() {/**/}
+
+    public get clearSlotAfterExit() {
         return false;
     }
 
-    public getParent(id:Protocol):AppState {
-        if (id === this.id) {
-            return this;
-        } else if (this._parent != null) {
-            return this._parent.getParent(id);
-        }
-        // TODO: Исключение
+    public get doesPutActiveToSleep() {
+        return true;
     }
-
-    public backToParent(id:Protocol):AppState {
-        if (id === this.id) {
-            return;
-        }
-        if (!this.hasParent(id)) {
-            // TODO: Исключение - yt
-        }
-
-        this.exit();
-        if (!this.destroyable) {
-            this.app.holdState(this);
-        }
-
-        this._parent.backToParent(id);
-        this.unlinkParent();
-    }
-
-    public get active() {
-        return this._active;
-    }
-
-    public sleep() {
-        this._active = false;
-    }
-
-    public wakeup() {
-        this._active = true;
-    }
-
-    public activate(event:IAppEvent = null) {
-        this._active = true;
-    }
-
-    /** Завершает действие */
-    public end() {
-        this.backToParent(this._parent.id);
-    }
-
-    protected exit() {
-        this._active = false;
-    }
-
-    protected init() {/**/}
 }

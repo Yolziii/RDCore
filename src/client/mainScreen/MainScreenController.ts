@@ -1,5 +1,4 @@
-import {Application} from "../Application";
-import {Protocol} from "../Protocol";
+import {MainScreenState} from "./MainScreenState";
 
 export interface IMainScreenView {
     init(controller:MainScreenController);
@@ -11,11 +10,11 @@ export interface IMainScreenView {
 }
 
 export class MainScreenController {
-    private app:Application;
+    private state:MainScreenState;
     private view:IMainScreenView;
 
-    constructor(app:Application, view:IMainScreenView) {
-        this.app = app;
+    constructor(state:MainScreenState, view:IMainScreenView) {
+        this.state = state;
         this.view = view;
         view.init(this);
     }
@@ -33,6 +32,6 @@ export class MainScreenController {
     }
 
     public onSingleRound() {
-        this.app.toState(Protocol.StartRound);
+        this.state.toSinglePlayer();
     }
 }

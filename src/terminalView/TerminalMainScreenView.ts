@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");
 
-import {IMainScreenView, MainScreenController} from "../application/mainScreen/MainScreenController";
+import {IMainScreenView, MainScreenController} from "../client/mainScreen/MainScreenController";
 import {ATerminalView} from "./ATerminalView";
 import {IKeyListener, TerminalAppView} from "./TerminalAppView";
 import chalk from "chalk";

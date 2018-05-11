@@ -1,6 +1,6 @@
-import {AppState} from "../Application";
+import {AppEvent, AppState} from "../../application/Application";
 import {RoundController} from "./RoundController";
-import {RoundPlayerCard1, SingleRound} from "../../core/Rounds";
+import {IRound, RoundPlayerCard1, SingleRound} from "../../core/Rounds";
 import {Card} from "../../core/Cards";
 import {Thrower} from "../../core/round/Thrower";
 import {
@@ -11,16 +11,35 @@ import {
     TopPointsCell, TotalBonusesCell
 } from "../../core/Cells";
 import {Config} from "../../core/Config";
+import {Protocol} from "../Protocol";
 
-export class SingleRoundState extends AppState {
+export interface IRoundState {
+    finishRound();
+}
+
+export class FinishRoundEvent extends AppEvent {
+    public readonly model:IRound;
+
+    constructor(model:IRound) {
+        super(Protocol.RoundResult);
+        this.model = model;
+    }
+}
+
+export class SingleRoundState extends AppState implements IRoundState {
     private controller:RoundController;
+    private model:SingleRound;
+
+    public finishRound() {
+        this.app.onExitEvent(new FinishRoundEvent(this.model));
+    }
 
     public activate() {
         const player = new RoundPlayerCard1();
         player.init(new Card(
             [
                 new NumberCell(CellType.Ones, 1),
-                new NumberCell(CellType.Twos, 2),
+                /*new NumberCell(CellType.Twos, 2),
                 new NumberCell(CellType.Threes, 3),
                 new NumberCell(CellType.Fours, 4),
                 new NumberCell(CellType.Fives, 5),
@@ -40,16 +59,15 @@ export class SingleRoundState extends AppState {
                 new BonusRoyalCell(),
                 new BottomPointsCell(),
                 new TotalBonusesCell(),
-                new FinalScoreCell()
-
+                new FinalScoreCell()*/
             ]),
             new Thrower());
-        const model = new SingleRound(player);
+        this.model = new SingleRound(player);
 
-        this.controller.activate(model);
+        this.controller.activate(this.model);
     }
 
-    protected init() {
-        this.controller = new RoundController(this.app, this.app.viewFactory.createRoundView());
+    public init() {
+        this.controller = new RoundController(this, this.app.viewFactory.createRoundView());
     }
 }

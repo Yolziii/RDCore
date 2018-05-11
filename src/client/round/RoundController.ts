@@ -1,9 +1,9 @@
-import {Application} from "../Application";
 import {
     IRound, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
     IRoundPlayerThrowObserver, SingleRound
 } from "../../core/Rounds";
 import {CellType} from "../../core/Cells";
+import {IRoundState} from "./SingleRoundState";
 
 export interface IRoundView {
     init(controller:RoundController);
@@ -17,20 +17,18 @@ export interface IRoundView {
 
     enableCells();
     disableCells();
-
 }
 
 export class RoundController implements IRoundPlayerThrowObserver, IRoundPlayerFillObserver, IRoundPlayerHoldObserver, IRoundPlayerFreeObserver {
-    private app:Application;
+    private state:IRoundState;
     private model:SingleRound;
     private view:IRoundView;
 
-    constructor(app:Application, view:IRoundView) {
-        this.app = app;
+    constructor(state:IRoundState, view:IRoundView) {
+        this.state = state;
         this.view = view;
 
         this.view.init(this);
-
     }
 
     public activate(model:SingleRound) {
@@ -90,9 +88,17 @@ export class RoundController implements IRoundPlayerThrowObserver, IRoundPlayerF
     }
 
     public onPlayerFill() {
-        this.view.draw();
-        this.view.disableCells();
-        this.view.enableThrowButton();
+        if (this.model.finished) {
+            this.view.draw();
+            this.view.disableCells();
+            this.view.disableThrowButton();
+
+            this.state.finishRound();
+        } else {
+            this.view.draw();
+            this.view.disableCells();
+            this.view.enableThrowButton();
+        }
     }
 
     public onPlayerHold() {
