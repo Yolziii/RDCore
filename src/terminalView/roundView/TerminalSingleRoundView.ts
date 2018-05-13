@@ -68,7 +68,7 @@ export class TerminalSingleRoundView extends ATerminalView implements
     public init(controller:RoundController) {
         this.controller = controller;
 
-        this.throwButton = new TerminalThrowButton(20, 20);
+        this.throwButton = new TerminalThrowButton(42, 13);
         for (let i = 0; i < Config.DefaultDiceSize; i++) {
             this.throwedViews.push(new TerminalDieView(DICE_X + i*7, THROWED_DICE_Y));
             this.holdedViews.push(new TerminalDieView(DICE_X + i*7, HOLDED_DICE_Y));
@@ -109,6 +109,10 @@ export class TerminalSingleRoundView extends ATerminalView implements
         }
     }
 
+    public sleep() {
+        TerminalAppView.instance.removeObserver(this);
+    }
+
     public exit() {
         this.model.unregisterObserver(this);
         TerminalAppView.instance.removeObserver(this);
@@ -123,6 +127,8 @@ export class TerminalSingleRoundView extends ATerminalView implements
             default:
                 if (typeForKey[key] != null) {
                     this.controller.fillCell(typeForKey[key]);
+                } else if ( key === "\u0008" ) {
+                    this.controller.undoFillCell();
                 } else {
                     const h = keyForHold.indexOf(key);
                     if (h !== -1) {

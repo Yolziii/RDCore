@@ -10,6 +10,7 @@ export interface IRoundView {
 
     activate(model:IRound);
     draw();
+    sleep();
     exit();
 
     enableThrowButton();
@@ -40,6 +41,10 @@ export class RoundController implements IRoundPlayerThrowObserver, IRoundPlayerF
         this.model.registerObserver(this);
     }
 
+    public sleep() {
+        this.view.sleep();
+    }
+
     public exit() {
         this.view.exit();
         this.model.unregisterObserver(this);
@@ -57,7 +62,13 @@ export class RoundController implements IRoundPlayerThrowObserver, IRoundPlayerF
             return;
         }
 
-        this.model.fillCell(type);
+        if (this.model.getCard().hasCell(type)) {
+            this.model.fillCell(type);
+        }
+    }
+
+    public undoFillCell() {
+        // TODO: Отмена заполнения последней ячейки (только до следующего броска)
     }
 
     public holdDie(index:number) {
@@ -69,14 +80,6 @@ export class RoundController implements IRoundPlayerThrowObserver, IRoundPlayerF
     public freeDie(index:number) {
         if (this.model.canFreeDie(index)) {
             this.model.freeDie(index);
-        }
-    }
-
-    public switchDie(index:number) {
-        if (this.model.canFreeDie(index)) {
-            this.model.freeDie(index);
-        } else if (this.model.canHoldDie(index)) {
-            this.model.holdDie(index);
         }
     }
 

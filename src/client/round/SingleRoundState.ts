@@ -39,7 +39,7 @@ export class SingleRoundState extends AppState implements IRoundState {
         player.init(new Card(
             [
                 new NumberCell(CellType.Ones, 1),
-                /*new NumberCell(CellType.Twos, 2),
+                new NumberCell(CellType.Twos, 2),
                 new NumberCell(CellType.Threes, 3),
                 new NumberCell(CellType.Fours, 4),
                 new NumberCell(CellType.Fives, 5),
@@ -56,15 +56,19 @@ export class SingleRoundState extends AppState implements IRoundState {
                 new RoyalDiceCell(),
                 new ChanceCell(),
 
-                new BonusRoyalCell(),
+               // new BonusRoyalCell(),
                 new BottomPointsCell(),
-                new TotalBonusesCell(),
-                new FinalScoreCell()*/
+               // new TotalBonusesCell(),
+                new FinalScoreCell()
             ]),
             new Thrower());
         this.model = new SingleRound(player);
 
         this.controller.activate(this.model);
+    }
+
+    public sleep() {
+        this.controller.sleep();
     }
 
     public init() {

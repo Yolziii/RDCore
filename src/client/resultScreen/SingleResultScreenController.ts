@@ -1,11 +1,37 @@
-export interface ISingleResultScreenView {
-    draw();
+import {SingleResultScreenState} from "./SingleResultScreenState";
+import {IRound} from "../../core/Rounds";
 
+export interface IResultScreenView {
+    init(controller:IResultScreenController);
+    activate(model);
+    sleep();
 }
 
-export class SingleResultScreenController {
+export interface IResultScreenController {
+    activate(model:IRound);
+    onClose();
+}
 
-    constructor(view:ISingleResultScreenView) {
-        //
+export class SingleResultScreenController implements IResultScreenController {
+    private state:SingleResultScreenState;
+    private view:IResultScreenView;
+
+    constructor(state:SingleResultScreenState, view:IResultScreenView) {
+        this.state = state;
+        this.view = view;
+
+        this.view.init(this);
+    }
+
+    public activate(model:IRound) {
+        this.view.activate(model);
+    }
+
+    public sleep() {
+        this.view.sleep();
+    }
+
+    public onClose() {
+        this.state.closeScreen();
     }
 }

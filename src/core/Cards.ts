@@ -24,11 +24,11 @@ export class Card implements ICard {
     private cells: IDictionary<ICell> = {};
 
     constructor(cells: ICell[]) {
-        if (cells === undefined  || cells.length === 0) {
+         if (cells === undefined  || cells.length === 0) {
             throw new RDError(RDErrorCode.NO_ANY_CELL, "Card must contain cells!");
-        }
+         }
 
-        for (const someCell of cells) {
+         for (const someCell of cells) {
             const cell: IPlayableCell | IServiceCell = someCell as IPlayableCell | IServiceCell;
             if (this.cells[cell.type] != null) {
                 // TODO: Выкидывать исключение
@@ -39,11 +39,11 @@ export class Card implements ICard {
             }
 
             this.cells[cell.type] = cell;
-        }
+         }
 
-        if (this.cells[CellType.ServiceFinalScore] === undefined) {
+         if (this.cells[CellType.ServiceFinalScore] === undefined) {
             throw new RDError(RDErrorCode.NO_FINAL_SCORE_CELL, "Card must contain at least CellType.ServiceFinalScore cell!");
-        }
+         }
     }
 
     public get finished() {

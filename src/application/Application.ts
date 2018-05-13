@@ -20,7 +20,7 @@ function isDynamicGraphState(state:IAppState):state is IDynamicGraphState {
 
 export interface IApplication {
     /** Текущее состояние */
-    readonly activeState:IAppState;
+    readonly currentState:IAppState;
 
     /** Заполняет указанный слот указанным состоянием */
     fillSlot(slot:Protocol, state: IAppState);
@@ -64,7 +64,7 @@ export interface IClientApplication {
  * Каркас для приложений проекта (клиента, сервера, утилит и тестовых окружений)
  */
 export class Application implements IApplication {
-    private _activeState:IAppState = null;
+    private _currentState:IAppState = null;
     private _viewFactory:IViewFactory;
 
     private slots:IDictionaryInt<IAppState> = {};
@@ -74,7 +74,7 @@ export class Application implements IApplication {
         this._viewFactory = viewFactory;
     }
 
-    public fillSlot(slot:Protocol, state: IAppState):void {
+    public fillSlot(slot:number, state: IAppState):void {
         if (this.slots[slot] !== undefined) {
             throw new RDError(RDErrorCode.SLOT_ALREADY_FILLED, `Slot ${slot} is already filled!`);
         }
@@ -83,34 +83,37 @@ export class Application implements IApplication {
         this.slots[slot] = state;
     }
 
-    public clearSlot(slot:Protocol):void {
+    public clearSlot(slot:number):void {
         if (this.slots[slot] === undefined) {
             throw new RDError(RDErrorCode.UNREGISTERED_SLOT, `Slot ${slot} is not filled!`);
         }
         delete(this.slots[slot]);
     }
 
-    public get activeState():IAppState {
-        return this._activeState;
+    public get currentState():IAppState {
+        return this._currentState;
     }
 
     public get viewFactory():IViewFactory {
         return this._viewFactory;
     }
 
-    public toState(slot:Protocol, event:IAppEvent = null) {
+    public toState(slot:number, event:IAppEvent = null) {
         if (this.slots[slot] === undefined) {
             // TODO: Debug message UNREGISTERED_SLOT
             return;
         }
 
         const targetState: IAppState = this.slots[slot];
-        if (this.activeState === targetState) {
+        if (this.currentState === targetState) {
             throw new RDError(RDErrorCode.STATE_ALREADY_ACTIVE, `State for slot ${slot} is already active!`);
         }
 
         let ai = this.stack.indexOf(targetState);
         if (ai !== -1) { // Если состояние, в которое нужно перейти находится в стеке, то выходим из всех других состояний по дороге к нему
+            if (this._currentState != null) {
+                this.exit(this._currentState);
+            }
             while (ai !== -1) {
                 const state = this.stack.pop();
                 if (state === targetState) {
@@ -121,12 +124,12 @@ export class Application implements IApplication {
 
                 ai = this.stack.indexOf(targetState);
             }
-            this._activeState = targetState;
+            this._currentState = targetState;
             targetState.wakeup(event);
         } else {
             this.holdActive(targetState.doesPutActiveToSleep);
 
-            this._activeState = targetState;
+            this._currentState = targetState;
             if (isDynamicGraphState(targetState)) {
                 targetState.fillStates();
             }
@@ -135,19 +138,19 @@ export class Application implements IApplication {
     }
 
     public onEvent(event:IAppEvent) {
-        this.toState(event.id, event);
+        this.toState(event.slot, event);
     }
 
-    public exitToState(slot:Protocol, event:IAppEvent) {
-        this.exit(this._activeState);
-        this._activeState = null;
+    public exitToState(slot:number, event:IAppEvent=null) {
+        this.exit(this._currentState);
+        this._currentState = null;
         this.toState(slot, event);
     }
 
     public onExitEvent(event:IAppEvent) {
-        this.exit(this._activeState);
-        this._activeState = null;
-        this.toState(event.id, event);
+        this.exit(this._currentState);
+        this._currentState = null;
+        this.toState(event.slot, event);
     }
 
     private exit(state:IAppState) {
@@ -158,35 +161,35 @@ export class Application implements IApplication {
         state.exit();
 
         if (state.clearSlotAfterExit) {
-            this.clearSlot(state.slot);
+            this.clearSlot(state.slot); // TODO: Дать возможность стейту обрабатывать несколько меседжей?
         }
     }
 
     private holdActive(sleep) {
-        if (this._activeState == null) {
+        if (this._currentState == null) {
             return;
         }
 
         if (sleep) {
-            this._activeState.sleep();
+            this._currentState.sleep();
         }
-        this.stack.push(this._activeState);
+        this.stack.push(this._currentState);
     }
 }
 
 export interface IAppEvent {
-    readonly id: Protocol;
+    readonly slot: number;
 }
 
 export class AppEvent implements IAppEvent {
-    protected _id:Protocol;
+    protected _slot:number;
 
-    public get id():Protocol {
-        return this._id;
+    public get slot():number {
+        return this._slot;
     }
 
-    constructor(id:Protocol) {
-        this._id = id;
+    constructor(id:number) {
+        this._slot = id;
     }
 }
 

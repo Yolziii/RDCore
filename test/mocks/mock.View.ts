@@ -2,6 +2,7 @@ import {IViewFactory} from "../../src/client/IViewFactory";
 import {IMainScreenView, MainScreenController} from "../../src/client/mainScreen/MainScreenController";
 import {IRoundView, RoundController} from "../../src/client/round/RoundController";
 import {IRound} from "../../src/core/Rounds";
+import {IResultScreenController, IResultScreenView} from "../../src/client/resultScreen/SingleResultScreenController";
 
 export class MockViewFactory implements IViewFactory {
     public createMainScreenView():IMainScreenView {
@@ -10,6 +11,10 @@ export class MockViewFactory implements IViewFactory {
 
     public createRoundView():IRoundView {
         return new MockRoundView();
+    }
+
+    public createRoundResultView():IResultScreenView {
+        return new MockResultScreenView();
     }
 }
 
@@ -34,4 +39,9 @@ export class MockRoundView implements  IRoundView {
 
     public enableCells() {/**/}
     public disableCells() {/**/}
+}
+
+export class MockResultScreenView implements IResultScreenView {
+    public  init(controller:IResultScreenController) {/**/}
+    public activate(model) {/**/}
 }
