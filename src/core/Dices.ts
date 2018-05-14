@@ -9,11 +9,13 @@ export interface IDie {
 
 export const enum DieType {
     Value = "Value",
-    Jocker = "Jocker",
+    Joker = "Joker",
     Unknown = "Unknown",
     Blocked = "Blocked",
     Empty = "Empty"
 }
+
+export const JokerDie = {value:0, type:DieType.Joker};
 
 export const NullDie:IDie = {type: DieType.Unknown, value: 0 };
 

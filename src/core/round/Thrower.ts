@@ -1,6 +1,9 @@
-import {Dice, DieType, IDice, IDie} from "../Dices";
-import {IRoundPlayer} from "../Rounds";
+import {Dice, DieType, IDice, IDie, JokerDie} from "../Dices";
+import {IRoundPlayer} from "./Rounds";
 
+/**
+ *
+ */
 export class Thrower {
     private player: IRoundPlayer;
 
@@ -8,8 +11,9 @@ export class Thrower {
         this.player = player;
     }
 
+    /** Шаблонный метод, реализует алгоритм бросания костей */
     public throwTemplate() {
-        let dice: IDice = this.diceFactory();
+        const dice: IDice = this.diceFactory();
         for (let i = 0; i < dice.max; i++) {
             this.fillDie(dice, i);
 
@@ -33,7 +37,18 @@ export class Thrower {
 
     protected dieFactory(): IDie {
         const random = Math.floor(Math.random() * 6) + 1;
-        let die = {type: DieType.Value, value: random};
+        const die = {type: DieType.Value, value: random};
         return die;
+    }
+}
+
+export class JokerThrower extends Thrower {
+    protected dieFactory(): IDie {
+        const random = Math.random();
+        if (random < 0.05) {
+            return JokerDie;
+        } else {
+            return super.dieFactory();
+        }
     }
 }

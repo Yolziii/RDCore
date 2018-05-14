@@ -3,6 +3,7 @@ import {IDictionaryInt} from "../util/Dictionaries";
 import {RDErrorCode} from "../core/RDErrorCode";
 import RDError from "../core/RDError";
 import {IViewFactory} from "../client/IViewFactory";
+import {ClientConnection} from "../server/ClientConnection";
 
 /**
  * Интерфейс для состояний, которые динамически управляют слотами приложения
@@ -65,14 +66,9 @@ export interface IClientApplication {
  */
 export class Application implements IApplication {
     private _currentState:IAppState = null;
-    private _viewFactory:IViewFactory;
 
     private slots:IDictionaryInt<IAppState> = {};
     private stack:IAppState[] = [];
-
-    constructor(viewFactory:IViewFactory) {
-        this._viewFactory = viewFactory;
-    }
 
     public fillSlot(slot:number, state: IAppState):void {
         if (this.slots[slot] !== undefined) {
@@ -92,10 +88,6 @@ export class Application implements IApplication {
 
     public get currentState():IAppState {
         return this._currentState;
-    }
-
-    public get viewFactory():IViewFactory {
-        return this._viewFactory;
     }
 
     public toState(slot:number, event:IAppEvent = null) {
@@ -174,6 +166,28 @@ export class Application implements IApplication {
             this._currentState.sleep();
         }
         this.stack.push(this._currentState);
+    }
+}
+
+export class ClientApplication extends Application {
+    private _viewFactory:IViewFactory;
+
+    constructor(viewFactory:IViewFactory) {
+        super();
+        this._viewFactory = viewFactory;
+    }
+
+    public get viewFactory():IViewFactory {
+        return this._viewFactory;
+    }
+}
+
+export class ServerClient extends Application {
+    private connection:ClientConnection;
+
+    constructor(connection:ClientConnection) {
+        super();
+        this.connection = connection;
     }
 }
 

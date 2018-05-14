@@ -1,4 +1,4 @@
-import {Application, AppState} from "./application/Application";
+import {Application, ClientApplication} from "./application/Application";
 import {Protocol} from "./client/Protocol";
 import {MainScreenState} from "./client/mainScreen/MainScreenState";
 import {TerminalViewFactory} from "./terminalView/TerminalViewFactory";
@@ -6,7 +6,7 @@ import {SingleRoundState} from "./client/round/SingleRoundState";
 import {SingleResultScreenState} from "./client/resultScreen/SingleResultScreenState";
 
 const viewFactory = new TerminalViewFactory();
-const app:Application = new Application(viewFactory);
+const app:ClientApplication = new ClientApplication(viewFactory);
 
 app.fillSlot(Protocol.StartApplication, new MainScreenState());
 app.fillSlot(Protocol.StartRound, new SingleRoundState());

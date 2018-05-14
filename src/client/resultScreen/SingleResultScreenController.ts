@@ -1,5 +1,5 @@
 import {SingleResultScreenState} from "./SingleResultScreenState";
-import {IRound} from "../../core/Rounds";
+import {IRound} from "../../core/round/Rounds";
 
 export interface IResultScreenView {
     init(controller:IResultScreenController);

@@ -92,8 +92,9 @@ export class NumberCell extends APlayableCell {
         let res = 0;
         for (let i = 0; i < dice.total; i++) {
             const die: IDie = dice.getFrom(i);
-            if (die.type === DieType.Value && die.value === this.cellValue) {
-                res += die.value;
+            if ((die.type === DieType.Value && die.value === this.cellValue) ||
+                die.type === DieType.Joker) {
+                res += this.cellValue;
             }
         }
         return res;
@@ -174,9 +175,13 @@ export class KindCell extends APlayableCell implements IPlayableCell {
     public valueFor(dice: IDice):number {
         const totals: number[] = [];
         let sum: number = 0;
+        let jokers:number = 0;
         for (let i = 0; i < dice.total; i++) {
             const die: IDie = dice.getFrom(i);
             if (die.type !== DieType.Value) {
+                if (die.type === DieType.Joker) {
+                    jokers++;
+                }
                 continue;
             }
 
@@ -189,8 +194,9 @@ export class KindCell extends APlayableCell implements IPlayableCell {
             }
         }
 
+        totals.sort(compareBiggerFirst);
         for (const total of totals) {
-            if (total >= this.total) {
+            if (total + jokers >= this.total) {
                 return sum;
             }
         }
@@ -210,9 +216,13 @@ export class FullHouseCell extends APlayableCell implements IPlayableCell {
 
     public valueFor(dice: IDice):number {
         const totals: number[] = [];
+        let jokers:number = 0;
         for (let i = 0; i < dice.total; i++) {
             const die: IDie = dice.getFrom(i);
             if (die.type !== DieType.Value) {
+                if (die.type === DieType.Joker) {
+                    jokers++;
+                }
                 continue;
             }
 
@@ -224,18 +234,31 @@ export class FullHouseCell extends APlayableCell implements IPlayableCell {
             }
         }
 
+        totals.sort(compareBiggerFirst);
+        while (totals.length < 2) {
+            totals.push(0);
+        }
+
         let was2 = false;
         let was3 = false;
         for (const total of totals) {
-            if (total === 2) {
-                was2 = true;
-            }
-            if (total === 3) {
+            if (total + jokers >= 3) {
+                jokers = this.spendJokers(total, 3, jokers);
                 was3 = true;
+            } else if (total + jokers >= 2) {
+                jokers = this.spendJokers(total, 2, jokers);
+                was2 = true;
             }
         }
 
         return was2 && was3 ? Config.CostFullHouse : 0;
+    }
+
+    private spendJokers(total:number, need:number, jokers:number):number {
+        if (need <= total) {
+            return jokers;
+        }
+        return jokers -= need - total;
     }
 }
 
@@ -263,11 +286,15 @@ export class StraightCell extends APlayableCell implements IPlayableCell {
 
     public valueFor(dice: IDice):number {
         const values: number[] = [];
+        let jokers = 0;
         for (let i = 0; i < dice.total; i++) {
             const die: IDie = dice.getFrom(i);
             if (die.type === DieType.Value) {
                 values[i] = die.value;
             } else {
+                if (die.type === DieType.Joker) {
+                    jokers++;
+                }
                 values[i] = 0;
             }
         }
@@ -275,7 +302,12 @@ export class StraightCell extends APlayableCell implements IPlayableCell {
         values.sort(StraightCell.compare);
         let count = 1;
         for (let i = 1; i < values.length; i++) {
-            if (values[i] === values[i - 1] + 1) {
+            let sequence = values[i] === values[i - 1] + 1;
+            if (!sequence && jokers > 0) {
+                sequence = true;
+                jokers--;
+            }
+            if (sequence) {
                 count++;
                 if (count === this.total) {
                     return this.cost;
@@ -447,7 +479,11 @@ export function pointsAsRoyalDice(dice: IDice) {
     const first: IDie = dice.getFrom(0);
     for (let i = 1; i < dice.total; i++) {
         const die: IDie = dice.getFrom(i);
-        if (die.type !== DieType.Value || die.value !== first.value) {
+        if (die.type !== DieType.Value) {
+            if (die.type !== DieType.Joker) {
+                return 0;
+            }
+        } else if (die.value !== first.value) {
             return 0;
         }
     }
@@ -464,4 +500,11 @@ export function sumPoints(card: ICard, types: CellType[]): number {
         sum += card.getCell(type).value;
     }
     return sum;
+}
+
+function compareBiggerFirst(a: number, b: number): number {
+    if (a === b) {
+        return 0;
+    }
+    return a > b ? -1 : 1;
 }

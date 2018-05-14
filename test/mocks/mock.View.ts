@@ -1,7 +1,7 @@
 import {IViewFactory} from "../../src/client/IViewFactory";
 import {IMainScreenView, MainScreenController} from "../../src/client/mainScreen/MainScreenController";
-import {IRoundView, RoundController} from "../../src/client/round/RoundController";
-import {IRound} from "../../src/core/Rounds";
+import {IRoundView, RoundController} from "../../src/client/round/SingleRoundController";
+import {IRound} from "../../src/core/round/Rounds";
 import {IResultScreenController, IResultScreenView} from "../../src/client/resultScreen/SingleResultScreenController";
 
 export class MockViewFactory implements IViewFactory {

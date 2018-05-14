@@ -1,12 +1,13 @@
 import {
     IRound, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
-    IRoundPlayerThrowObserver, SingleRound
-} from "../../core/Rounds";
+    IRoundPlayerThrowObserver
+} from "../../core/round/Rounds";
 import {CellType} from "../../core/Cells";
 import {IRoundState} from "./SingleRoundState";
+import {SingleRound} from "../../core/round/SingleRound";
 
 export interface IRoundView {
-    init(controller:RoundController);
+    init(controller:SingleRoundController);
 
     activate(model:IRound);
     draw();
@@ -20,7 +21,7 @@ export interface IRoundView {
     disableCells();
 }
 
-export class RoundController implements IRoundPlayerThrowObserver, IRoundPlayerFillObserver, IRoundPlayerHoldObserver, IRoundPlayerFreeObserver {
+export class SingleRoundController implements IRoundPlayerThrowObserver, IRoundPlayerFillObserver, IRoundPlayerHoldObserver, IRoundPlayerFreeObserver {
     private state:IRoundState;
     private model:SingleRound;
     private view:IRoundView;

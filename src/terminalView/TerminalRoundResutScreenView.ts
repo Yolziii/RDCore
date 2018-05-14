@@ -10,7 +10,7 @@ import {IMainScreenView, MainScreenController} from "../client/mainScreen/MainSc
 import {ATerminalView} from "./ATerminalView";
 import {IKeyListener, TerminalAppView} from "./TerminalAppView";
 import chalk from "chalk";
-import {IRound} from "../core/Rounds";
+import {IRound} from "../core/round/Rounds";
 import {CellType} from "../core/Cells";
 
 export class TerminalRoundResutScreenView extends ATerminalView implements IResultScreenView, IKeyListener {

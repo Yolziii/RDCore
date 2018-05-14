@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import "mocha";
-import {Dice, IDie, DieType} from "../src/core/Dices";
+import {Dice, IDie, DieType, JokerDie} from "../src/core/Dices";
 import {
     Bonus63Cell, BonusRoyalCell, BottomPointsCell, CellType,
     ChanceCell, FinalScoreCell, FullHouseCell, IPlayableCell, IServiceCell, KindCell, NumberCell, RoyalDiceCell,
@@ -13,46 +13,27 @@ import {Config} from "../src/core/Config";
 import {ICard, Card} from "../src/core/Cards";
 
 describe("Cells", () => {
-    function die1(): IDie {
-        return copy({type: DieType.Value, value: 1});
-    }
-
-    function die2(): IDie {
-        return copy({type: DieType.Value, value: 2});
-    }
-
-    function die3(): IDie {
-        return copy({type: DieType.Value, value: 3});
-    }
-
-    function die4(): IDie {
-        return copy({type: DieType.Value, value: 4});
-    }
-
-    function die5(): IDie {
-        return copy({type: DieType.Value, value: 5});
-    }
-
-    function die6(): IDie {
-        return copy({type: DieType.Value, value: 6});
-    }
-    function copy(die: IDie): IDie {
-        const newOne = {};
-        for (const prop in die) {
-            if (die.hasOwnProperty(prop)) {
-                newOne[prop] = die[prop];
-            }
-        }
-        return newOne as IDie;
-    }
+    const die1: IDie = {type: DieType.Value, value: 1};
+    const die2: IDie = {type: DieType.Value, value: 2};
+    const die3: IDie = {type: DieType.Value, value: 3};
+    const die4: IDie = {type: DieType.Value, value: 4};
+    const die5: IDie = {type: DieType.Value, value: 5};
+    const die6: IDie = {type: DieType.Value, value: 6};
 
     describe("Playable cells", () => {
         describe("NumberCell", () => {
             it("NumberCell", () => {
-                const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
+                const dice: Dice = new Dice(die1, die2, die3, die4, die5);
                 const cell: IPlayableCell = new NumberCell(CellType.Ones, 1);
                 cell.fill(dice);
                 assert.equal(cell.value, 1);
+            });
+
+            it("NumberCellJocker", () => {
+                const dice: Dice = new Dice(die1, JokerDie, die3, die4, die5);
+                const cell: IPlayableCell = new NumberCell(CellType.Ones, 1);
+                cell.fill(dice);
+                assert.equal(cell.value, 2);
             });
 
             it("NumberCell type", () => {
@@ -61,7 +42,7 @@ describe("Cells", () => {
             });
 
             it("valueFor()", () => {
-                const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
+                const dice: Dice = new Dice(die1, die2, die3, die4, die5);
                 const cell: IPlayableCell = new NumberCell(CellType.Ones, 1);
                 assert.equal(cell.valueFor(dice), 1);
             });
@@ -74,14 +55,28 @@ describe("Cells", () => {
 
         describe("RoyalDiceCell", () => {
             it("RoyalDice - 50", () => {
-                const dice: Dice = new Dice(die1(), die1(), die1(), die1(), die1());
+                const dice: Dice = new Dice(die1, die1, die1, die1, die1);
+                const cell: IPlayableCell = new RoyalDiceCell();
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostRoyalDice);
+            });
+
+            it("RoyalDice Joker - 50", () => {
+                const dice: Dice = new Dice(die1, die1, die1, die1, JokerDie);
+                const cell: IPlayableCell = new RoyalDiceCell();
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostRoyalDice);
+            });
+
+            it("RoyalDice 5 Jokers - 50", () => {
+                const dice: Dice = new Dice(JokerDie, JokerDie, JokerDie, JokerDie, JokerDie);
                 const cell: IPlayableCell = new RoyalDiceCell();
                 cell.fill(dice);
                 assert.equal(cell.value, Config.CostRoyalDice);
             });
 
             it("RoyalDice valueFor", () => {
-                const dice: Dice = new Dice(die1(), die1(), die1(), die1(), die1());
+                const dice: Dice = new Dice(die1, die1, die1, die1, die1);
                 const cell: IPlayableCell = new RoyalDiceCell();
                 assert.equal(cell.valueFor(dice), Config.CostRoyalDice);
             });
@@ -92,7 +87,7 @@ describe("Cells", () => {
             });
 
             it("RoyalDice - 0", () => {
-                const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
+                const dice: Dice = new Dice(die1, die2, die3, die4, die5);
                 const cell: IPlayableCell = new RoyalDiceCell();
                 cell.fill(dice);
                 assert.equal(cell.value, 0);
@@ -101,14 +96,21 @@ describe("Cells", () => {
 
         describe("ChanceCell", () => {
             it("Chance - 15", () => {
-                const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
+                const dice: Dice = new Dice(die1, die2, die3, die4, die5);
                 const cell: IPlayableCell = new ChanceCell();
                 cell.fill(dice);
                 assert.equal(cell.value, 15);
             });
 
+            it("Chance joker - 10", () => {
+                const dice: Dice = new Dice(die1, die2, die3, die4, JokerDie); // Joker value equals 0
+                const cell: IPlayableCell = new ChanceCell();
+                cell.fill(dice);
+                assert.equal(cell.value, 10);
+            });
+
             it("Chance - valueFor()", () => {
-                const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
+                const dice: Dice = new Dice(die1, die2, die3, die4, die5);
                 const cell: IPlayableCell = new ChanceCell();
                 assert.equal(cell.valueFor(dice), 15);
             });
@@ -121,14 +123,35 @@ describe("Cells", () => {
 
         describe("KindsCell", () => {
             it("3 Kind - 7", () => {
-                const dice: Dice = new Dice(die1(), die1(), die1(), die2(), die2());
+                const dice: Dice = new Dice(die1, die1, die1, die2, die2);
                 const cell: IPlayableCell = new KindCell(CellType.Kind3, 3);
                 cell.fill(dice);
                 assert.equal(cell.value, 7);
             });
 
+            it("3 Kind joker - 7", () => {
+                const dice: Dice = new Dice(die1, die1, JokerDie, die2, die2);
+                const cell: IPlayableCell = new KindCell(CellType.Kind3, 3);
+                cell.fill(dice);
+                assert.equal(cell.value, 6);
+            });
+
+            it("3 Kind 2 jokers - 7", () => {
+                const dice: Dice = new Dice(die1, JokerDie, JokerDie, die2, die2);
+                const cell: IPlayableCell = new KindCell(CellType.Kind3, 3);
+                cell.fill(dice);
+                assert.equal(cell.value, 5);
+            });
+
+            it("3 Kind 3 jokers - 7", () => {
+                const dice: Dice = new Dice(die1, JokerDie, JokerDie, JokerDie, die2);
+                const cell: IPlayableCell = new KindCell(CellType.Kind3, 3);
+                cell.fill(dice);
+                assert.equal(cell.value, 3);
+            });
+
             it("3 Kind - valueFor", () => {
-                const dice: Dice = new Dice(die1(), die1(), die1(), die2(), die2());
+                const dice: Dice = new Dice(die1, die1, die1, die2, die2);
                 const cell: IPlayableCell = new KindCell(CellType.Kind3, 3);
                 assert.equal(cell.valueFor(dice), 7);
             });
@@ -139,43 +162,99 @@ describe("Cells", () => {
             });
 
             it("3 Kind - 0", () => {
-                const dice: Dice = new Dice(die1(), die2(), die3(), die4(), die5());
+                const dice: Dice = new Dice(die1, die2, die3, die4, die5);
                 const cell: IPlayableCell = new KindCell(CellType.Kind3, 3);
                 cell.fill(dice);
                 assert.equal(cell.value, 0);
             });
 
             it("4 Kind - 6", () => {
-                const dice: Dice = new Dice(die1(), die1(), die1(), die1(), die2());
+                const dice: Dice = new Dice(die1, die1, die1, die1, die2);
                 const cell: IPlayableCell = new KindCell(CellType.Kind4, 4);
                 cell.fill(dice);
                 assert.equal(cell.value, 6);
+            });
+
+            it("4 Kind 3 jokers - 3", () => {
+                const dice: Dice = new Dice(die1, JokerDie, JokerDie, JokerDie, die2);
+                const cell: IPlayableCell = new KindCell(CellType.Kind4, 4);
+                cell.fill(dice);
+                assert.equal(cell.value, 3);
+            });
+
+            it("4 Kind 4 jokers - 1", () => {
+                const dice: Dice = new Dice(die1, JokerDie, JokerDie, JokerDie, JokerDie);
+                const cell: IPlayableCell = new KindCell(CellType.Kind4, 4);
+                cell.fill(dice);
+                assert.equal(cell.value, 1);
             });
         });
 
         describe("FullHouseCell", () => {
             it("FullHouseCell - 25", () => {
-                const dice: Dice = new Dice(die1(), die1(), die2(), die2(), die2());
+                const dice: Dice = new Dice(die1, die1, die2, die2, die2);
+                const cell: IPlayableCell = new FullHouseCell();
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostFullHouse);
+            });
+
+            it("FullHouseCell joker - 25", () => {
+                const dice: Dice = new Dice(die1, die1, die2, die2, JokerDie);
+                const cell: IPlayableCell = new FullHouseCell();
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostFullHouse);
+            });
+
+            it("FullHouseCell 2 jokers - 25", () => {
+                const dice: Dice = new Dice(die1, die1, die2, JokerDie, JokerDie);
+                const cell: IPlayableCell = new FullHouseCell();
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostFullHouse);
+            });
+
+            it("FullHouseCell 3 jokers - 25", () => {
+                const dice: Dice = new Dice(die1, JokerDie, die2, JokerDie, JokerDie);
+                const cell: IPlayableCell = new FullHouseCell();
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostFullHouse);
+            });
+
+            it("FullHouseCell 3 jokers #2 - 25", () => {
+                const dice: Dice = new Dice(die1, JokerDie, die1, JokerDie, JokerDie);
+                const cell: IPlayableCell = new FullHouseCell();
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostFullHouse);
+            });
+
+            it("FullHouseCell 4 jokers - 25", () => {
+                const dice: Dice = new Dice(die1, JokerDie, JokerDie, JokerDie, JokerDie);
+                const cell: IPlayableCell = new FullHouseCell();
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostFullHouse);
+            });
+
+            it("FullHouseCell 5 jokers - 25", () => {
+                const dice: Dice = new Dice(JokerDie, JokerDie, JokerDie, JokerDie, JokerDie);
                 const cell: IPlayableCell = new FullHouseCell();
                 cell.fill(dice);
                 assert.equal(cell.value, Config.CostFullHouse);
             });
 
             it("FullHouseCell - valueFor", () => {
-                const dice: Dice = new Dice(die1(), die1(), die2(), die2(), die2());
+                const dice: Dice = new Dice(die1, die1, die2, die2, die2);
                 const cell: IPlayableCell = new FullHouseCell();
                 assert.equal(cell.valueFor(dice), Config.CostFullHouse);
             });
 
             it("FullHouseCell type", () => {
-                const dice: Dice = new Dice(die1(), die1(), die2(), die2(), die2());
+                const dice: Dice = new Dice(die1, die1, die2, die2, die2);
                 const cell: IPlayableCell = new FullHouseCell();
                 cell.fill(dice);
                 assert.equal(cell.value, Config.CostFullHouse);
             });
 
             it("FullHouseCell - 0", () => {
-                const dice: Dice = new Dice(die1(), die1(), die2(), die2(), die3());
+                const dice: Dice = new Dice(die1, die1, die2, die2, die3);
                 const cell: IPlayableCell = new FullHouseCell();
                 cell.fill(dice);
                 assert.equal(cell.value, 0);
@@ -184,14 +263,56 @@ describe("Cells", () => {
 
         describe("StraightsCell", () => {
             it("SmallStraight - 30", () => {
-                const dice: Dice = new Dice(die2(), die3(), die1(), die4(), die6());
+                const dice: Dice = new Dice(die2, die3, die1, die4, die6);
+                const cell: IPlayableCell = new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4);
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostSmallStraight);
+            });
+
+            it("SmallStraight joker first - 30", () => {
+                const dice: Dice = new Dice(die2, die3, JokerDie, die4, die6);
+                const cell: IPlayableCell = new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4);
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostSmallStraight);
+            });
+
+            it("SmallStraight joker second - 30", () => {
+                const dice: Dice = new Dice(JokerDie, die3, die1, die4, die6);
+                const cell: IPlayableCell = new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4);
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostSmallStraight);
+            });
+
+            it("SmallStraight 2 jokers - 30", () => {
+                const dice: Dice = new Dice(JokerDie, die3, JokerDie, die4, die6);
+                const cell: IPlayableCell = new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4);
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostSmallStraight);
+            });
+
+            it("SmallStraight 2 jokers #2 - 30", () => {
+                const dice: Dice = new Dice(JokerDie, die1, JokerDie, die5, die6);
+                const cell: IPlayableCell = new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4);
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostSmallStraight);
+            });
+
+            it("SmallStraight 3 jokers - 30", () => {
+                const dice: Dice = new Dice(JokerDie, die1, JokerDie, JokerDie, die6);
+                const cell: IPlayableCell = new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4);
+                cell.fill(dice);
+                assert.equal(cell.value, Config.CostSmallStraight);
+            });
+
+            it("SmallStraight 4 jokers - 30", () => {
+                const dice: Dice = new Dice(JokerDie, JokerDie, JokerDie, JokerDie, die6);
                 const cell: IPlayableCell = new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4);
                 cell.fill(dice);
                 assert.equal(cell.value, Config.CostSmallStraight);
             });
 
             it("SmallStraight - valueFor", () => {
-                const dice: Dice = new Dice(die2(), die3(), die1(), die4(), die6());
+                const dice: Dice = new Dice(die2, die3, die1, die4, die6);
                 const cell: IPlayableCell = new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4);
                 assert.equal(cell.valueFor(dice), Config.CostSmallStraight);
             });
@@ -202,14 +323,14 @@ describe("Cells", () => {
             });
 
             it("SmallStraight - 0", () => {
-                const dice: Dice = new Dice(die2(), die3(), die1(), die5(), die6());
+                const dice: Dice = new Dice(die2, die3, die1, die5, die6);
                 const cell: IPlayableCell = new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4);
                 cell.fill(dice);
                 assert.equal(cell.value, 0);
             });
 
             it("LargeStraight - 40", () => {
-                const dice: Dice = new Dice(die2(), die3(), die1(), die4(), die5());
+                const dice: Dice = new Dice(die2, die3, die1, die4, die5);
                 const cell: IPlayableCell = new StraightCell(CellType.LargeStraight, Config.CostLargeStraight, 5);
                 cell.fill(dice);
                 assert.equal(cell.value, Config.CostLargeStraight);
@@ -261,12 +382,12 @@ describe("Cells", () => {
             });
 
             it("1-6", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die2(), die3(), die4(), die5()));
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die2, die3, die4, die5));
 
                 const totalNumbers: IServiceCell = card.getCellService(CellType.ServiceTotalNumbers);
                 assert.equal(totalNumbers.value, 21);
@@ -284,24 +405,24 @@ describe("Cells", () => {
             });
 
             it("Zero bonus", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die2(), die3(), die4(), die5()));
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die2, die3, die4, die5));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceBonus63);
                 assert.equal(amount.value, 0);
             });
 
             it("Full bonus", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die1(), die1(), die4(), die5()));
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die2(), die2(), die2(), die4(), die5()));
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die3(), die3(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die4(), die4(), die4(), die5(), die6()));
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die5(), die5(), die5(), die1(), die2()));
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die6(), die6(), die4(), die5()));
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die1, die1, die4, die5));
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die2, die2, die2, die4, die5));
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die3, die3, die3, die4, die5));
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die4, die4, die4, die5, die6));
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die5, die5, die5, die1, die2));
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die6, die6, die4, die5));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceBonus63);
                 assert.equal(amount.value, Config.CostBonus63);
@@ -319,24 +440,24 @@ describe("Cells", () => {
             });
 
             it("Zero bonus", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die2(), die3(), die4(), die5()));
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die2, die3, die4, die5));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceTotalNumbersWithBonus);
                 assert.equal(amount.value, 21);
             });
 
             it("Full bonus", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die1(), die1(), die4(), die5()));
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die2(), die2(), die2(), die4(), die5()));
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die3(), die3(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die4(), die4(), die4(), die5(), die6()));
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die5(), die5(), die5(), die1(), die2()));
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die6(), die6(), die4(), die5()));
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die1, die1, die4, die5));
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die2, die2, die2, die4, die5));
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die3, die3, die3, die4, die5));
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die4, die4, die4, die5, die6));
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die5, die5, die5, die1, die2));
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die6, die6, die4, die5));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceTotalNumbersWithBonus);
                 assert.equal(amount.value, Config.CostBonus63 + 63);
@@ -356,24 +477,24 @@ describe("Cells", () => {
             });
 
             it("Just points", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die2(), die3(), die4(), die5()));
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die2, die3, die4, die5));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceTopPoints);
                 assert.equal(amount.value, 21);
             });
 
             it("Full bonus", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die1(), die1(), die4(), die5()));
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die2(), die2(), die2(), die4(), die5()));
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die3(), die3(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die4(), die4(), die4(), die5(), die6()));
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die5(), die5(), die5(), die1(), die2()));
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die6(), die6(), die4(), die5()));
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die1, die1, die4, die5));
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die2, die2, die2, die4, die5));
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die3, die3, die3, die4, die5));
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die4, die4, die4, die5, die6));
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die5, die5, die5, die1, die2));
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die6, die6, die4, die5));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceTopPoints);
                 assert.equal(amount.value, Config.CostBonus63 + 63);
@@ -392,14 +513,14 @@ describe("Cells", () => {
 
             it("Just playable values", () => {
                 card.getCellPlayable(CellType.Kind3).fill(
-                    new Dice(die1(), die1(), die1(), die2(), die2())); // 3 + 4 = 7;
+                    new Dice(die1, die1, die1, die2, die2)); // 3 + 4 = 7;
                 card.getCellPlayable(CellType.Kind4).fill(
-                    new Dice(die1(), die1(), die1(), die1(), die2())); // 4 + 2 = 6;
-                card.getCellPlayable(CellType.FullHouse).fill(new Dice(die1(), die1(), die1(), die2(), die2()));
-                card.getCellPlayable(CellType.SmallStraight).fill(new Dice(die1(), die2(), die3(), die4(), die6()));
-                card.getCellPlayable(CellType.LargeStraight).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.Chance).fill(new Dice(die1(), die2(), die3(), die4(), die5())); // 15
+                    new Dice(die1, die1, die1, die1, die2)); // 4 + 2 = 6;
+                card.getCellPlayable(CellType.FullHouse).fill(new Dice(die1, die1, die1, die2, die2));
+                card.getCellPlayable(CellType.SmallStraight).fill(new Dice(die1, die2, die3, die4, die6));
+                card.getCellPlayable(CellType.LargeStraight).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.Chance).fill(new Dice(die1, die2, die3, die4, die5)); // 15
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceBottomPoints);
                 assert.equal(amount.value, 7 + 6 + 15 +
@@ -422,33 +543,33 @@ describe("Cells", () => {
             });
 
             it("All royaldices", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die1(), die1(), die1(), die1()));
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die2(), die2(), die2(), die2(), die2()));
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die3(), die3(), die3(), die3(), die3()));
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die4(), die4(), die4(), die4(), die4()));
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die5(), die5(), die5(), die5(), die5()));
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.Kind3).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.Kind4).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.FullHouse).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.SmallStraight).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.LargeStraight).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.Chance).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die1, die1, die1, die1));
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die2, die2, die2, die2, die2));
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die3, die3, die3, die3, die3));
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die4, die4, die4, die4, die4));
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die5, die5, die5, die5, die5));
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.Kind3).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.Kind4).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.FullHouse).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.SmallStraight).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.LargeStraight).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.Chance).fill(new Dice(die6, die6, die6, die6, die6));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceBonusRoyal);
                 assert.equal(amount.value, Config.CostRoyalBonusPerItem * 12);
             });
 
             it("One royaldice doesn't matter", () => {
-                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
+                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6, die6, die6, die6, die6));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceBonusRoyal);
                 assert.equal(amount.value, 0);
             });
 
             it("Royaldice somewhere else doesn't matter too", () => {
-                card.getCellPlayable(CellType.Chance).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
+                card.getCellPlayable(CellType.Chance).fill(new Dice(die6, die6, die6, die6, die6));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceBonusRoyal);
                 assert.equal(amount.value, 0);
@@ -466,15 +587,15 @@ describe("Cells", () => {
             });
 
             it("Both bonuses", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die1(), die1(), die4(), die5()));
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die2(), die2(), die2(), die4(), die5()));
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die3(), die3(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die4(), die4(), die4(), die5(), die6()));
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die5(), die5(), die5(), die1(), die2()));
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die6(), die6(), die4(), die5()));
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die1, die1, die4, die5));
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die2, die2, die2, die4, die5));
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die3, die3, die3, die4, die5));
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die4, die4, die4, die5, die6));
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die5, die5, die5, die1, die2));
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die6, die6, die4, die5));
 
-                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.Chance).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
+                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.Chance).fill(new Dice(die6, die6, die6, die6, die6));
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceTotalBonuses);
                 assert.equal(amount.value, Config.CostBonus63 + Config.CostRoyalBonusPerItem);
@@ -492,22 +613,22 @@ describe("Cells", () => {
             });
 
             it("All Points", () => {
-                card.getCellPlayable(CellType.Ones).fill(new Dice(die1(), die1(), die1(), die4(), die5()));   // 3
-                card.getCellPlayable(CellType.Twos).fill(new Dice(die2(), die2(), die2(), die4(), die5()));   // 6
-                card.getCellPlayable(CellType.Threes).fill(new Dice(die3(), die3(), die3(), die4(), die5())); // 9
-                card.getCellPlayable(CellType.Fours).fill(new Dice(die4(), die4(), die4(), die5(), die6()));  // 12
-                card.getCellPlayable(CellType.Fives).fill(new Dice(die5(), die5(), die5(), die1(), die2()));  // 15
-                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6(), die6(), die6(), die4(), die5()));  // 18
+                card.getCellPlayable(CellType.Ones).fill(new Dice(die1, die1, die1, die4, die5));   // 3
+                card.getCellPlayable(CellType.Twos).fill(new Dice(die2, die2, die2, die4, die5));   // 6
+                card.getCellPlayable(CellType.Threes).fill(new Dice(die3, die3, die3, die4, die5)); // 9
+                card.getCellPlayable(CellType.Fours).fill(new Dice(die4, die4, die4, die5, die6));  // 12
+                card.getCellPlayable(CellType.Fives).fill(new Dice(die5, die5, die5, die1, die2));  // 15
+                card.getCellPlayable(CellType.Sixes).fill(new Dice(die6, die6, die6, die4, die5));  // 18
 
                 card.getCellPlayable(CellType.Kind3).fill(
-                    new Dice(die1(), die1(), die1(), die2(), die2())); // 3 + 4 = 7;
+                    new Dice(die1, die1, die1, die2, die2)); // 3 + 4 = 7;
                 card.getCellPlayable(CellType.Kind4).fill(
-                    new Dice(die1(), die1(), die1(), die1(), die2())); // 4 + 2 = 6;
-                card.getCellPlayable(CellType.FullHouse).fill(new Dice(die1(), die1(), die1(), die2(), die2()));
-                card.getCellPlayable(CellType.SmallStraight).fill(new Dice(die1(), die2(), die3(), die4(), die6()));
-                card.getCellPlayable(CellType.LargeStraight).fill(new Dice(die1(), die2(), die3(), die4(), die5()));
-                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6(), die6(), die6(), die6(), die6()));
-                card.getCellPlayable(CellType.Chance).fill(new Dice(die6(), die6(), die6(), die6(), die6())); // 30
+                    new Dice(die1, die1, die1, die1, die2)); // 4 + 2 = 6;
+                card.getCellPlayable(CellType.FullHouse).fill(new Dice(die1, die1, die1, die2, die2));
+                card.getCellPlayable(CellType.SmallStraight).fill(new Dice(die1, die2, die3, die4, die6));
+                card.getCellPlayable(CellType.LargeStraight).fill(new Dice(die1, die2, die3, die4, die5));
+                card.getCellPlayable(CellType.RoyalDice).fill(new Dice(die6, die6, die6, die6, die6));
+                card.getCellPlayable(CellType.Chance).fill(new Dice(die6, die6, die6, die6, die6)); // 30
 
                 const amount: IServiceCell = card.getCellService(CellType.ServiceFinalScore);
                 assert.equal(amount.value, 63 + 7 + 6 + 30 +

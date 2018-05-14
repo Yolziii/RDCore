@@ -27,8 +27,15 @@ export class TerminalMainScreenView extends ATerminalView implements IMainScreen
     }
 
     public onKey(key:string) {
-        if (key === "s") {
-            this.controller.onSingleRound();
+        switch (key) {
+            case "s":
+                this.controller.onSingleRound();
+                break;
+
+            case "j":
+                this.controller.onSingleJokerRound();
+                break;
+
         }
     }
 
@@ -55,12 +62,20 @@ export class TerminalMainScreenView extends ATerminalView implements IMainScreen
         this.line("             | (_| (_) | | |  __/");
         this.line("              \\___\\___/|_|  \\___|");
 
-        this.x = 18;
+        this.x = 9;
         this.y = 15;
         this.startDraw();
         this.line(chalk.gray("|--------------|"));
         this.line(chalk.gray("| Single round |"));
         this.line(chalk.gray(`|      ${chalk.yellowBright("[S]")}     |`));
         this.line(chalk.gray("|--------------|"));
+
+        this.x = 27;
+        this.y = 15;
+        this.startDraw();
+        this.line(chalk.gray("|-------------|"));
+        this.line(chalk.gray("| Joker round |"));
+        this.line(chalk.gray(`|     ${chalk.yellowBright("[J]")}     |`));
+        this.line(chalk.gray("|-------------|"));
     }
 }

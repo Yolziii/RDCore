@@ -1,8 +1,7 @@
-import {AppEvent, AppState} from "../../application/Application";
-import {RoundController} from "./RoundController";
-import {IRound, RoundPlayerCard1, SingleRound} from "../../core/Rounds";
+import {AppEvent, AppState, ClientApplication, IAppEvent} from "../../application/Application";
+import {IRound} from "../../core/round/Rounds";
 import {Card} from "../../core/Cards";
-import {Thrower} from "../../core/round/Thrower";
+import {JokerThrower, Thrower} from "../../core/round/Thrower";
 import {
     Bonus63Cell, BonusRoyalCell, BottomPointsCell, CellType, ChanceCell, FinalScoreCell, FullHouseCell, KindCell,
     NumberCell,
@@ -12,6 +11,10 @@ import {
 } from "../../core/Cells";
 import {Config} from "../../core/Config";
 import {Protocol} from "../Protocol";
+import {SingleRound} from "../../core/round/SingleRound";
+import {RoundPlayerCard1} from "../../core/round/RoundPlayerCard1";
+import {SingleRoundController} from "./SingleRoundController";
+import {SingleRoundEvent} from "../mainScreen/MainScreenState";
 
 export interface IRoundState {
     finishRound();
@@ -27,14 +30,22 @@ export class FinishRoundEvent extends AppEvent {
 }
 
 export class SingleRoundState extends AppState implements IRoundState {
-    private controller:RoundController;
+    private controller:SingleRoundController;
     private model:SingleRound;
 
     public finishRound() {
         this.app.onExitEvent(new FinishRoundEvent(this.model));
     }
 
-    public activate() {
+    public activate(event:IAppEvent=null) {
+        let thrower:Thrower = new Thrower();
+        if (event != null) {
+            const withJokers = (event as SingleRoundEvent).withJokers;
+            if (withJokers) {
+                thrower = new JokerThrower();
+            }
+        }
+
         const player = new RoundPlayerCard1();
         player.init(new Card(
             [
@@ -61,7 +72,7 @@ export class SingleRoundState extends AppState implements IRoundState {
                // new TotalBonusesCell(),
                 new FinalScoreCell()
             ]),
-            new Thrower());
+            thrower);
         this.model = new SingleRound(player);
 
         this.controller.activate(this.model);
@@ -72,6 +83,6 @@ export class SingleRoundState extends AppState implements IRoundState {
     }
 
     public init() {
-        this.controller = new RoundController(this, this.app.viewFactory.createRoundView());
+        this.controller = new SingleRoundController(this, (this.app as ClientApplication).viewFactory.createRoundView());
     }
 }

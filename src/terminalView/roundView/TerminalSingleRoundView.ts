@@ -4,11 +4,10 @@ import {TermninalCellView} from "./TerminalCellView";
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");
 
-import {IRoundView, RoundController} from "../../client/round/RoundController";
 import {
     IRound, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
     IRoundPlayerThrowObserver
-} from "../../core/Rounds";
+} from "../../core/round/Rounds";
 import chalk from "chalk";
 import {IDictionary} from "../../util/Dictionaries";
 import {CellType, ICell} from "../../core/Cells";
@@ -18,6 +17,7 @@ import {IKeyListener, TerminalAppView} from "../TerminalAppView";
 import {TerminalDieView} from "./TerminalDieView";
 import {Config} from "../../core/Config";
 import {DieType, IDice} from "../../core/Dices";
+import {IRoundView, SingleRoundController} from "../../client/round/SingleRoundController";
 
 const keyForType:IDictionary<string> = {
     [CellType.Ones]: "1",
@@ -57,7 +57,7 @@ const HOLDED_DICE_Y = 7;
 export class TerminalSingleRoundView extends ATerminalView implements
         IRoundView, IRoundPlayerThrowObserver, IRoundPlayerHoldObserver, IRoundPlayerFreeObserver, IRoundPlayerFillObserver,
         IKeyListener {
-    private controller:RoundController;
+    private controller:SingleRoundController;
     private model:IRound;
 
     private throwButton:TerminalThrowButton;
@@ -65,10 +65,10 @@ export class TerminalSingleRoundView extends ATerminalView implements
     private throwedViews:TerminalDieView[] = [];
     private holdedViews:TerminalDieView[] = [];
 
-    public init(controller:RoundController) {
+    public init(controller:SingleRoundController) {
         this.controller = controller;
 
-        this.throwButton = new TerminalThrowButton(42, 13);
+        this.throwButton = new TerminalThrowButton(41, 13);
         for (let i = 0; i < Config.DefaultDiceSize; i++) {
             this.throwedViews.push(new TerminalDieView(DICE_X + i*7, THROWED_DICE_Y));
             this.holdedViews.push(new TerminalDieView(DICE_X + i*7, HOLDED_DICE_Y));

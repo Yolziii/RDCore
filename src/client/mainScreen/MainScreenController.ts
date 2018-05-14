@@ -34,4 +34,8 @@ export class MainScreenController {
     public onSingleRound() {
         this.state.toSinglePlayer();
     }
+
+    public onSingleJokerRound() {
+        this.state.toSingleJokerRound();
+    }
 }

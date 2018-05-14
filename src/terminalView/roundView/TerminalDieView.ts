@@ -50,13 +50,17 @@ export class TerminalDieView extends ATerminalView {
                     break;
             }
         } else if (this.die.type === DieType.Blocked) {
-            this.line(chalk.red(" \\ / "));
-            this.line(chalk.red(`  X  `));
-            this.line(chalk.red(` / \\ `));
+            this.line(chalk.bgRed.black(" \\ / "));
+            this.line(chalk.bgRed.black("  X  "));
+            this.line(chalk.bgRed.black(" / \\ "));
         } else if (this.die.type === DieType.Empty) {
             this.line(chalk.gray("- - -"));
-            this.line(chalk.gray(`- - -`));
-            this.line(chalk.gray(`- - -`));
+            this.line(chalk.gray("- - -"));
+            this.line(chalk.gray("- - -"));
+        } else if (this.die.type === DieType.Joker) {
+            this.line(chalk.bgBlueBright.black("     "));
+            this.line(chalk.bgBlueBright.black(" <J> "));
+            this.line(chalk.bgBlueBright.black("     "));
         }
     }
 }
