@@ -5,6 +5,7 @@ import {
 import {CellType} from "../../core/Cells";
 import {IRoundState} from "./SingleRoundState";
 import {SingleRound} from "../../core/round/SingleRound";
+import {ICard} from "../../core/Cards";
 
 export interface IRoundView {
     init(controller:SingleRoundController);
@@ -63,13 +64,23 @@ export class SingleRoundController implements IRoundPlayerThrowObserver, IRoundP
             return;
         }
 
-        if (this.model.getCard().hasCell(type)) {
+        const card:ICard = this.model.getCard();
+        if (card.hasCell(type)) {
+            if (card.getCellPlayable(type).isFull) {
+                return;
+            }
             this.model.fillCell(type);
         }
     }
 
     public undoFillCell() {
         // TODO: Отмена заполнения последней ячейки (только до следующего броска)
+    }
+
+    public selectCard(index:number) {
+        if (this.model.activeCardIndex !== index) {
+            this.model.setActiveCard(index);
+        }
     }
 
     public holdDie(index:number) {
@@ -111,5 +122,9 @@ export class SingleRoundController implements IRoundPlayerThrowObserver, IRoundP
 
     public onPlayerFree() {
         this.view.draw();
+    }
+
+    public quit() {
+        this.state.quitRound();
     }
 }

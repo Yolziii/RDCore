@@ -5,16 +5,18 @@ import {
 import {ICard} from "../Cards";
 import {IDice} from "../Dices";
 import {CellType} from "../Cells";
-import {RoundPlayerCard1} from "./RoundPlayerCard1";
+import {RoundPlayer} from "./RoundPlayer";
 
 export class SingleRound implements IRound {
     public readonly totalPlayers:number = 1;
-    public readonly totalCards:number = 1;
+    private player:IRoundPlayer;
 
-    private player:RoundPlayerCard1;
-
-    constructor(player:RoundPlayerCard1) {
+    constructor(player:RoundPlayer) {
         this.player = player;
+    }
+
+    public get totalCards():number {
+        return this.player.totalCards;
     }
 
     public getPlayer():IRoundPlayer {
@@ -28,8 +30,7 @@ export class SingleRound implements IRound {
     public setActivePlayer(index:number) {/**/}
 
     public get finished() {
-        const card:ICard = this.player.getCard();
-        return card.finished;
+        return this.player.finished;
     }
 
     public get throwsLeft(): number {return this.player.throwsLeft;}
@@ -49,6 +50,11 @@ export class SingleRound implements IRound {
         this.player.fillCell(type);
     }
 
+    public setActiveCard(index:number) {this.player.setActiveCard(index);}
+    public get activeCardIndex() {return this.player.activeCardIndex;}
+
+    public get score() {return this.player.score;}
+
     public registerObserver(observer:IRoundPlayerThrowObserver | IRoundPlayerHoldObserver | IRoundPlayerFreeObserver | IRoundPlayerFillObserver) {
         this.player.registerObserver(observer);
     }
@@ -56,6 +62,4 @@ export class SingleRound implements IRound {
     public unregisterObserver(observer:IRoundPlayerThrowObserver | IRoundPlayerHoldObserver | IRoundPlayerFreeObserver | IRoundPlayerFillObserver) {
         this.player.unregisterObserver(observer);
     }
-
-    public setActiveCard() {/**/}
 }

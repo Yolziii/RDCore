@@ -10,6 +10,11 @@ export enum CellType {
     Fives = "Fives",
     Sixes = "Sixes",
 
+    ServiceTotalNumbers = "ServiceTotalNumbers",
+    ServiceBonus63 = "ServiceBonus63",
+    ServiceTopPoints = "ServiceTopPoints",
+    ServiceTotalNumbersWithBonus = "ServiceTotalNumbersWithBonus",
+
     Kind3 = "Kind3",
     Kind4 = "Kind4",
     FullHouse = "FullHouse",
@@ -18,16 +23,9 @@ export enum CellType {
     RoyalDice = "RoyalDice",
     Chance = "Chance",
 
-    ServiceTotalNumbers = "ServiceTotalNumbers",
-    ServiceBonus63 = "ServiceBonus63",
-    ServiceTotalNumbersWithBonus = "ServiceTotalNumbersWithBonus",
-
-    ServiceTopPoints = "ServiceTopPoints",
     ServiceBottomPoints = "ServiceBottomPoints",
-
     ServiceBonusRoyal = "ServiceBonusRoyal",
     ServiceTotalBonuses = "ServiceTotalBonuses",
-
     ServiceFinalScore = "ServiceFinalScore",
 }
 
@@ -41,7 +39,7 @@ export interface IPlayableCell extends ICell {
     readonly dice: IDice;
 
     fill(dice: IDice): void;
-    valueFor(dice: IDice):void;
+    valueFor(dice: IDice):number;
 }
 
 export interface IServiceCell extends ICell {
@@ -72,7 +70,7 @@ export abstract class APlayableCell implements IPlayableCell {
         }
     }
 
-    public abstract valueFor(dice: IDice):void;
+    public abstract valueFor(dice: IDice):number;
 }
 
 export class NumberCell extends APlayableCell {
@@ -123,8 +121,10 @@ export class TotalNumbersCell implements IServiceCell {
 export class Bonus63Cell implements IServiceCell {
     public type: CellType;
     private card: ICard;
+    private threshold:number;
 
-    constructor() {
+    constructor(threshold:number = Config.ThresholdBonus63) {
+        this.threshold = threshold;
         this.type = CellType.ServiceBonus63;
     }
 
@@ -136,7 +136,7 @@ export class Bonus63Cell implements IServiceCell {
         const numberTypes = [
             CellType.Ones, CellType.Twos, CellType.Threes, CellType.Fours, CellType.Fives, CellType.Sixes];
         const sum = sumPoints(this.card, numberTypes);
-        return (sum >= 63) ? Config.CostBonus63 : 0;
+        return (sum >= this.threshold) ? Config.CostBonus63 : 0;
     }
 }
 
@@ -468,6 +468,50 @@ export class FinalScoreCell implements IServiceCell {
             CellType.Kind3, CellType.Kind4, CellType.FullHouse, CellType.SmallStraight, CellType.LargeStraight,
             CellType.RoyalDice, CellType.Chance,
             CellType.ServiceBonus63, CellType.ServiceBonusRoyal]);
+    }
+}
+
+export abstract class APlayableCellDecorator implements IPlayableCell {
+    protected cell:IPlayableCell;
+
+    constructor(cell:IPlayableCell) {
+        this.cell = cell;
+    }
+
+    public get isFull():boolean {
+        return this.cell.isFull;
+    }
+
+    public get dice(): IDice {
+        return this.cell.dice;
+    }
+
+    public fill(dice: IDice): void {
+        this.cell.fill(dice);
+    }
+
+    public get type(): CellType {
+        return this.cell.type;
+    }
+
+    public abstract valueFor(dice: IDice):number;
+    public abstract get value():number;
+}
+
+export class MultiplierCellDecorator extends APlayableCellDecorator {
+    private multiple:number;
+
+    constructor(cell:IPlayableCell, multiple:number) {
+        super(cell);
+        this.multiple = multiple;
+    }
+
+    public valueFor(dice: IDice):number {
+        return this.cell.valueFor(dice) * this.multiple;
+    }
+
+    public get value():number {
+        return this.cell.value * this.multiple;
     }
 }
 

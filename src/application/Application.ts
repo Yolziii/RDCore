@@ -5,20 +5,6 @@ import RDError from "../core/RDError";
 import {IViewFactory} from "../client/IViewFactory";
 import {ClientConnection} from "../server/ClientConnection";
 
-/**
- * Интерфейс для состояний, которые динамически управляют слотами приложения
- */
-export interface IDynamicGraphState extends IAppState { // TODO: Вызывать методы перед активацией и после выхода
-    /** Добавить новые состояния в слоты приложения */
-    fillStates();
-
-    /** Очистить ранее добавленные состояния из слотов приложения */
-    clearStates();
-}
-function isDynamicGraphState(state:IAppState):state is IDynamicGraphState {
-    return (state as IDynamicGraphState).fillStates !== undefined;
-}
-
 export interface IApplication {
     /** Текущее состояние */
     readonly currentState:IAppState;
@@ -122,9 +108,6 @@ export class Application implements IApplication {
             this.holdActive(targetState.doesPutActiveToSleep);
 
             this._currentState = targetState;
-            if (isDynamicGraphState(targetState)) {
-                targetState.fillStates();
-            }
             targetState.activate(event);
         }
     }
@@ -146,9 +129,6 @@ export class Application implements IApplication {
     }
 
     private exit(state:IAppState) {
-        if (isDynamicGraphState(state)) {
-            state.clearStates();
-        }
         state.sleep();
         state.exit();
 
@@ -182,7 +162,7 @@ export class ClientApplication extends Application {
     }
 }
 
-export class ServerClient extends Application {
+export class ServerApplication extends Application {
     private connection:ClientConnection;
 
     constructor(connection:ClientConnection) {
@@ -193,6 +173,7 @@ export class ServerClient extends Application {
 
 export interface IAppEvent {
     readonly slot: number;
+    toSlot(slot:number);
 }
 
 export class AppEvent implements IAppEvent {
@@ -202,8 +183,12 @@ export class AppEvent implements IAppEvent {
         return this._slot;
     }
 
-    constructor(id:number) {
-        this._slot = id;
+    constructor(slot:number) {
+        this._slot = slot;
+    }
+
+    public toSlot(slot:number) {
+        this._slot = slot;
     }
 }
 

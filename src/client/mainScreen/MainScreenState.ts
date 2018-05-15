@@ -1,18 +1,11 @@
 import {AppEvent, AppState, ClientApplication, IAppEvent} from "../../application/Application";
 import {MainScreenController} from "./MainScreenController";
 import {Protocol} from "../Protocol";
+import {StartRoundEvent} from "../round/StartRoundState";
 
-export class SingleRoundEvent extends AppEvent {
-    private _withJokers:boolean = false;
-
-    public get withJokers() {
-        return this._withJokers;
-    }
-
-    constructor(withJokers:boolean) {
-        super(Protocol.StartRound);
-        this._withJokers = withJokers;
-    }
+export enum RoundMode {
+    SingleRound,
+    SingleRoundTriple
 }
 
 export class MainScreenState extends AppState {
@@ -32,11 +25,17 @@ export class MainScreenState extends AppState {
     }
 
     public toSinglePlayer() {
-        this.app.toState(Protocol.StartRound);
+        const event:StartRoundEvent = new StartRoundEvent({mode: RoundMode.SingleRound});
+        this.app.onEvent(event);
     }
 
     public toSingleJokerRound() {
-        const event:SingleRoundEvent = new SingleRoundEvent(true);
+        const event:StartRoundEvent = new StartRoundEvent({mode: RoundMode.SingleRound, withJokers: true});
+        this.app.onEvent(event);
+    }
+
+    public toSingleTripleRound() {
+        const event:StartRoundEvent = new StartRoundEvent({mode: RoundMode.SingleRoundTriple});
         this.app.onEvent(event);
     }
 }

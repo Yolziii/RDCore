@@ -1,39 +1,60 @@
-import {Dice, DieType, IDice, IDie, NullDice} from "../Dices";
+import {IDice} from "../Dices";
 import {ICard} from "../Cards";
-import {CellType, ICell} from "../Cells";
-import {Config} from "../Config";
-import {Thrower} from "./Thrower";
+import {CellType} from "../Cells";
 
 export interface IRoundPlayer extends IRoundObserverSubject {
+    /** Сколько бросков осталось у игрока */
     readonly throwsLeft: number;
+
+    /** Текущая комбинация костей (миск из собранных и брошенных костей) */
     readonly dice:IDice;
 
+    /** Кости, брошенные игроком последний раз */
     readonly throwed:IDice;
+
+    /** Кости, собранные игроком */
     readonly holded:IDice;
 
+    /** Сколько всего карточек есть у игрока */
     readonly totalCards:number;
 
+    /** Индекс текущей активной карточки (начиная с 0) */
+    readonly activeCardIndex:number;
+
+    /** Заполнил ли игрок все свои карточки */
+    readonly finished:boolean;
+
+    /** Очков во всех карточках игрока */
+    readonly score:number;
+
+    /** Может ли игрок сохранить текущую кость */
     canHoldDie(index:number);
+
+    /** Может ли игрок освободить текущую кость */
     canFreeDie(index:number);
 
+    /** Сохранить текущую кость */
     holdDie(index:number);
+
+    /** Освободить текущую кость */
     freeDie(index:number);
 
+    /** Бросить кости */
     throwDice();
 
+    /** Определить текущую карточку */
     setActiveCard(index:number); // Если карт несколько, то API работает с активной
-    getCard():ICard;
-    fillCell(type:CellType);
-}
 
-export interface ISingleCardPlayer {
+    /** Возвращает текущую карточку */
     getCard():ICard;
+
+    /** Заполнить указанную ячейку текущей карточски текущей комбинацией */
     fillCell(type:CellType);
 }
 
 export interface IRound extends IRoundPlayer, IRoundObserverSubject {
-    readonly finished: boolean;
     readonly totalPlayers:number;
+    readonly score:number;
 
     setActivePlayer(index:number);
     getPlayer():IRoundPlayer;

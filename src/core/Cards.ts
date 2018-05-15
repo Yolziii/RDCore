@@ -1,8 +1,9 @@
 import {IDictionary} from "../util/Dictionaries";
 import {RDErrorCode} from "./RDErrorCode";
 import RDError from "./RDError";
-import {CellType, ICell, IPlayableCell, IServiceCell} from "./Cells";
+import {CellType, ICell, IPlayableCell, IServiceCell, NumberCell} from "./Cells";
 import {IDice} from "./Dices";
+import {ICardCellsFactory} from "./round/CardCellFactories";
 
 export interface ICard {
     readonly finished: boolean;
@@ -23,22 +24,49 @@ export class Card implements ICard {
 
     private cells: IDictionary<ICell> = {};
 
-    constructor(cells: ICell[]) {
-         if (cells === undefined  || cells.length === 0) {
+    constructor(factory:ICardCellsFactory, ...types: CellType[]) {
+         if (types === undefined  || types.length === 0) {
             throw new RDError(RDErrorCode.NO_ANY_CELL, "Card must contain cells!");
          }
 
-         for (const someCell of cells) {
-            const cell: IPlayableCell | IServiceCell = someCell as IPlayableCell | IServiceCell;
-            if (this.cells[cell.type] != null) {
+         for (const type of types) {
+            if (this.cells[type] != null) {
                 // TODO: Выкидывать исключение
+            }
+
+            let cell: IPlayableCell | IServiceCell;
+            switch (type) {
+                case CellType.Ones: cell = factory.createOnes(); break;
+                case CellType.Twos: cell = factory.createTwos(); break;
+                case CellType.Threes: cell = factory.createThrees(); break;
+                case CellType.Fours: cell = factory.createFours(); break;
+                case CellType.Fives: cell = factory.createFives(); break;
+                case CellType.Sixes: cell = factory.createSixes(); break;
+
+                case CellType.ServiceTotalNumbers: cell = factory.createServiceTotalNumbers(); break;
+                case CellType.ServiceBonus63: cell = factory.createServiceBonus63(); break;
+                case CellType.ServiceTopPoints: cell = factory.createServiceTopPoints(); break;
+                case CellType.ServiceTotalNumbersWithBonus: cell = factory.createServiceTotalNumbersWithBonus(); break;
+
+                case CellType.Kind3: cell = factory.createKind3(); break;
+                case CellType.Kind4: cell = factory.createKind4(); break;
+                case CellType.FullHouse: cell = factory.createFullHouse(); break;
+                case CellType.SmallStraight: cell = factory.createSmallStraight(); break;
+                case CellType.LargeStraight: cell = factory.createLargeStraight(); break;
+                case CellType.RoyalDice: cell = factory.createRoyalDice(); break;
+                case CellType.Chance: cell = factory.createChance(); break;
+
+                case CellType.ServiceBottomPoints: cell = factory.createServiceBottomPoints(); break;
+                case CellType.ServiceBonusRoyal: cell = factory.createServiceBonusRoyal(); break;
+                case CellType.ServiceTotalBonuses: cell = factory.createServiceTotalBonuses(); break;
+                case CellType.ServiceFinalScore: cell = factory.createServiceFinalScore(); break;
             }
 
             if (!Card.isPlayableCell(cell)) {
                 cell.linkCard(this);
             }
 
-            this.cells[cell.type] = cell;
+            this.cells[type] = cell;
          }
 
          if (this.cells[CellType.ServiceFinalScore] === undefined) {

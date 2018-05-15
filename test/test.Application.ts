@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import "mocha";
-import {AppEvent, Application, AppState, IAppEvent, IAppState} from "../src/application/Application";
+import {AppEvent, Application, AppState, ClientApplication, IAppEvent, IAppState} from "../src/application/Application";
 import {Protocol} from "../src/client/Protocol";
 import {MockViewFactory} from "./mocks/mock.View";
 
@@ -55,7 +55,7 @@ describe("Application", () => {
     let app:Application;
     beforeEach(() => {
 
-        app = new Application(new MockViewFactory());
+        app = new ClientApplication(new MockViewFactory());
 
         stateStart = new TestState();
         app.fillSlot(TestProtocol.Start, stateStart);

@@ -8,5 +8,7 @@ export let Config = {
 
     CostRoyalBonusPerItem: 100,
     CostRoyalDice: 50,
-    CostSmallStraight: 30
+    CostSmallStraight: 30,
+
+    ThresholdBonus63: 63
 };

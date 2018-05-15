@@ -3,7 +3,8 @@ import "mocha";
 import {Dice, IDie, DieType, JokerDie} from "../src/core/Dices";
 import {
     Bonus63Cell, BonusRoyalCell, BottomPointsCell, CellType,
-    ChanceCell, FinalScoreCell, FullHouseCell, IPlayableCell, IServiceCell, KindCell, NumberCell, RoyalDiceCell,
+    ChanceCell, FinalScoreCell, FullHouseCell, IPlayableCell, IServiceCell, KindCell, MultiplierCellDecorator,
+    NumberCell, RoyalDiceCell,
     StraightCell,
     TopPointsCell,
     TotalBonusesCell,
@@ -11,6 +12,8 @@ import {
 } from "../src/core/Cells";
 import {Config} from "../src/core/Config";
 import {ICard, Card} from "../src/core/Cards";
+import {RoundPlayer} from "../src/core/round/RoundPlayer";
+import {CardCellsFactory} from "../src/core/round/CardCellFactories";
 
 describe("Cells", () => {
     const die1: IDie = {type: DieType.Value, value: 1};
@@ -342,33 +345,34 @@ describe("Cells", () => {
         let card: ICard;
 
         beforeEach(() => {
-            card = new Card([
-                new NumberCell(CellType.Ones, 1),
-                new NumberCell(CellType.Twos, 2),
-                new NumberCell(CellType.Threes, 3),
-                new NumberCell(CellType.Fours, 4),
-                new NumberCell(CellType.Fives, 5),
-                new NumberCell(CellType.Sixes, 6),
+            card = new Card(
+                new CardCellsFactory(),
 
-                new TotalNumbersCell(),
-                new Bonus63Cell(),
-                new TotalNumbersWithBonusCell(),
+                CellType.Ones,
+                CellType.Twos,
+                CellType.Threes,
+                CellType.Fours,
+                CellType.Fives,
+                CellType.Sixes,
 
-                new KindCell(CellType.Kind3, 3),
-                new KindCell(CellType.Kind4, 4),
-                new FullHouseCell(),
-                new StraightCell(CellType.SmallStraight, Config.CostSmallStraight, 4),
-                new StraightCell(CellType.LargeStraight, Config.CostLargeStraight, 5),
-                new RoyalDiceCell(),
-                new ChanceCell(),
+                CellType.ServiceTotalNumbers,
+                CellType.ServiceBonus63,
+                CellType.ServiceTopPoints,
+                CellType.ServiceTotalNumbersWithBonus,
 
-                new TopPointsCell(),
-                new BottomPointsCell(),
-                new BonusRoyalCell(),
-                new TotalBonusesCell(),
+                CellType.Kind3,
+                CellType.Kind4,
+                CellType.FullHouse,
+                CellType.SmallStraight,
+                CellType.LargeStraight,
+                CellType.RoyalDice,
+                CellType.Chance,
 
-                new FinalScoreCell(),
-            ]);
+                CellType.ServiceBonusRoyal,
+                CellType.ServiceBottomPoints,
+                CellType.ServiceTotalBonuses,
+                CellType.ServiceFinalScore
+            );
         });
 
         describe("TotalNumbersCell", () => {
@@ -635,6 +639,23 @@ describe("Cells", () => {
                     Config.CostBonus63 + Config.CostFullHouse +
                     Config.CostSmallStraight + Config.CostLargeStraight + Config.CostRoyalDice +
                     Config.CostRoyalBonusPerItem);
+            });
+        });
+    });
+
+    describe("Decorators", () => {
+        describe("MultiplierCellDecorator", () => {
+            it("vaslue", () => {
+                const dice: Dice = new Dice(die1, die2, die3, die4, die5);
+                const cell: IPlayableCell = new MultiplierCellDecorator(new NumberCell(CellType.Ones, 1), 2);
+                cell.fill(dice);
+                assert.equal(cell.value, 2);
+            });
+
+            it("valueFor", () => {
+                const dice: Dice = new Dice(die1, die2, die3, die4, die5);
+                const cell: IPlayableCell = new MultiplierCellDecorator(new NumberCell(CellType.Ones, 1), 2);
+                assert.equal(cell.valueFor(dice), 2);
             });
         });
     });

@@ -1,6 +1,6 @@
 import {ATerminalView} from "../ATerminalView";
 import chalk from "chalk";
-import {CellType, ICell, IPlayableCell, IServiceCell} from "../../core/Cells";
+import {CellType, ICell, IPlayableCell, IServiceCell} from "../../../core/Cells";
 
 export class TermninalCellView extends ATerminalView {
     private cell: ICell;
@@ -10,6 +10,10 @@ export class TermninalCellView extends ATerminalView {
     public init(key: string, cell: ICell) {
         this.key = key;
         this.cell = cell;
+    }
+
+    public isEnabled() {
+        return this.enabled;
     }
 
     public draw() {

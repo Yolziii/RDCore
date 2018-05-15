@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");
 
-import {IMainScreenView, MainScreenController} from "../client/mainScreen/MainScreenController";
+import {IMainScreenView, MainScreenController} from "../mainScreen/MainScreenController";
 import {ATerminalView} from "./ATerminalView";
 import {IKeyListener, TerminalAppView} from "./TerminalAppView";
 import chalk from "chalk";
@@ -36,6 +36,9 @@ export class TerminalMainScreenView extends ATerminalView implements IMainScreen
                 this.controller.onSingleJokerRound();
                 break;
 
+            case "t":
+                this.controller.onTripleRound();
+                break;
         }
     }
 
@@ -77,5 +80,13 @@ export class TerminalMainScreenView extends ATerminalView implements IMainScreen
         this.line(chalk.gray("| Joker round |"));
         this.line(chalk.gray(`|     ${chalk.yellowBright("[J]")}     |`));
         this.line(chalk.gray("|-------------|"));
+
+        this.x = 9;
+        this.y = 20;
+        this.startDraw();
+        this.line(chalk.gray("|--------------|"));
+        this.line(chalk.gray("| Triple round |"));
+        this.line(chalk.gray(`|      ${chalk.yellowBright("[T]")}     |`));
+        this.line(chalk.gray("|--------------|"));
     }
 }

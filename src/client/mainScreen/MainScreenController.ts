@@ -38,4 +38,8 @@ export class MainScreenController {
     public onSingleJokerRound() {
         this.state.toSingleJokerRound();
     }
+
+    public onTripleRound() {
+        this.state.toSingleTripleRound();
+    }
 }

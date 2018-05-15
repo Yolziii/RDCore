@@ -1,17 +1,15 @@
 import {
     IResultScreenController, IResultScreenView,
     SingleResultScreenController
-} from "../client/resultScreen/SingleResultScreenController";
+} from "../resultScreen/SingleResultScreenController";
 
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");
 
-import {IMainScreenView, MainScreenController} from "../client/mainScreen/MainScreenController";
 import {ATerminalView} from "./ATerminalView";
 import {IKeyListener, TerminalAppView} from "./TerminalAppView";
 import chalk from "chalk";
-import {IRound} from "../core/round/Rounds";
-import {CellType} from "../core/Cells";
+import {IRound} from "../../core/round/Rounds";
 
 export class TerminalRoundResutScreenView extends ATerminalView implements IResultScreenView, IKeyListener {
     private controller:IResultScreenController;
@@ -47,12 +45,12 @@ export class TerminalRoundResutScreenView extends ATerminalView implements IResu
         const log = console.log;
         log("");
 
-        this.x = 5;
-        this.y = 0;
+        this.x = 12;
+        this.y = 6;
         this.startDraw();
 
         this.line("You finished the round!");
-        this.line("your score: " + this.model.getPlayer().getCard().getCell(CellType.ServiceFinalScore).value);
+        this.line("нour score: " + this.model.score);
 
         this.x = 18;
         this.y = 15;

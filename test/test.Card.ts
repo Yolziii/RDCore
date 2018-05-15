@@ -3,6 +3,7 @@ import "mocha";
 import {CellType, FinalScoreCell, IPlayableCell, NumberCell} from "../src/core/Cells";
 import {ICard, Card} from "../src/core/Cards";
 import {Dice, IDie, DieType} from "../src/core/Dices";
+import {CardCellsFactory} from "../src/core/round/CardCellFactories";
 
 describe("Card", () => {
     let card: ICard;
@@ -11,11 +12,9 @@ describe("Card", () => {
     let cellTwos: IPlayableCell;
 
     beforeEach(() => {
-        cellOnes = new NumberCell(CellType.Ones, 1);
-        cellTwos = new NumberCell(CellType.Twos, 2);
-        const finalScore = new FinalScoreCell();
-
-        card = new Card([cellOnes, cellTwos, finalScore]);
+        card = new Card(new CardCellsFactory(), CellType.Ones, CellType.Twos, CellType.ServiceFinalScore);
+        cellOnes = card.getCellPlayable(CellType.Ones);
+        cellTwos = card.getCellPlayable(CellType.Twos);
     });
 
     it("Not finished", () => {

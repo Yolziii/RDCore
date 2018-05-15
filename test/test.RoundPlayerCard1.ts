@@ -6,9 +6,10 @@ import {CellType, FinalScoreCell, NumberCell, RoyalDiceCell} from "../src/core/C
 import {Config} from "../src/core/Config";
 import {Thrower} from "../src/core/round/Thrower";
 import {Dice, DieType, IDice, IDie} from "../src/core/Dices";
-import {RoundPlayerCard1} from "../src/core/round/RoundPlayerCard1";
+import {RoundPlayer} from "../src/core/round/RoundPlayer";
+import {CardCellsFactory} from "../src/core/round/CardCellFactories";
 
-describe("RoundPlayerCard1", () => {
+describe("RoundPlayer", () => {
     let DIE1:IDie;
     class TestThrower extends Thrower {
         protected diceFactory() {
@@ -21,18 +22,17 @@ describe("RoundPlayerCard1", () => {
     }
 
     const testThrower = new TestThrower();
-    let roundPlayer:RoundPlayerCard1;
+    let roundPlayer:RoundPlayer;
 
     beforeEach(() => {
-        const card:ICard = new Card([
-            new NumberCell(CellType.Ones, 1),
-            new RoyalDiceCell(),
+        const card:ICard = new Card(
+            new CardCellsFactory(),
+            CellType.Ones,
+            CellType.RoyalDice,
+            CellType.ServiceFinalScore
+        );
 
-            new FinalScoreCell()
-        ]);
-
-        roundPlayer = new RoundPlayerCard1();
-        roundPlayer.init(card, testThrower);
+        roundPlayer = new RoundPlayer(testThrower, card);
 
         DIE1 = {type:DieType.Value, value: 1};
     });
