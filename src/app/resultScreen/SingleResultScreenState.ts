@@ -1,4 +1,4 @@
-import {AppState, ClientApplication} from "../../application/Application";
+import {AppState, ClientApplication} from "../Application";
 import {SingleResultScreenController} from "./SingleResultScreenController";
 import {FinishRoundEvent} from "../round/SingleRoundState";
 import {Protocol} from "../Protocol";

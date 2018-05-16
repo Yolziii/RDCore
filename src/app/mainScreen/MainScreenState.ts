@@ -1,4 +1,4 @@
-import {AppEvent, AppState, ClientApplication, IAppEvent} from "../../application/Application";
+import {AppEvent, AppState, ClientApplication, IAppEvent} from "../Application";
 import {MainScreenController} from "./MainScreenController";
 import {Protocol} from "../Protocol";
 import {StartRoundEvent} from "../round/StartRoundState";

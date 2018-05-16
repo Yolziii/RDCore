@@ -1,4 +1,4 @@
-import {IViewFactory} from "../IViewFactory";
+import {IViewFactory} from "../../client/IViewFactory";
 import {IMainScreenView} from "../mainScreen/MainScreenController";
 import {TerminalMainScreenView} from "./TerminalMainScreenView";
 import {TerminalSingleRoundView} from "./roundView/TerminalSingleRoundView";

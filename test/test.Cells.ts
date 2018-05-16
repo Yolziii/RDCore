@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import "mocha";
-import {Dice, IDie, DieType, JokerDie} from "../src/core/Dices";
+import {Dice, IDie, DieType, JokerDie} from "../src/model/Dices";
 import {
     Bonus63Cell, BonusRoyalCell, BottomPointsCell, CellType,
     ChanceCell, FinalScoreCell, FullHouseCell, IPlayableCell, IServiceCell, KindCell, MultiplierCellDecorator,
@@ -9,11 +9,10 @@ import {
     TopPointsCell,
     TotalBonusesCell,
     TotalNumbersCell, TotalNumbersWithBonusCell,
-} from "../src/core/Cells";
-import {Config} from "../src/core/Config";
-import {ICard, Card} from "../src/core/Cards";
-import {RoundPlayer} from "../src/core/round/RoundPlayer";
-import {CardCellsFactory} from "../src/core/round/CardCellFactories";
+} from "../src/model/Cells";
+import {Config} from "../src/model/Config";
+import {ICard, Card} from "../src/model/Cards";
+import {CardCellsFactory} from "../src/model/round/CardCellFactories";
 
 describe("Cells", () => {
     const die1: IDie = {type: DieType.Value, value: 1};

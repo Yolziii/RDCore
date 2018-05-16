@@ -9,7 +9,7 @@ const ansiEsc = require("ansi-escapes");
 import {ATerminalView} from "./ATerminalView";
 import {IKeyListener, TerminalAppView} from "./TerminalAppView";
 import chalk from "chalk";
-import {IRound} from "../../core/round/Rounds";
+import {IRound} from "../../model/round/Rounds";
 
 export class TerminalRoundResutScreenView extends ATerminalView implements IResultScreenView, IKeyListener {
     private controller:IResultScreenController;

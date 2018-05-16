@@ -1,5 +1,5 @@
 import * as SocketIO from "socket.io";
-import {Application} from "../application/Application";
+import {Application} from "../app/Application";
 
 const log = console.log;
 

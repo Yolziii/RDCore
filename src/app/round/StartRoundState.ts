@@ -1,4 +1,4 @@
-import {AppEvent, AppState, IAppEvent, IAppState} from "../../application/Application";
+import {AppEvent, AppState, IAppEvent, IAppState} from "../Application";
 import {SingleResultScreenState} from "../resultScreen/SingleResultScreenState";
 import {Protocol} from "../Protocol";
 import {SingleRoundState} from "./SingleRoundState";
@@ -50,7 +50,7 @@ export class StartRoundState extends AppState implements IAppState {
         this.app.fillSlot(Protocol.RoundResult, this.singleResultScreenState);
         this.app.fillSlot(Protocol.QuitRound, this.immediatelyQuitState);
 
-        event.toSlot(Protocol.Round);
+        event.slot = Protocol.Round;
         this.app.onEvent(event);
     }
 

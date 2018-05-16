@@ -1,7 +1,7 @@
-import {Protocol} from "../client/Protocol";
+import {Protocol} from "./Protocol";
 import {IDictionaryInt} from "../util/Dictionaries";
-import {RDErrorCode} from "../core/RDErrorCode";
-import RDError from "../core/RDError";
+import {RDErrorCode} from "../model/RDErrorCode";
+import RDError from "../model/RDError";
 import {IViewFactory} from "../client/IViewFactory";
 import {ClientConnection} from "../server/ClientConnection";
 
@@ -172,23 +172,14 @@ export class ServerApplication extends Application {
 }
 
 export interface IAppEvent {
-    readonly slot: number;
-    toSlot(slot:number);
+    slot: number;
 }
 
 export class AppEvent implements IAppEvent {
-    protected _slot:number;
-
-    public get slot():number {
-        return this._slot;
-    }
+    public slot:number;
 
     constructor(slot:number) {
-        this._slot = slot;
-    }
-
-    public toSlot(slot:number) {
-        this._slot = slot;
+        this.slot = slot;
     }
 }
 

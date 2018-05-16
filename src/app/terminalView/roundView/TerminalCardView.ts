@@ -1,8 +1,8 @@
 import {ATerminalView} from "../ATerminalView";
-import {CellType, ICell} from "../../../core/Cells";
+import {CellType, ICell} from "../../../model/Cells";
 import {TermninalCellView} from "./TerminalCellView";
-import {ICard} from "../../../core/Cards";
-import {IRound} from "../../../core/round/Rounds";
+import {ICard} from "../../../model/Cards";
+import {IRound} from "../../../model/round/Rounds";
 import {IDictionary} from "../../../util/Dictionaries";
 import chalk from "chalk";
 

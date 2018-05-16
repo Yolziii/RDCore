@@ -1,10 +1,10 @@
-import {Application, ClientApplication} from "./application/Application";
-import {Protocol} from "./client/Protocol";
-import {MainScreenState} from "./client/mainScreen/MainScreenState";
-import {TerminalViewFactory} from "./client/terminalView/TerminalViewFactory";
-import {SingleRoundState} from "./client/round/SingleRoundState";
-import {SingleResultScreenState} from "./client/resultScreen/SingleResultScreenState";
-import {StartRoundState} from "./client/round/StartRoundState";
+import {Application, ClientApplication} from "./app/Application";
+import {Protocol} from "./app/Protocol";
+import {MainScreenState} from "./app/mainScreen/MainScreenState";
+import {TerminalViewFactory} from "./app/terminalView/TerminalViewFactory";
+import {SingleRoundState} from "./app/round/SingleRoundState";
+import {SingleResultScreenState} from "./app/resultScreen/SingleResultScreenState";
+import {StartRoundState} from "./app/round/StartRoundState";
 
 const viewFactory = new TerminalViewFactory();
 const app:ClientApplication = new ClientApplication(viewFactory);

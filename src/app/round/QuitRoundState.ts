@@ -1,4 +1,4 @@
-import {AppState, IAppState} from "../../application/Application";
+import {AppState, IAppState} from "../Application";
 import {Protocol} from "../Protocol";
 
 export class QuitRoundState extends AppState implements IAppState {

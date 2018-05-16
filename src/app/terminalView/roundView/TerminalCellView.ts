@@ -1,6 +1,6 @@
 import {ATerminalView} from "../ATerminalView";
 import chalk from "chalk";
-import {CellType, ICell, IPlayableCell, IServiceCell} from "../../../core/Cells";
+import {CellType, ICell, IPlayableCell, IServiceCell} from "../../../model/Cells";
 
 export class TermninalCellView extends ATerminalView {
     private cell: ICell;

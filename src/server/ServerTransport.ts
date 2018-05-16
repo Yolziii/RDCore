@@ -3,7 +3,7 @@ import * as express from "express";
 import * as SocketIO from "socket.io";
 import {ClientsRepository} from "./ClientsRepository";
 import {ClientConnection} from "./ClientConnection";
-import {Application} from "../application/Application";
+import {Application} from "../app/Application";
 const log = console.log;
 
 export class ServerTransport {

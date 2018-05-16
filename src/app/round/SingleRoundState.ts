@@ -1,13 +1,13 @@
-import {AppEvent, AppState, ClientApplication, IAppEvent, IAppState} from "../../application/Application";
-import {IRound} from "../../core/round/Rounds";
-import {Card} from "../../core/Cards";
-import {JokerThrower, Thrower} from "../../core/round/Thrower";
-import {CellType} from "../../core/Cells";
+import {AppEvent, AppState, ClientApplication, IAppEvent, IAppState} from "../Application";
+import {IRound} from "../../model/round/Rounds";
+import {Card} from "../../model/Cards";
+import {JokerThrower, Thrower} from "../../model/round/Thrower";
+import {CellType} from "../../model/Cells";
 import {Protocol} from "../Protocol";
-import {SingleRound} from "../../core/round/SingleRound";
-import {RoundPlayer} from "../../core/round/RoundPlayer";
+import {SingleRound} from "../../model/round/SingleRound";
+import {RoundPlayer} from "../../model/round/RoundPlayer";
 import {SingleRoundController} from "./SingleRoundController";
-import {CardCellsFactory, MultiplierCardCellsFactory} from "../../core/round/CardCellFactories";
+import {CardCellsFactory, MultiplierCardCellsFactory} from "../../model/round/CardCellFactories";
 import {StartRoundEvent} from "./StartRoundState";
 import {RoundMode} from "../mainScreen/MainScreenState";
 

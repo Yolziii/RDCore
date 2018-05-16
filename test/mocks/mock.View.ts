@@ -1,8 +1,8 @@
 import {IViewFactory} from "../../src/client/IViewFactory";
-import {IMainScreenView, MainScreenController} from "../../src/client/mainScreen/MainScreenController";
-import {IRoundView, RoundController} from "../../src/client/round/SingleRoundController";
-import {IRound} from "../../src/core/round/Rounds";
-import {IResultScreenController, IResultScreenView} from "../../src/client/resultScreen/SingleResultScreenController";
+import {IMainScreenView, MainScreenController} from "../../src/app/mainScreen/MainScreenController";
+import {IRoundView, RoundController} from "../../src/app/round/SingleRoundController";
+import {IRound} from "../../src/model/round/Rounds";
+import {IResultScreenController, IResultScreenView} from "../../src/app/resultScreen/SingleResultScreenController";
 
 export class MockViewFactory implements IViewFactory {
     public createMainScreenView():IMainScreenView {

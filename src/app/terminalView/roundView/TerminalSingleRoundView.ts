@@ -6,15 +6,15 @@ const ansiEsc = require("ansi-escapes");
 import {
     IRound, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
     IRoundPlayerThrowObserver
-} from "../../../core/round/Rounds";
+} from "../../../model/round/Rounds";
 import chalk from "chalk";
 import {IDictionary} from "../../../util/Dictionaries";
-import {CellType} from "../../../core/Cells";
+import {CellType} from "../../../model/Cells";
 import {TerminalThrowButton} from "./TerminalThrowButton";
 import {IKeyListener, TerminalAppView} from "../TerminalAppView";
 import {TerminalDieView} from "./TerminalDieView";
-import {Config} from "../../../core/Config";
-import {DieType, IDice} from "../../../core/Dices";
+import {Config} from "../../../model/Config";
+import {DieType, IDice} from "../../../model/Dices";
 import {IRoundView, SingleRoundController} from "../../round/SingleRoundController";
 import {TerminalQuitButton} from "./TerminalQuitButton";
 import {TerminalCardView} from "./TerminalCardView";

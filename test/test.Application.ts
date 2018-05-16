@@ -1,7 +1,6 @@
 import * as assert from "assert";
 import "mocha";
-import {AppEvent, Application, AppState, ClientApplication, IAppEvent, IAppState} from "../src/application/Application";
-import {Protocol} from "../src/client/Protocol";
+import {AppEvent, Application, AppState, ClientApplication, IAppEvent} from "../src/app/Application";
 import {MockViewFactory} from "./mocks/mock.View";
 
 describe("Application", () => {

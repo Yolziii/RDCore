@@ -1,11 +1,11 @@
 import {
     IRound, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
     IRoundPlayerThrowObserver
-} from "../../core/round/Rounds";
-import {CellType} from "../../core/Cells";
+} from "../../model/round/Rounds";
+import {CellType} from "../../model/Cells";
 import {IRoundState} from "./SingleRoundState";
-import {SingleRound} from "../../core/round/SingleRound";
-import {ICard} from "../../core/Cards";
+import {SingleRound} from "../../model/round/SingleRound";
+import {ICard} from "../../model/Cards";
 
 export interface IRoundView {
     init(controller:SingleRoundController);

@@ -1,5 +1,5 @@
 import {IDictionary} from "../util/Dictionaries";
-import {Application} from "../application/Application";
+import {Application} from "../app/Application";
 import {ClientConnection} from "./ClientConnection";
 
 export class ClientsRepository {

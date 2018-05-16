@@ -1,13 +1,13 @@
 import * as assert from "assert";
 import "mocha";
-import {IRoundPlayerThrowObserver} from "../src/core/round/Rounds";
-import {Card, ICard} from "../src/core/Cards";
-import {CellType, FinalScoreCell, NumberCell, RoyalDiceCell} from "../src/core/Cells";
-import {Config} from "../src/core/Config";
-import {Thrower} from "../src/core/round/Thrower";
-import {Dice, DieType, IDice, IDie} from "../src/core/Dices";
-import {RoundPlayer} from "../src/core/round/RoundPlayer";
-import {CardCellsFactory} from "../src/core/round/CardCellFactories";
+import {IRoundPlayerThrowObserver} from "../src/model/round/Rounds";
+import {Card, ICard} from "../src/model/Cards";
+import {CellType} from "../src/model/Cells";
+import {Config} from "../src/model/Config";
+import {Thrower} from "../src/model/round/Thrower";
+import {Dice, DieType, IDice, IDie} from "../src/model/Dices";
+import {RoundPlayer} from "../src/model/round/RoundPlayer";
+import {CardCellsFactory} from "../src/model/round/CardCellFactories";
 
 describe("RoundPlayer", () => {
     let DIE1:IDie;
