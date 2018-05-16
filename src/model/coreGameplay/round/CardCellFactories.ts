@@ -7,8 +7,9 @@ import {
     TopPointsCell, TotalBonusesCell,
     TotalNumbersCell, TotalNumbersWithBonusCell
 } from "../Cells";
-import {Config} from "../Config";
+import {Config} from "../../Config";
 
+/** Определяет какие ячейки карточки долждна создавать фабрика */
 export interface ICardCellsFactory {
     createOnes():IPlayableCell;
     createTwos():IPlayableCell;
@@ -36,6 +37,7 @@ export interface ICardCellsFactory {
     createServiceFinalScore():IServiceCell;
 }
 
+/** Фабрика обычных ячеек */
 export class CardCellsFactory implements ICardCellsFactory {
     public createOnes():IPlayableCell {
         return new NumberCell(CellType.Ones, 1);
@@ -122,6 +124,7 @@ export class CardCellsFactory implements ICardCellsFactory {
     }
 }
 
+/** Фабрика ячеек с увеличенными на указанное число значениями */
 export class MultiplierCardCellsFactory extends CardCellsFactory {
     private multiple:number;
 

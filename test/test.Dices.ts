@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import "mocha";
-import {IDie, Dice, DieType, FullDiceDecorator, IDice} from "../src/model/Dices";
+import {IDie, Dice, DieType, FullDiceDecorator, IDice} from "../src/model/coreGameplay/Dices";
 import {Config} from "../src/model/Config";
 import {RDErrorCode} from "../src/model/RDErrorCode";
 import RDError from "../src/model/RDError";

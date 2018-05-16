@@ -1,6 +1,6 @@
-import {Config} from "./Config";
-import RDError from "./RDError";
-import {RDErrorCode} from "./RDErrorCode";
+import {Config} from "../Config";
+import RDError from "../RDError";
+import {RDErrorCode} from "../RDErrorCode";
 
 export interface IDie {
     readonly type: DieType;

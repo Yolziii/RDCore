@@ -1,7 +1,7 @@
 import {
     IResultScreenController, IResultScreenView,
     SingleResultScreenController
-} from "../resultScreen/SingleResultScreenController";
+} from "../../app/resultScreen/SingleResultScreenController";
 
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");
@@ -9,7 +9,7 @@ const ansiEsc = require("ansi-escapes");
 import {ATerminalView} from "./ATerminalView";
 import {IKeyListener, TerminalAppView} from "./TerminalAppView";
 import chalk from "chalk";
-import {IRound} from "../../model/round/Rounds";
+import {IRound} from "../../model/coreGameplay/round/Rounds";
 
 export class TerminalRoundResutScreenView extends ATerminalView implements IResultScreenView, IKeyListener {
     private controller:IResultScreenController;

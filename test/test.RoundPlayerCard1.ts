@@ -1,13 +1,13 @@
 import * as assert from "assert";
 import "mocha";
-import {IRoundPlayerThrowObserver} from "../src/model/round/Rounds";
-import {Card, ICard} from "../src/model/Cards";
-import {CellType} from "../src/model/Cells";
+import {IRoundObserver, RoundEvent, RoundEventType} from "../src/model/coreGameplay/round/Rounds";
+import {Card, ICard} from "../src/model/coreGameplay/Cards";
+import {CellType} from "../src/model/coreGameplay/Cells";
 import {Config} from "../src/model/Config";
-import {Thrower} from "../src/model/round/Thrower";
-import {Dice, DieType, IDice, IDie} from "../src/model/Dices";
-import {RoundPlayer} from "../src/model/round/RoundPlayer";
-import {CardCellsFactory} from "../src/model/round/CardCellFactories";
+import {Thrower} from "../src/model/coreGameplay/round/Thrower";
+import {Dice, DieType, IDice, IDie} from "../src/model/coreGameplay/Dices";
+import {RoundPlayer} from "../src/model/coreGameplay/round/RoundPlayer";
+import {CardCellsFactory} from "../src/model/coreGameplay/round/CardCellFactories";
 
 describe("RoundPlayer", () => {
     let DIE1:IDie;
@@ -130,15 +130,15 @@ describe("RoundPlayer", () => {
 
     });
 
-    it("IRoundPlayerThrowObserver()", () => {
-        class ThrowObserver implements IRoundPlayerThrowObserver {
+    it("IRoundObserver", () => {
+        class Observer implements IRoundObserver {
             public throwed = false;
-            public onPlayerThrow() {
-                this.throwed = true;
+            public onRoundEvent(event:RoundEvent) {
+                this.throwed = (event.type === RoundEventType.Throw);
             }
         }
-        const observer = new ThrowObserver();
-        roundPlayer.registerObserver(observer);
+        const observer = new Observer();
+        roundPlayer.addObserver(observer);
 
         assert.equal(observer.throwed, false);
 

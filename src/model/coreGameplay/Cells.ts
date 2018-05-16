@@ -1,4 +1,4 @@
-import {Config} from "./Config";
+import {Config} from "../Config";
 import {ICard} from "./Cards";
 import {IDice, IDie, DieType, NullDice, Dice} from "./Dices";
 

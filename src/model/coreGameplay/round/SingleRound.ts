@@ -1,6 +1,5 @@
 import {
-    IRound, IRoundPlayer, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
-    IRoundPlayerThrowObserver
+    IRound, IRoundPlayer, IRoundObserverSubject, IRoundObserver
 } from "./Rounds";
 import {ICard} from "../Cards";
 import {IDice} from "../Dices";
@@ -55,11 +54,11 @@ export class SingleRound implements IRound {
 
     public get score() {return this.player.score;}
 
-    public registerObserver(observer:IRoundPlayerThrowObserver | IRoundPlayerHoldObserver | IRoundPlayerFreeObserver | IRoundPlayerFillObserver) {
-        this.player.registerObserver(observer);
+    public addObserver(observer:IRoundObserver) {
+        this.player.addObserver(observer);
     }
 
-    public unregisterObserver(observer:IRoundPlayerThrowObserver | IRoundPlayerHoldObserver | IRoundPlayerFreeObserver | IRoundPlayerFillObserver) {
-        this.player.unregisterObserver(observer);
+    public removeObserver(observer:IRoundObserver) {
+        this.player.removeObserver(observer);
     }
 }

@@ -1,6 +1,6 @@
-import {IDictionary} from "../util/Dictionaries";
-import {RDErrorCode} from "./RDErrorCode";
-import RDError from "./RDError";
+import {IDictionary} from "../../util/Dictionaries";
+import {RDErrorCode} from "../RDErrorCode";
+import RDError from "../RDError";
 import {CellType, ICell, IPlayableCell, IServiceCell, NumberCell} from "./Cells";
 import {IDice} from "./Dices";
 import {ICardCellsFactory} from "./round/CardCellFactories";

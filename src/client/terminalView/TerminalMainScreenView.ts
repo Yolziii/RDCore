@@ -1,10 +1,10 @@
-// tslint:disable-next-line:no-var-requires
-const ansiEsc = require("ansi-escapes");
-
-import {IMainScreenView, MainScreenController} from "../mainScreen/MainScreenController";
 import {ATerminalView} from "./ATerminalView";
+import {IMainScreenView, MainScreenController} from "../../app/mainScreen/MainScreenController";
 import {IKeyListener, TerminalAppView} from "./TerminalAppView";
 import chalk from "chalk";
+
+// tslint:disable-next-line:no-var-requires
+const ansiEsc = require("ansi-escapes");
 
 export class TerminalMainScreenView extends ATerminalView implements IMainScreenView, IKeyListener {
     private controller:MainScreenController;

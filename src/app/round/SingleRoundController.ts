@@ -1,11 +1,8 @@
-import {
-    IRound, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
-    IRoundPlayerThrowObserver
-} from "../../model/round/Rounds";
-import {CellType} from "../../model/Cells";
+import {IRound, IRoundObserver, RoundEvent, RoundEventType} from "../../model/coreGameplay/round/Rounds";
+import {CellType} from "../../model/coreGameplay/Cells";
 import {IRoundState} from "./SingleRoundState";
-import {SingleRound} from "../../model/round/SingleRound";
-import {ICard} from "../../model/Cards";
+import {SingleRound} from "../../model/coreGameplay/round/SingleRound";
+import {ICard} from "../../model/coreGameplay/Cards";
 
 export interface IRoundView {
     init(controller:SingleRoundController);
@@ -22,7 +19,7 @@ export interface IRoundView {
     disableCells();
 }
 
-export class SingleRoundController implements IRoundPlayerThrowObserver, IRoundPlayerFillObserver, IRoundPlayerHoldObserver, IRoundPlayerFreeObserver {
+export class SingleRoundController implements IRoundObserver {
     private state:IRoundState;
     private model:SingleRound;
     private view:IRoundView;
@@ -40,7 +37,7 @@ export class SingleRoundController implements IRoundPlayerThrowObserver, IRoundP
         this.view.activate(model);
         this.view.disableCells();
         this.view.enableThrowButton();
-        this.model.registerObserver(this);
+        this.model.addObserver(this);
     }
 
     public sleep() {
@@ -49,7 +46,7 @@ export class SingleRoundController implements IRoundPlayerThrowObserver, IRoundP
 
     public exit() {
         this.view.exit();
-        this.model.unregisterObserver(this);
+        this.model.removeObserver(this);
     }
 
     public throwPressed() {
@@ -95,6 +92,22 @@ export class SingleRoundController implements IRoundPlayerThrowObserver, IRoundP
         }
     }
 
+    public quit() {
+        this.state.quitRound();
+    }
+
+    public onRoundEvent(event:RoundEvent) {
+        switch (event.type) {
+            case RoundEventType.Throw:
+                this.onPlayerThrow();
+                break;
+
+            case RoundEventType.Fill:
+                this.onPlayerFill();
+                break;
+        }
+    }
+
     public onPlayerThrow() {
         if (this.model.throwsLeft === 0) {
             this.view.disableThrowButton();
@@ -114,17 +127,5 @@ export class SingleRoundController implements IRoundPlayerThrowObserver, IRoundP
             this.view.disableCells();
             this.view.enableThrowButton();
         }
-    }
-
-    public onPlayerHold() {
-        this.view.draw();
-    }
-
-    public onPlayerFree() {
-        this.view.draw();
-    }
-
-    public quit() {
-        this.state.quitRound();
     }
 }

@@ -1,14 +1,14 @@
 import {
-    IRoundPlayer, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
-    IRoundPlayerThrowObserver, RoundPlayerObserverSubject
+    IRoundObserver, IRoundObserverSubject, IRoundPlayer, RoundEvent, RoundEventIndex, RoundEventThrow,
+    RoundEventType
 } from "./Rounds";
 import {ICard} from "../Cards";
 import {Thrower} from "./Thrower";
 import {Dice, IDice} from "../Dices";
-import {Config} from "../Config";
+import {Config} from "../../Config";
 import {CellType} from "../Cells";
 
-export class RoundPlayer implements IRoundPlayer {
+export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
     private _cards:ICard[] = [];
     private _currentCard:ICard;
     private _activeCardIndex:number = 0;
@@ -18,7 +18,7 @@ export class RoundPlayer implements IRoundPlayer {
     private _throwedDice:IDice = new Dice();
     private _mixedDice:IDice = new Dice();
 
-    private _observable:RoundPlayerObserverSubject = new RoundPlayerObserverSubject();
+    private _observers:IRoundObserver[] = [];
     private _thrower:Thrower;
 
     constructor(thrower:Thrower, ...cards:ICard[]) {
@@ -74,12 +74,14 @@ export class RoundPlayer implements IRoundPlayer {
 
     public holdDie(index:number) {
         this._holdedDice.put(this._throwedDice.popFrom(index));
-        this._observable.onPlayerHold();
+
+        this.dispatch(new RoundEventIndex(RoundEventType.Hold, index));
     }
 
     public freeDie(index:number) {
         this._throwedDice.put(this._holdedDice.popFrom(index));
-        this._observable.onPlayerFree();
+
+        this.dispatch(new RoundEventIndex(RoundEventType.Free, index));
     }
 
     public getCard():ICard {
@@ -93,7 +95,7 @@ export class RoundPlayer implements IRoundPlayer {
         this._throwedDice.clear();
         this._holdedDice.clear();
 
-        this._observable.onPlayerFill();
+        this.dispatch(new RoundEvent(RoundEventType.Fill));
     }
 
     public throwDice() {
@@ -103,14 +105,14 @@ export class RoundPlayer implements IRoundPlayer {
         }
 
         this._thrower.throwTemplate();
-        this._observable.onPlayerThrow();
+        this.dispatch(new RoundEventThrow(this._throwedDice));
     }
 
     public setActiveCard(index:number) {
         this._activeCardIndex = index;
         this._currentCard = this._cards[index];
 
-        this._observable.onPlayerHold(); // TODO: Свое событие, переделать реализацию Наблюдателя
+        this.dispatch(new RoundEventIndex(RoundEventType.SelectCard, index));
     }
 
     public get finished():boolean {
@@ -130,11 +132,22 @@ export class RoundPlayer implements IRoundPlayer {
         return res;
     }
 
-    public registerObserver(observer:IRoundPlayerThrowObserver | IRoundPlayerHoldObserver | IRoundPlayerFreeObserver | IRoundPlayerFillObserver) {
-        this._observable.registerObserver(observer);
+    public addObserver(observer:IRoundObserver) {
+        if (this._observers.indexOf(observer) === -1) {
+            this._observers.push(observer);
+        }
     }
 
-    public unregisterObserver(observer:IRoundPlayerThrowObserver | IRoundPlayerHoldObserver | IRoundPlayerFreeObserver | IRoundPlayerFillObserver) {
-        this._observable.unregisterObserver(observer);
+    public removeObserver(observer:IRoundObserver) {
+        const index = this._observers.indexOf(observer);
+        if (index !== -1) {
+            this._observers.splice(index, 1);
+        }
+    }
+
+    private dispatch(event:RoundEvent) {
+        for (const observer of this._observers) {
+            observer.onRoundEvent(event);
+        }
     }
 }

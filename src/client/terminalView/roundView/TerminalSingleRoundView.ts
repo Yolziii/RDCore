@@ -3,19 +3,16 @@ import {ATerminalView} from "../ATerminalView";
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");
 
-import {
-    IRound, IRoundPlayerFillObserver, IRoundPlayerFreeObserver, IRoundPlayerHoldObserver,
-    IRoundPlayerThrowObserver
-} from "../../../model/round/Rounds";
+import {IRound, IRoundObserver, RoundEvent} from "../../../model/coreGameplay/round/Rounds";
 import chalk from "chalk";
 import {IDictionary} from "../../../util/Dictionaries";
-import {CellType} from "../../../model/Cells";
+import {CellType} from "../../../model/coreGameplay/Cells";
 import {TerminalThrowButton} from "./TerminalThrowButton";
 import {IKeyListener, TerminalAppView} from "../TerminalAppView";
 import {TerminalDieView} from "./TerminalDieView";
 import {Config} from "../../../model/Config";
-import {DieType, IDice} from "../../../model/Dices";
-import {IRoundView, SingleRoundController} from "../../round/SingleRoundController";
+import {DieType, IDice} from "../../../model/coreGameplay/Dices";
+import {IRoundView, SingleRoundController} from "../../../app/round/SingleRoundController";
 import {TerminalQuitButton} from "./TerminalQuitButton";
 import {TerminalCardView} from "./TerminalCardView";
 
@@ -53,9 +50,7 @@ let DICE_X = 30;
 const THROWED_DICE_Y = 1;
 const HOLDED_DICE_Y = 7;
 
-export class TerminalSingleRoundView extends ATerminalView implements
-        IRoundView, IRoundPlayerThrowObserver, IRoundPlayerHoldObserver, IRoundPlayerFreeObserver, IRoundPlayerFillObserver,
-        IKeyListener {
+export class TerminalSingleRoundView extends ATerminalView implements IRoundView, IRoundObserver, IKeyListener {
     private controller:SingleRoundController;
     private model:IRound;
 
@@ -86,7 +81,7 @@ export class TerminalSingleRoundView extends ATerminalView implements
             this.holdedViews.push(new TerminalDieView(DICE_X + i*7, HOLDED_DICE_Y));
         }
 
-        model.registerObserver(this);
+        model.addObserver(this);
         const self = this;
 
         this.cardViews = [];
@@ -107,7 +102,7 @@ export class TerminalSingleRoundView extends ATerminalView implements
     }
 
     public exit() {
-        this.model.unregisterObserver(this);
+        this.model.removeObserver(this);
         TerminalAppView.instance.removeObserver(this);
     }
 
@@ -190,22 +185,6 @@ export class TerminalSingleRoundView extends ATerminalView implements
         this.quitButton.draw();
     }
 
-    public onPlayerThrow() {
-        this.draw();
-    }
-
-    public onPlayerHold() {
-        this.draw();
-    }
-
-    public onPlayerFree() {
-        this.draw();
-    }
-
-    public onPlayerFill() {
-        this.draw();
-    }
-
     public enableThrowButton() {
         this.throwButton.enable();
     }
@@ -224,5 +203,9 @@ export class TerminalSingleRoundView extends ATerminalView implements
         for (const cardViews of this.cardViews) {
             cardViews.disableCells();
         }
+    }
+
+    public onRoundEvent(event:RoundEvent) {
+        this.draw();
     }
 }
