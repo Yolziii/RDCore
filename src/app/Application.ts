@@ -181,6 +181,15 @@ export class AppEvent implements IAppEvent {
     constructor(slot:number) {
         this.slot = slot;
     }
+
+    public toJSON() {
+        return Object.assign({}, this);
+    }
+
+    public fromJSON(json:any) {
+        const event = Object.create(Object.getPrototypeOf(this));
+        return Object.create(event, json);
+    }
 }
 
 /**

@@ -1,5 +1,5 @@
 import {
-    IRound, IRoundPlayer, IRoundObserverSubject, IRoundObserver
+    IRound, IRoundPlayer, IRoundObserver
 } from "./Rounds";
 import {ICard} from "../Cards";
 import {IDice} from "../Dices";
