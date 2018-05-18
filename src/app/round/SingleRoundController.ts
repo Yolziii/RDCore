@@ -10,6 +10,7 @@ export interface IRoundView {
     activate(model:IRound);
     draw();
     sleep();
+    wakeup();
     exit();
 
     enableThrowButton();
@@ -21,7 +22,7 @@ export interface IRoundView {
 
 export class SingleRoundController implements IRoundObserver {
     private state:IRoundState;
-    private model:SingleRound;
+    private model:IRound;
     private view:IRoundView;
 
     constructor(state:IRoundState, view:IRoundView) {
@@ -31,7 +32,7 @@ export class SingleRoundController implements IRoundObserver {
         this.view.init(this);
     }
 
-    public activate(model:SingleRound) {
+    public activate(model:IRound) {
         this.model = model;
 
         this.view.activate(model);
@@ -42,6 +43,10 @@ export class SingleRoundController implements IRoundObserver {
 
     public sleep() {
         this.view.sleep();
+    }
+
+    public wakeup() {
+        this.view.wakeup();
     }
 
     public exit() {

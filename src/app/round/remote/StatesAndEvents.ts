@@ -10,14 +10,13 @@ import {Dice, IDice} from "../../../model/coreGameplay/Dices";
 import {Protocol} from "../../Protocol";
 import {CellType} from "../../../model/coreGameplay/Cells";
 
-/**
- * Описывает брошенные игроком кости
- */
-export class AppEventSetThrowedDice extends AppEvent implements ISerializable {
+/** Описывает брошенные игроком кости */
+export class AppEventSetThrowedDice extends AppEvent {
     public dice:IDice;
 
     constructor(dice:IDice) {
         super(Protocol.RoundSetThrowedDice);
+        this.dice = dice;
     }
 
     public toJSON(): any {
@@ -37,7 +36,7 @@ export class ServerRoundThrowDiceState extends ServerSideAppState implements IRo
         super(Protocol.RoundThrowDice, clientApp);
     }
 
-    public link(model:IRound) {
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
@@ -66,19 +65,19 @@ export class ClientSetThrowedDiceState extends AppState implements IDeserializer
         super(Protocol.RoundSetThrowedDice);
     }
 
-    public link(model:IRound) {
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
     public activate(event:AppEventSetThrowedDice) {
-        this.model.setThrowedDice(event.dice);
         this.app.exitToPreviousState();
+        this.model.setThrowedDice(event.dice);
     }
 
     public fromJSON(json: any): AppEventSetThrowedDice {
         const event = Object.create(AppEventSetThrowedDice.prototype);
         json.dice = Dice.fromJSON(json.dice);
-        return Object.create(event, json);
+        return Object.assign(event, json);
     }
 }
 
@@ -96,8 +95,11 @@ export class RoundIndexAppEvent extends AppEvent {
 export class ServerRoundHoldDieState extends ServerSideAppState implements IRoundObserver {
     private model:IRound;
 
-    constructor(appClient:IRemoteApplication, model:IRound) {
+    constructor(appClient:IRemoteApplication) {
         super(Protocol.RoundHoldDie, appClient);
+    }
+
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
@@ -116,6 +118,7 @@ export class ServerRoundHoldDieState extends ServerSideAppState implements IRoun
 
             const appEvent = new RoundIndexAppEvent(Protocol.RoundHoldDie, event.index);
             this.appClient.proceedEvent(appEvent);
+            this.app.exitToPreviousState();
         }
     }
 }
@@ -124,13 +127,17 @@ export class ServerRoundHoldDieState extends ServerSideAppState implements IRoun
 export class ClientRoundHoldDieState extends ClientSideAppState {
     private model:IRound;
 
-    constructor(appServer:IRemoteApplication, model:IRound) {
+    constructor(appServer:IRemoteApplication) {
         super(Protocol.RoundHoldDie, appServer);
+    }
+
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
     public activate(event:RoundIndexAppEvent) {
         if (this.model.canHoldDie(event.index)) {
+            this.app.exitToPreviousState();
             this.model.holdDie(event.index);
         } else {
             // TODO: Исключение + запрашивать у сервера полное обновление состояния
@@ -142,8 +149,11 @@ export class ClientRoundHoldDieState extends ClientSideAppState {
 export class ServerRoundFreeDieState extends ServerSideAppState implements IRoundObserver {
     private model:IRound;
 
-    constructor(appClient:IRemoteApplication, model:IRound) {
+    constructor(appClient:IRemoteApplication) {
         super(Protocol.RoundFreeDie, appClient);
+    }
+
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
@@ -162,6 +172,7 @@ export class ServerRoundFreeDieState extends ServerSideAppState implements IRoun
 
             const appEvent = new RoundIndexAppEvent(Protocol.RoundFreeDie, event.index);
             this.appClient.proceedEvent(appEvent);
+            this.app.exitToPreviousState();
         }
     }
 }
@@ -170,13 +181,17 @@ export class ServerRoundFreeDieState extends ServerSideAppState implements IRoun
 export class ClientRoundFreeDieState extends ClientSideAppState {
     private model:IRound;
 
-    constructor(appServer:IRemoteApplication, model:IRound) {
+    constructor(appServer:IRemoteApplication) {
         super(Protocol.RoundFreeDie, appServer);
+    }
+
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
     public activate(event:RoundIndexAppEvent) {
         if (this.model.canFreeDie(event.index)) {
+            this.app.exitToPreviousState();
             this.model.freeDie(event.index);
         } else {
             // TODO: Исключение + запрашивать у сервера полное обновление состояния
@@ -188,8 +203,11 @@ export class ClientRoundFreeDieState extends ClientSideAppState {
 export class ServerRoundSelectCardState extends ServerSideAppState implements IRoundObserver {
     private model:IRound;
 
-    constructor(appClient:IRemoteApplication, model:IRound) {
+    constructor(appClient:IRemoteApplication) {
         super(Protocol.RoundSelectCard, appClient);
+    }
+
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
@@ -198,12 +216,14 @@ export class ServerRoundSelectCardState extends ServerSideAppState implements IR
         this.model.selectCard(event.index);
     }
 
-    public  onRoundEvent(event:RoundEventIndex) {
+    public onRoundEvent(event:RoundEventIndex) {
         if (event.type === RoundEventType.SelectCard) {
             this.model.removeObserver(this);
 
             const appEvent = new RoundIndexAppEvent(Protocol.RoundSelectCard, event.index);
             this.appClient.proceedEvent(appEvent);
+
+            this.app.exitToPreviousState();
         }
     }
 }
@@ -212,12 +232,16 @@ export class ServerRoundSelectCardState extends ServerSideAppState implements IR
 export class ClientRoundSelectCardState extends ClientSideAppState {
     private model:IRound;
 
-    constructor(appServer:IRemoteApplication, model:IRound) {
+    constructor(appServer:IRemoteApplication) {
         super(Protocol.RoundSelectCard, appServer);
+    }
+
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
     public activate(event:RoundIndexAppEvent) {
+        this.app.exitToPreviousState();
         this.model.selectCard(event.index);
     }
 }
@@ -242,6 +266,8 @@ export class ServerRoundSelectPlayerState extends ServerSideAppState implements 
 
             const appEvent = new RoundIndexAppEvent(Protocol.RoundSelectPlayer, event.index);
             this.appClient.proceedEvent(appEvent);
+
+            this.app.exitToPreviousState();
         }
     }
 }
@@ -256,6 +282,7 @@ export class ClientRoundSelectPlayerState extends ClientSideAppState {
     }
 
     public activate(event:RoundIndexAppEvent) {
+        this.app.exitToPreviousState();
         this.model.selectPlayer(event.index);
     }
 }
@@ -273,8 +300,11 @@ export class RoundFillCellAppEvent extends AppEvent {
 export class ServerRoundFillCellState extends ServerSideAppState implements IRoundObserver {
     private model:IRound;
 
-    constructor(appClient:IRemoteApplication, model:IRound) {
+    constructor(appClient:IRemoteApplication) {
         super(Protocol.RoundFillCell, appClient);
+    }
+
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
@@ -289,6 +319,8 @@ export class ServerRoundFillCellState extends ServerSideAppState implements IRou
 
             const appEvent = new RoundFillCellAppEvent(event.cellType);
             this.appClient.proceedEvent(appEvent);
+
+            this.app.exitToPreviousState();
         }
     }
 }
@@ -297,12 +329,16 @@ export class ServerRoundFillCellState extends ServerSideAppState implements IRou
 export class ClientRoundFillCellState extends ClientSideAppState {
     private model:IRound;
 
-    constructor(appServer:IRemoteApplication, model:IRound) {
+    constructor(appServer:IRemoteApplication) {
         super(Protocol.RoundFillCell, appServer);
+    }
+
+    public linkModel(model:IRound) {
         this.model = model;
     }
 
     public activate(event:RoundFillCellAppEvent) {
+        this.app.exitToPreviousState();
         this.model.fillCell(event.cellType);
     }
 }

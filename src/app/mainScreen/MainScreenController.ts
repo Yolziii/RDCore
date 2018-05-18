@@ -42,4 +42,8 @@ export class MainScreenController {
     public onTripleRound() {
         this.state.toSingleTripleRound();
     }
+
+    public onServerSingleRound() {
+        this.state.toServerSingleMode();
+    }
 }

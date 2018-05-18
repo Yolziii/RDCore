@@ -28,7 +28,7 @@ export class TerminalMainScreenView extends ATerminalView implements IMainScreen
 
     public onKey(key:string) {
         switch (key) {
-            case "s":
+            case "r":
                 this.controller.onSingleRound();
                 break;
 
@@ -38,6 +38,10 @@ export class TerminalMainScreenView extends ATerminalView implements IMainScreen
 
             case "t":
                 this.controller.onTripleRound();
+                break;
+
+            case "s":
+                this.controller.onServerSingleRound();
                 break;
         }
     }
@@ -70,7 +74,7 @@ export class TerminalMainScreenView extends ATerminalView implements IMainScreen
         this.startDraw();
         this.line(chalk.gray("|--------------|"));
         this.line(chalk.gray("| Single round |"));
-        this.line(chalk.gray(`|      ${chalk.yellowBright("[S]")}     |`));
+        this.line(chalk.gray(`|      ${chalk.yellowBright("[R]")}     |`));
         this.line(chalk.gray("|--------------|"));
 
         this.x = 27;
@@ -87,6 +91,14 @@ export class TerminalMainScreenView extends ATerminalView implements IMainScreen
         this.line(chalk.gray("|--------------|"));
         this.line(chalk.gray("| Triple round |"));
         this.line(chalk.gray(`|      ${chalk.yellowBright("[T]")}     |`));
+        this.line(chalk.gray("|--------------|"));
+
+        this.x = 27;
+        this.y = 20;
+        this.startDraw();
+        this.line(chalk.gray("|--------------|"));
+        this.line(chalk.gray("| Server round |"));
+        this.line(chalk.gray(`|      ${chalk.yellowBright("[S]")}     |`));
         this.line(chalk.gray("|--------------|"));
     }
 }

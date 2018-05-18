@@ -1,32 +1,97 @@
-import {ClientSideAppState, IRemoteApplication} from "../../Application";
+import {ClientApplication, ClientSideAppState, IRemoteApplication} from "../../Application";
 import {Protocol} from "../../Protocol";
 import {IRound, IRoundObserver, IRoundPlayer} from "../../../model/coreGameplay/round/Rounds";
 import {CellType} from "../../../model/coreGameplay/Cells";
 import {IDice} from "../../../model/coreGameplay/Dices";
 import {ICard} from "../../../model/coreGameplay/Cards";
-import {RoundFillCellAppEvent, RoundIndexAppEvent} from "./StatesAnsEvents";
-import {IRoundState} from "../SingleRoundState";
+import {
+    ClientRoundFillCellState, ClientRoundFreeDieState, ClientRoundHoldDieState, ClientRoundSelectCardState,
+    ClientSetThrowedDiceState,
+    RoundFillCellAppEvent,
+    RoundIndexAppEvent
+} from "./StatesAndEvents";
+import {FinishRoundEvent, IRoundState} from "../SingleRoundState";
+import {SingleRoundController} from "../SingleRoundController";
+import {LazyThrower, Thrower} from "../../../model/coreGameplay/round/Thrower";
+import {RoundPlayer} from "../../../model/coreGameplay/round/RoundPlayer";
+import {CardCellsFactory, ICardCellsFactory} from "../../../model/coreGameplay/round/CardCellFactories";
+import {SingleRound} from "../../../model/coreGameplay/round/SingleRound";
+import {ICardFactory, StandardCardFactory} from "../../../model/coreGameplay/round/CardFactories";
 
 /**
  * Заместитель локальной модели раунда, запрашивает разрешение на все меняющие модель операции у сервера
  */
 export class ClientSingleRoundState extends ClientSideAppState implements IRound, IRoundState {
     private localModel:IRound;
+    private controller:SingleRoundController;
 
-    constructor(appServer:IRemoteApplication, model:IRound) {
+    private cardFactory:ICardFactory;
+    private cellsFactory:ICardCellsFactory;
+
+    private clientSetThrowedDiceState:ClientSetThrowedDiceState;
+    private clientHoldDieState:ClientRoundHoldDieState;
+    private clientFreeDieState:ClientRoundFreeDieState;
+    private clientSelectCardState:ClientRoundSelectCardState;
+    private clientFillCellState:ClientRoundFillCellState;
+
+    constructor(appServer:IRemoteApplication) {
         super(Protocol.Round, appServer);
-        this.localModel = model;
+    }
+
+    public init() {
+        const view = (this.app as ClientApplication).viewFactory.createRoundView();
+        this.controller = new SingleRoundController(this, view);
+
+        this.cardFactory = new StandardCardFactory();
+        this.cellsFactory = new CardCellsFactory();
+
+        this.clientSetThrowedDiceState = new ClientSetThrowedDiceState();
+        this.clientHoldDieState = new ClientRoundHoldDieState(this.appServer);
+        this.clientFreeDieState = new ClientRoundFreeDieState(this.appServer);
+        this.clientSelectCardState = new ClientRoundSelectCardState(this.appServer);
+        this.clientFillCellState = new ClientRoundFillCellState(this.appServer);
+    }
+
+    public activate() {
+        const thrower:Thrower = new LazyThrower();
+
+        const card = this.cardFactory.createCard(this.cellsFactory);
+        const player:RoundPlayer = new RoundPlayer(thrower, card);
+
+        this.localModel = new SingleRound(player);
+
+        this.clientSetThrowedDiceState.linkModel(this.localModel);
+        this.clientHoldDieState.linkModel(this.localModel);
+        this.clientFreeDieState.linkModel(this.localModel);
+        this.clientSelectCardState.linkModel(this.localModel);
+        this.clientFillCellState.linkModel(this.localModel);
+
+        this.app.fillSlot(this.clientSetThrowedDiceState);
+        this.app.fillSlot(this.clientHoldDieState);
+        this.app.fillSlot(this.clientFreeDieState);
+        this.app.fillSlot(this.clientSelectCardState);
+        this.app.fillSlot(this.clientFillCellState);
+
+        this.controller.activate(this);
+    }
+
+    public sleep() {
+        this.controller.sleep();
+    }
+
+    public wakeup() {
+        this.controller.wakeup();
     }
 
     // ------------------------------------------------------------------
     // IRoundState implementation
     // ------------------------------------------------------------------
     public finishRound() {
-        // TODO:
+        this.app.proceedExitToEvent(new FinishRoundEvent(this.localModel));
     }
 
     public quitRound() {
-        // TODO:
+        this.app.toState(Protocol.RoundQuit);
     }
 
     // ------------------------------------------------------------------
@@ -58,7 +123,7 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
         this.appServer.proceedEvent(event);
     }
 
-    public selectPlayer(index:number) {/* В сингловой игре ничего не делаем */} // TODO: Может состояние тоже сделать одно на всех режимов, не только для контролируемого синглплеера
+    public selectPlayer(index:number) {/* В сингловой игре ничего не делаем */} // TODO: Может состояние тоже сделать одно на всех режимов, не только для контролируемого синглплеера?
 
     // ------------------------------------------------------------------
     // Делегируем остальные методы локальной модели

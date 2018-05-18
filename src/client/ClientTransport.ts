@@ -33,47 +33,70 @@ export class ClientTransport implements IRemoteApplication {
         });
 
         this.serverSocket.on("toState", (slot) => {
+            (console).log(`-> [toState] ${slot}`);
+
             this.app.toState(slot);
         });
 
         this.serverSocket.on("proceedEvent", (eventSJON: any) => {
+            (console).log(`-> [proceedEvent] ${JSON.stringify(eventSJON)}`);
+
             const state:IAppState = this.app.getState(eventSJON.slot);
             const event:IAppEvent = state.fromJSON(eventSJON);
             this.app.proceedEvent(event);
         });
 
         this.serverSocket.on("exitToState", (slot) => {
+            (console).log(`-> [exitToState] ${slot}`);
+
             this.app.exitToState(slot);
         });
 
         this.serverSocket.on("proceedExitToEvent", (eventSJON: any) => {
+            (console).log(`-> [proceedExitToEvent] ${JSON.stringify(eventSJON)}`);
+
             const state:IAppState = this.app.getState(eventSJON.slot);
             const event:IAppEvent = state.fromJSON(eventSJON);
             this.app.proceedExitToEvent(event);
         });
 
         this.serverSocket.on("exitToPreviousState", () => {
+            (console).log(`-> [exitToPreviousState]`);
+
             this.app.exitToPreviousState();
         });
     }
 
     public toState(slot:Protocol) {
+        (console).log(`[toState] ${slot} ->`);
+
         this.serverSocket.emit("toState", slot);
     }
 
     public proceedEvent(event:IAppEvent) {
-        this.serverSocket.emit("proceedEvent", event.toJSON());
+        const json = event.toJSON();
+        (console).log(`[proceedEvent] ${JSON.stringify(json)} ->`);
+
+        this.serverSocket.emit("proceedEvent", json);
     }
 
     public exitToState(slot:Protocol) {
+        (console).log(`[exitToState] ${slot} ->`);
+
         this.serverSocket.emit("exitToState", slot);
     }
 
     public proceedExitToEvent(event:IAppEvent) {
-        this.serverSocket.emit("proceedExitToEvent", event.toJSON());
+        const json = event.toJSON();
+
+        (console).log(`[proceedExitToEvent] ${JSON.stringify(json)} ->`);
+
+        this.serverSocket.emit("proceedExitToEvent", json);
     }
 
     public exitToPreviousState() {
+        (console).log(`[exitToPreviousState] -> `);
+
         this.serverSocket.emit("exitToPreviousState");
     }
 }

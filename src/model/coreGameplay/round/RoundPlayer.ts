@@ -99,17 +99,17 @@ export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
     }
 
     public throwDice() {
+        this._thrower.throwTemplate();
+    }
+
+    public setThrowedDice(dice:IDice) {
         this._throwsLeft--;
         if ( this._throwsLeft < 0) {
             // TODO: Исключение
         }
 
-        this._thrower.throwTemplate();
-        this.dispatch(new RoundEventThrowedDice(this._throwedDice));
-    }
-
-    public setThrowedDice(dice:IDice) {
         this._throwedDice = dice;
+        this.dispatch(new RoundEventThrowedDice(this._throwedDice));
     }
 
     public selectCard(index:number) {

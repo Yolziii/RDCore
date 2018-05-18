@@ -2,7 +2,6 @@ import * as assert from "assert";
 import "mocha";
 import {AppEvent} from "../src/app/Application";
 import {Dice, DieType, IDice} from "../src/model/coreGameplay/Dices";
-import {autoserialize, serialize} from "cerialize";
 
 describe("Serialize AppState", () => {
     class TestAppEvent1 extends AppEvent {

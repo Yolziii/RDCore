@@ -101,6 +101,10 @@ export class TerminalSingleRoundView extends ATerminalView implements IRoundView
         TerminalAppView.instance.removeObserver(this);
     }
 
+    public wakeup() {
+        TerminalAppView.instance.addObserver(this);
+    }
+
     public exit() {
         this.model.removeObserver(this);
         TerminalAppView.instance.removeObserver(this);

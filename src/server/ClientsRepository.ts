@@ -3,6 +3,8 @@ import {Application, ClientMirrorApplication} from "../app/Application";
 import {ClientConnection} from "./ClientConnection";
 import {Protocol} from "../app/Protocol";
 import {ServerWaitState} from "../app/mainScreen/ServerWaitState";
+import {ServerStartSingleRound} from "../app/round/remote/ServerStartSingleRound";
+import {ServerEventPrototypes} from "./ServerEventPrototypes";
 
 export class ClientsRepository {
     private lastClientNumber:number = 0;
@@ -12,11 +14,9 @@ export class ClientsRepository {
     public createClient():number {
         this.lastClientNumber++;
 
-        const clientApp:ClientMirrorApplication = new ClientMirrorApplication();
+        const clientMirrorApp:ClientMirrorApplication = new ClientMirrorApplication(ServerEventPrototypes);
 
-        clientApp.fillSlot(new ServerWaitState());
-
-        this.clients[this.lastClientNumber] = clientApp;
+        this.clients[this.lastClientNumber] = clientMirrorApp;
 
         return this.lastClientNumber;
     }

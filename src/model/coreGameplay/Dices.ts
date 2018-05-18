@@ -37,7 +37,7 @@ export interface IDice extends ISerializable {
 export class Dice implements IDice {
     public static fromJSON(json: any): AppEvent {
         const event = Object.create(Dice.prototype);
-        return Object.create(event, json);
+        return Object.assign(event, json);
     }
 
     protected dice: IDie[] = [];

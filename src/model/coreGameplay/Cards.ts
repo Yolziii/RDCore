@@ -1,4 +1,4 @@
-import {IDictionary} from "../../util/Dictionaries";
+import {IDictionary, IDictionaryInt} from "../../util/Dictionaries";
 import {RDErrorCode} from "../RDErrorCode";
 import RDError from "../RDError";
 import {CellType, ICell, IPlayableCell, IServiceCell, NumberCell} from "./Cells";

@@ -2,11 +2,7 @@ import {AppState, ClientApplication} from "../Application";
 import {MainScreenController} from "./MainScreenController";
 import {Protocol} from "../Protocol";
 import {StartRoundEvent} from "../round/StartRoundState";
-
-export enum RoundMode {
-    SingleRound,
-    SingleRoundTriple
-}
+import {RoundMode} from "../round/RoundMode";
 
 export class MainScreenState extends AppState {
     private controller:MainScreenController;
@@ -40,6 +36,11 @@ export class MainScreenState extends AppState {
 
     public toSingleTripleRound() {
         const event:StartRoundEvent = new StartRoundEvent({mode: RoundMode.SingleRoundTriple});
+        this.app.proceedEvent(event);
+    }
+
+    public toServerSingleMode() {
+        const event:StartRoundEvent = new StartRoundEvent({mode: RoundMode.ServeSingleRound});
         this.app.proceedEvent(event);
     }
 }

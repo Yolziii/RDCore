@@ -1,15 +1,17 @@
-import {AppEvent, AppState, ClientApplication, IAppEvent, IAppState} from "../Application";
+import {AppEvent, AppState, ClientApplication, IAppState} from "../Application";
 import {IRound} from "../../model/coreGameplay/round/Rounds";
-import {Card} from "../../model/coreGameplay/Cards";
 import {JokerThrower, Thrower} from "../../model/coreGameplay/round/Thrower";
-import {CellType} from "../../model/coreGameplay/Cells";
 import {Protocol} from "../Protocol";
 import {SingleRound} from "../../model/coreGameplay/round/SingleRound";
 import {RoundPlayer} from "../../model/coreGameplay/round/RoundPlayer";
 import {SingleRoundController} from "./SingleRoundController";
-import {CardCellsFactory, MultiplierCardCellsFactory} from "../../model/coreGameplay/round/CardCellFactories";
+import {
+    CardCellsFactory, ICardCellsFactory,
+    MultiplierCardCellsFactory
+} from "../../model/coreGameplay/round/CardCellFactories";
 import {StartRoundEvent} from "./StartRoundState";
-import {RoundMode} from "../mainScreen/MainScreenState";
+import {ICardFactory, StandardCardFactory} from "../../model/coreGameplay/round/CardFactories";
+import {RoundMode} from "./RoundMode";
 
 export interface IRoundState {
     finishRound();
@@ -29,6 +31,11 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
     private controller:SingleRoundController;
     private model:SingleRound;
 
+    private cardFactory:ICardFactory;
+    private cellsFactory:ICardCellsFactory;
+    private cellsX2Factory:ICardCellsFactory;
+    private cellsX3Factory:ICardCellsFactory;
+
     constructor() {
         super(Protocol.Round);
     }
@@ -36,6 +43,11 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
     public init() {
         const view = (this.app as ClientApplication).viewFactory.createRoundView();
         this.controller = new SingleRoundController(this, view);
+
+        this.cardFactory = new StandardCardFactory();
+        this.cellsFactory = new CardCellsFactory();
+        this.cellsX2Factory = new MultiplierCardCellsFactory(2);
+        this.cellsX3Factory = new MultiplierCardCellsFactory(3);
     }
 
     public activate(event:StartRoundEvent) {
@@ -52,12 +64,12 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
         if (event.mode === RoundMode.SingleRoundTriple) {
             player = new RoundPlayer(
                 thrower,
-                this.createCard(new CardCellsFactory()),
-                this.createCard(new MultiplierCardCellsFactory(2)),
-                this.createCard(new MultiplierCardCellsFactory(3))
+                this.cardFactory.createCard(this.cellsFactory),
+                this.cardFactory.createCard(this.cellsX2Factory),
+                this.cardFactory.createCard(this.cellsX3Factory)
             );
         } else if (event.mode === RoundMode.SingleRound) {
-            const card = this.createCard(new CardCellsFactory());
+            const card = this.cardFactory.createCard(this.cellsFactory);
             player = new RoundPlayer(thrower, card);
         }
 
@@ -76,29 +88,5 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
 
     public quitRound() {
         this.app.toState(Protocol.RoundQuit);
-    }
-
-    private createCard(factory:CardCellsFactory) {
-        return new Card(
-            factory,
-
-            CellType.Ones,
-            CellType.Twos,
-            CellType.Threes,
-            CellType.Fours,
-            CellType.Fives,
-            CellType.Sixes,
-            CellType.ServiceBonus63,
-            CellType.ServiceTopPoints,
-            CellType.Kind3,
-            CellType.Kind4,
-            CellType.FullHouse,
-            CellType.SmallStraight,
-            CellType.LargeStraight,
-            CellType.RoyalDice,
-            CellType.Chance,
-            CellType.ServiceBottomPoints,
-            CellType.ServiceFinalScore
-        );
     }
 }

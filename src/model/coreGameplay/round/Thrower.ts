@@ -1,9 +1,6 @@
 import {Dice, DieType, IDice, IDie, JokerDie} from "../Dices";
 import {IRoundPlayer} from "./Rounds";
 
-/**
- *
- */
 export class Thrower {
     private player: IRoundPlayer;
 
@@ -38,6 +35,10 @@ export class Thrower {
         const die = {type: DieType.Value, value: random};
         return die;
     }
+}
+
+export class LazyThrower extends Thrower {
+    public throwTemplate() {/**/}
 }
 
 export class JokerThrower extends Thrower {

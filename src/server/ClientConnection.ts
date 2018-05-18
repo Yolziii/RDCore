@@ -19,47 +19,64 @@ export class ClientConnection implements IRemoteApplication {
         this.clientSocket.on("disconnect", this.onDisconnected);
 
         this.clientSocket.on("toState", (slot) => {
+            (console).log(`-> [toState] ${slot}`);
             this.appMirror.toState(slot);
         });
 
-        this.clientSocket.on("proceedEvent", (eventSJON: any) => {
+        this.clientSocket.on("proceedEvent", (eventSJON) => {
+            (console).log(`-> [proceedEvent] ${JSON.stringify(eventSJON)}`);
+
             const state:IAppState = this.appMirror.getState(eventSJON.slot);
             const event:IAppEvent = state.fromJSON(eventSJON);
             this.appMirror.proceedEvent(event);
         });
 
         this.clientSocket.on("exitToState", (slot) => {
+            (console).log(`-> [exitToState] ${slot}`);
+
             this.appMirror.exitToState(slot);
         });
 
-        this.clientSocket.on("proceedExitToEvent", (eventSJON: any) => {
+        this.clientSocket.on("proceedExitToEvent", (eventSJON) => {
+            (console).log(`-> [proceedExitToEvent] ${JSON.stringify(eventSJON)}`);
+
             const state:IAppState = this.appMirror.getState(eventSJON.slot);
             const event:IAppEvent = state.fromJSON(eventSJON);
             this.appMirror.proceedExitToEvent(event);
         });
 
         this.clientSocket.on("exitToPreviousState", () => {
+            (console).log(`-> [exitToPreviousState]`);
             this.appMirror.exitToPreviousState();
         });
     }
 
     public toState(slot:Protocol) {
+        (console).log(`[toState] ${slot} ->`);
         this.clientSocket.emit("toState", slot);
     }
 
     public proceedEvent(event:IAppEvent) {
-        this.clientSocket.emit("proceedEvent", event.toJSON());
+        const json = event.toJSON();
+
+        (console).log(`[proceedEvent] ${JSON.stringify(json)} ->`);
+        this.clientSocket.emit("proceedEvent", json);
     }
 
     public exitToState(slot:Protocol) {
+        (console).log(`[exitToState] ${slot} ->`);
         this.clientSocket.emit("exitToState", slot);
     }
 
     public proceedExitToEvent(event:IAppEvent) {
-        this.clientSocket.emit("proceedExitToEvent", event.toJSON());
+        const json = event.toJSON();
+
+        (console).log(`[proceedExitToEvent] ${JSON.stringify(json)} ->`);
+        this.clientSocket.emit("proceedExitToEvent", json);
     }
 
     public exitToPreviousState() {
+        (console).log(`[exitToPreviousState] -> `);
         this.clientSocket.emit("exitToPreviousState");
     }
 

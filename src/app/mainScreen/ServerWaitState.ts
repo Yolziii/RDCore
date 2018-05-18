@@ -9,6 +9,6 @@ export class ServerWaitState extends AppState {
 
     public activate() {
         const id = (this.app as ClientMirrorApplication).connection.id;
-        console.log(`[client #${id}] activate ServerWaitState`);
+        (console).log(`[client #${id}] activate ServerWaitState`);
     }
 }

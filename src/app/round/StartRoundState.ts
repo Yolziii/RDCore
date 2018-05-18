@@ -1,9 +1,10 @@
-import {AppEvent, AppState, IAppEvent, IAppState} from "../Application";
+import {AppEvent, ClientSideAppState, IAppState, IRemoteApplication} from "../Application";
 import {SingleResultScreenState} from "../resultScreen/SingleResultScreenState";
 import {Protocol} from "../Protocol";
 import {SingleRoundState} from "./SingleRoundState";
-import {RoundMode} from "../mainScreen/MainScreenState";
 import {QuitRoundState} from "./QuitRoundState";
+import {ClientSingleRoundState} from "./remote/ClientSingleRoundState";
+import {RoundMode} from "./RoundMode";
 
 export interface IStartRoundEventParams {
     mode:RoundMode;
@@ -11,52 +12,67 @@ export interface IStartRoundEventParams {
 }
 
 export class StartRoundEvent extends AppEvent implements IStartRoundEventParams {
-    private _mode:RoundMode;
-    private _withJokers:boolean = false;
+    public mode:RoundMode;
+    public withJokers:boolean = false;
 
     constructor(params:IStartRoundEventParams) {
         super(Protocol.StartRound);
-        this._mode = params.mode;
+        this.mode = params.mode;
         if (params.withJokers != null) {
-            this._withJokers = params.withJokers;
+            this.withJokers = params.withJokers;
         }
-    }
-
-    public get withJokers() {
-        return this._withJokers;
-    }
-
-    public get mode() {
-        return this._mode;
     }
 }
 
-export class StartRoundState extends AppState implements IAppState {
+export class StartRoundState extends ClientSideAppState implements IAppState {
     private singleRoundState: SingleRoundState;
     private singleResultScreenState: SingleResultScreenState;
     private immediatelyQuitState:QuitRoundState;
 
-    constructor() {
-        super(Protocol.StartRound);
+    private clientSingleRound: ClientSingleRoundState;
+
+    constructor(appServer:IRemoteApplication) {
+        super(Protocol.StartRound, appServer);
 
         this.singleRoundState = new SingleRoundState();
         this.singleResultScreenState = new SingleResultScreenState();
         this.immediatelyQuitState = new QuitRoundState();
+
+        this.clientSingleRound = new ClientSingleRoundState(this.appServer);
     }
 
-    public activate(event:IAppEvent) {
-        // TODO: Выбор режима
-        this.app.fillSlot(this.singleRoundState);
-        this.app.fillSlot(this.singleResultScreenState);
-        this.app.fillSlot(this.immediatelyQuitState);
+    public activate(event:StartRoundEvent) {
+        switch (event.mode) {
+            case RoundMode.SingleRound:
+            case RoundMode.SingleRoundTriple:
+                this.app.fillSlot(this.singleRoundState);
+                this.app.fillSlot(this.singleResultScreenState);
+                this.app.fillSlot(this.immediatelyQuitState);
 
-        event.slot = Protocol.Round;
-        this.app.proceedEvent(event);
+                event.slot = Protocol.Round; // Подменяем получателя события
+                this.app.proceedEvent(event);
+                break;
+
+            case RoundMode.ServeSingleRound:
+                this.app.fillSlot(this.clientSingleRound);
+                this.app.fillSlot(this.singleResultScreenState);
+                this.app.fillSlot(this.immediatelyQuitState);
+
+                event.slot = Protocol.ConfirmStartServerRound; // Подменяем получателя события
+                this.appServer.proceedEvent(event);
+                break;
+        }
     }
 
     public exit() {
         this.app.clearSlot(Protocol.Round);
         this.app.clearSlot(Protocol.RoundResult);
         this.app.clearSlot(Protocol.RoundQuit);
+
+        this.app.clearSlot(Protocol.RoundSetThrowedDice);
+        this.app.clearSlot(Protocol.RoundHoldDie);
+        this.app.clearSlot(Protocol.RoundFreeDie);
+        this.app.clearSlot(Protocol.RoundSelectCard);
+        this.app.clearSlot(Protocol.RoundFillCell);
     }
 }

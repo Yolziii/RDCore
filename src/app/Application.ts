@@ -1,5 +1,5 @@
 import {Protocol} from "./Protocol";
-import {IDictionaryInt} from "../util/Dictionaries";
+import {IDictionary, IDictionaryInt} from "../util/Dictionaries";
 import {RDErrorCode} from "../model/RDErrorCode";
 import RDError from "../model/RDError";
 import {IViewFactory} from "../client/IViewFactory";
@@ -72,6 +72,12 @@ export class Application implements IApplication {
     private slots:IDictionaryInt<IAppState> = {};
     private stack:IAppState[] = [];
 
+    private eventPrototypes:any;
+
+    constructor(eventPrototypes:any) {
+        this.eventPrototypes = eventPrototypes;
+    }
+
     public fillSlot(state: IAppState):void {
         if (this.slots[state.slot] !== undefined) {
             throw new RDError(RDErrorCode.SLOT_ALREADY_FILLED, `Slot ${state.slot} is already filled!`);
@@ -82,9 +88,6 @@ export class Application implements IApplication {
     }
 
     public clearSlot(slot:number):void {
-        if (this.slots[slot] === undefined) {
-            throw new RDError(RDErrorCode.UNREGISTERED_SLOT, `Slot ${slot} is not filled!`);
-        }
         delete(this.slots[slot]);
     }
 
@@ -94,12 +97,14 @@ export class Application implements IApplication {
 
     public toState(slot:number, event:IAppEvent = null) { // TODO: Вынести реализцаю в отдельный внутренний метод
         if (this.slots[slot] === undefined) {
+            (console).log(`Unknown state for slot ${slot}!`);
             // TODO: Debug message UNREGISTERED_SLOT
             return;
         }
 
         const targetState: IAppState = this.slots[slot];
         if (this.currentState === targetState) {
+            (console).log("slot: " + slot);
             throw new RDError(RDErrorCode.STATE_ALREADY_ACTIVE, `State for slot ${slot} is already active!`);
         }
 
@@ -119,11 +124,15 @@ export class Application implements IApplication {
                 ai = this.stack.indexOf(targetState);
             }
             this._currentState = targetState;
+
+            (console).log("<wakeup> for: " + Protocol[slot]);
             targetState.wakeup(event);
         } else {
             this.holdActive(targetState.doesPutActiveToSleep);
 
             this._currentState = targetState;
+
+            (console).log("<activate> for: " + Protocol[slot]);
             targetState.activate(event);
         }
     }
@@ -157,7 +166,14 @@ export class Application implements IApplication {
         return state;
     }
 
-    private exit(state:IAppState) {
+    public prototypeFor(slot:Protocol):any {
+        if (this.eventPrototypes[slot] == null) {
+            throw new RDError(RDErrorCode.UNDEFINED, `Unknown prototype for slot ${slot}`);
+        }
+        return this.eventPrototypes[slot];
+    }
+
+    private exit(state:IAppState, newOne:IAppState=null) {
         state.sleep();
         state.exit();
 
@@ -182,8 +198,8 @@ export class ClientApplication extends Application implements IClientApplication
     private _viewFactory:IViewFactory;
     private _appServer:IRemoteApplication;
 
-    constructor(viewFactory:IViewFactory, appServer:IRemoteApplication) {
-        super();
+    constructor(eventPrototypes:any, viewFactory:IViewFactory, appServer:IRemoteApplication) {
+        super(eventPrototypes);
         this._viewFactory = viewFactory;
         this._appServer = appServer;
     }
@@ -303,8 +319,8 @@ export class AppState implements IAppState, IDeserializer {
     }
 
     public fromJSON(json: any): AppEvent {
-        const event = Object.create(AppEvent.prototype);
-        return Object.create(event, json);
+        const event = Object.create(this.app.prototypeFor(json.slot));
+        return Object.assign(event, json);
     }
 }
 

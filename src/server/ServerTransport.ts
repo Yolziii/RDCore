@@ -5,6 +5,8 @@ import {ClientsRepository} from "./ClientsRepository";
 import {ClientConnection} from "./ClientConnection";
 import {Application, ClientMirrorApplication, IApplication} from "../app/Application";
 import {Protocol} from "../app/Protocol";
+import {ServerWaitState} from "../app/mainScreen/ServerWaitState";
+import {ServerStartSingleRound} from "../app/round/remote/ServerStartSingleRound";
 const log = console.log;
 
 export class ServerTransport {
@@ -35,6 +37,10 @@ export class ServerTransport {
 
             const client:ClientMirrorApplication = self.clients.getClient(clientNumber);
             const connection = new ClientConnection(socket, clientNumber, client);
+
+            client.fillSlot(new ServerWaitState());
+            client.fillSlot(new ServerStartSingleRound(connection));
+
             self.connections.push(connection);
 
             client.linkConnection(connection);
