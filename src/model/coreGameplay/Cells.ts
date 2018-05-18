@@ -65,7 +65,7 @@ export abstract class APlayableCell implements IPlayableCell {
 
     public fill(dice: IDice): void {
         this.cellDice = new Dice();
-        for (let i = 0; i<dice.max; i++) {
+        for (let i = 0; i<dice.length; i++) {
             this.cellDice.put(dice.getFrom(i));
         }
     }

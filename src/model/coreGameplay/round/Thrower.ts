@@ -14,17 +14,15 @@ export class Thrower {
     /** Шаблонный метод, реализует алгоритм бросания костей */
     public throwTemplate() {
         const dice: IDice = this.diceFactory();
-        for (let i = 0; i < dice.max; i++) {
-            this.fillDie(dice, i);
-
-            if (this.player.throwed.hasAt(i)) {
-                this.player.throwed.popFrom(i);
-            }
-
+        let j = 0;
+        for (let i = 0; i < this.player.holded.length; i++) {
             if (!this.player.holded.hasAt(i)) {
-                this.player.throwed.put(dice.getFrom(i));
+                this.fillDie(dice, j);
+                j++;
             }
         }
+
+        this.player.setThrowedDice(dice);
     }
 
     protected diceFactory():IDice {

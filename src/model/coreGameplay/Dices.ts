@@ -1,6 +1,7 @@
 import {Config} from "../Config";
 import RDError from "../RDError";
 import {RDErrorCode} from "../RDErrorCode";
+import {AppEvent, IDeserializer, ISerializable} from "../../app/Application";
 
 export interface IDie {
     readonly type: DieType;
@@ -19,8 +20,8 @@ export const JokerDie = {value:0, type:DieType.Joker};
 
 export const NullDie:IDie = {type: DieType.Unknown, value: 0 };
 
-export interface IDice {
-    readonly max: number;
+export interface IDice extends ISerializable {
+    readonly length: number;
     readonly total: number;
     readonly isFull: boolean;
 
@@ -34,6 +35,11 @@ export interface IDice {
 }
 
 export class Dice implements IDice {
+    public static fromJSON(json: any): AppEvent {
+        const event = Object.create(Dice.prototype);
+        return Object.create(event, json);
+    }
+
     protected dice: IDie[] = [];
     protected maxDies: number;
 
@@ -48,9 +54,15 @@ export class Dice implements IDice {
         }
     }
 
-    public get max(): number {
+    public toJSON(): any {
+        return Object.assign({}, this);
+    }
+
+    public get length(): number {
         return this.maxDies;
     }
+
+    // TODO: changeLength(newLength:number)
 
     public get total(): number {
         let res = 0;
@@ -128,56 +140,3 @@ export class Dice implements IDice {
 }
 
 export const NullDice: IDice = new Dice();
-
-export abstract class ADiceDecorator implements IDice {
-    protected dice: IDice;
-
-    constructor(dice: IDice) {
-        this.dice = dice;
-    }
-
-    public get max(): number {
-        return this.dice.max;
-    }
-
-    public get total(): number {
-        return this.dice.total;
-    }
-
-    public get isFull(): boolean {
-        return this.dice.isFull;
-    }
-
-    public popFrom(index:number): IDie {
-        return this.dice.popFrom(index);
-    }
-
-    public getFrom(index:number): IDie {
-        return this.dice.getFrom(index);
-    }
-
-    public putTo(die: IDie, index: number): void {
-        this.dice.putTo(die, index);
-    }
-
-    public put(die: IDie): void {
-        this.dice.put(die);
-    }
-
-    public hasAt(index:number):boolean {
-        return this.dice.hasAt(index);
-    }
-
-    public clear() {
-        this.dice.clear();
-    }
-}
-
-export class FullDiceDecorator extends ADiceDecorator {
-    public getFrom(index): IDie {
-        if (!this.isFull) {
-            throw new RDError(RDErrorCode.DICE_NOT_FULL, "Dice not full!");
-        }
-        return this.dice.getFrom(index);
-    }
-}

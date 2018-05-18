@@ -43,8 +43,11 @@ export interface IRoundPlayer extends IRoundObserverSubject {
     /** Бросить кости */
     throwDice();
 
+    /** Передает модели брошенные кости */
+    setThrowedDice(dice:IDice);
+
     /** Определить текущую карточку */
-    setActiveCard(index:number); // Если карт несколько, то API работает с активной
+    selectCard(index:number); // Если карт несколько, то API работает с активной
 
     /** Возвращает текущую карточку */
     getCard():ICard;
@@ -63,7 +66,7 @@ export interface IRound extends IRoundPlayer {
     readonly totalPlayers:number;
     readonly score:number;
 
-    setActivePlayer(index:number);
+    selectPlayer(index:number);
     getPlayer():IRoundPlayer;
 }
 
@@ -71,7 +74,7 @@ export enum RoundEventType {
     Throw,
     Hold,
     Free,
-    Fill,
+    FillCell,
     SelectCard,
     SelectPlayer,
     End
@@ -85,7 +88,7 @@ export class RoundEvent {
     }
 }
 
-export class RoundEventThrow extends RoundEvent {
+export class RoundEventThrowedDice extends RoundEvent {
     public dice:IDice;
 
     constructor(dice:IDice) {
@@ -100,6 +103,15 @@ export class RoundEventIndex extends RoundEvent {
     constructor(type:RoundEventType, index: number) {
         super(type);
         this.index = index;
+    }
+}
+
+export class RoundEventFillCell extends RoundEvent {
+    public cellType:CellType;
+
+    constructor(type:RoundEventType, cellType:CellType) {
+        super(type);
+        this.cellType = cellType;
     }
 }
 

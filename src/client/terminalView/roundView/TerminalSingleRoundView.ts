@@ -89,7 +89,7 @@ export class TerminalSingleRoundView extends ATerminalView implements IRoundView
             const cardView = new TerminalCardView(i * 30, 1, this.model, keyForType, i);
             this.cardViews.push(cardView);
         }
-        this.model.setActiveCard(0);
+        this.model.selectCard(0);
 
         process.stdout.write(ansiEsc.clearScreen);
         this.draw();
@@ -146,7 +146,7 @@ export class TerminalSingleRoundView extends ATerminalView implements IRoundView
         }
 
         const throwed:IDice = this.model.throwed;
-        for (let i = 0; i < throwed.max; i++) {
+        for (let i = 0; i < throwed.length; i++) {
             if (throwed.hasAt(i)) {
                 this.throwedViews[i].init(throwed.getFrom(i));
             } else {
@@ -163,7 +163,7 @@ export class TerminalSingleRoundView extends ATerminalView implements IRoundView
         }
 
         const holded:IDice = this.model.holded;
-        for (let i = 0; i < holded.max; i++) {
+        for (let i = 0; i < holded.length; i++) {
             if (holded.hasAt(i)) {
                 this.holdedViews[i].init(holded.getFrom(i));
             } else {

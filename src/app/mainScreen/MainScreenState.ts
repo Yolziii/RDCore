@@ -1,4 +1,4 @@
-import {AppEvent, AppState, ClientApplication, IAppEvent} from "../Application";
+import {AppState, ClientApplication} from "../Application";
 import {MainScreenController} from "./MainScreenController";
 import {Protocol} from "../Protocol";
 import {StartRoundEvent} from "../round/StartRoundState";
@@ -10,6 +10,10 @@ export enum RoundMode {
 
 export class MainScreenState extends AppState {
     private controller:MainScreenController;
+
+    constructor() {
+        super(Protocol.StartApplication);
+    }
 
     public init() {
         this.controller = new MainScreenController(this, (this.app as ClientApplication).viewFactory.createMainScreenView());
@@ -26,16 +30,16 @@ export class MainScreenState extends AppState {
 
     public toSinglePlayer() {
         const event:StartRoundEvent = new StartRoundEvent({mode: RoundMode.SingleRound});
-        this.app.onEvent(event);
+        this.app.proceedEvent(event);
     }
 
     public toSingleJokerRound() {
         const event:StartRoundEvent = new StartRoundEvent({mode: RoundMode.SingleRound, withJokers: true});
-        this.app.onEvent(event);
+        this.app.proceedEvent(event);
     }
 
     public toSingleTripleRound() {
         const event:StartRoundEvent = new StartRoundEvent({mode: RoundMode.SingleRoundTriple});
-        this.app.onEvent(event);
+        this.app.proceedEvent(event);
     }
 }

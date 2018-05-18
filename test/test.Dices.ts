@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import "mocha";
-import {IDie, Dice, DieType, FullDiceDecorator, IDice} from "../src/model/coreGameplay/Dices";
+import {IDie, Dice, DieType, IDice} from "../src/model/coreGameplay/Dices";
 import {Config} from "../src/model/Config";
 import {RDErrorCode} from "../src/model/RDErrorCode";
 import RDError from "../src/model/RDError";
@@ -34,7 +34,7 @@ describe("Dices", () => {
 
     it("Max", () => {
         const dice: IDice = new Dice();
-        assert.equal(dice.max, Config.DefaultDiceSize);
+        assert.equal(dice.length, Config.DefaultDiceSize);
     });
 
     it("Zero total", () => {
@@ -138,28 +138,5 @@ describe("Dices", () => {
                 throw e;
             }
         }
-    });
-
-    it("FullDiceDecorator exeption", () => {
-        const dice: IDice = new FullDiceDecorator(new Dice({type: DieType.Value, value: 1}));
-        try {
-            dice.getFrom(0);
-            assert.fail("FullDiceDecorator.getFrom() don't throw exception!");
-        } catch (e) {
-            if (e instanceof RDError) {
-                assert.equal(e.code, RDErrorCode.DICE_NOT_FULL);
-            } else {
-                throw e;
-            }
-        }
-    });
-
-    it("FullDiceDecorator ok", () => {
-        const dice: IDice = new FullDiceDecorator(
-            new Dice(die1(), die2(), die3(), die4(), die5()),
-        );
-
-        const die: IDie = dice.getFrom(0);
-        assert.equal(die.value, 1);
     });
 });

@@ -1,5 +1,5 @@
 import {
-    IRoundObserver, IRoundObserverSubject, IRoundPlayer, RoundEvent, RoundEventIndex, RoundEventThrow,
+    IRoundObserver, IRoundObserverSubject, IRoundPlayer, RoundEvent, RoundEventIndex, RoundEventThrowedDice,
     RoundEventType
 } from "./Rounds";
 import {ICard} from "../Cards";
@@ -95,7 +95,7 @@ export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
         this._throwedDice.clear();
         this._holdedDice.clear();
 
-        this.dispatch(new RoundEvent(RoundEventType.Fill));
+        this.dispatch(new RoundEvent(RoundEventType.FillCell));
     }
 
     public throwDice() {
@@ -105,10 +105,14 @@ export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
         }
 
         this._thrower.throwTemplate();
-        this.dispatch(new RoundEventThrow(this._throwedDice));
+        this.dispatch(new RoundEventThrowedDice(this._throwedDice));
     }
 
-    public setActiveCard(index:number) {
+    public setThrowedDice(dice:IDice) {
+        this._throwedDice = dice;
+    }
+
+    public selectCard(index:number) {
         this._activeCardIndex = index;
         this._currentCard = this._cards[index];
 

@@ -56,19 +56,19 @@ describe("Application", () => {
 
         app = new ClientApplication(new MockViewFactory());
 
-        stateStart = new TestState();
-        app.fillSlot(TestProtocol.Start, stateStart);
+        stateStart = new TestState(TestProtocol.Start as any);
+        app.fillSlot(stateStart);
 
-        stateMain = new TestState();
-        app.fillSlot(TestProtocol.Main, stateMain);
+        stateMain = new TestState(TestProtocol.Main as any);
+        app.fillSlot(stateMain);
 
-        stateStartRound = new TestStartRoundState();
-        app.fillSlot(TestProtocol.StartRound, stateStartRound);
+        stateStartRound = new TestStartRoundState(TestProtocol.StartRound as any);
+        app.fillSlot(stateStartRound);
 
-        stateRound = new TestState();
-        app.fillSlot(TestProtocol.Round, stateRound);
+        stateRound = new TestState(TestProtocol.Round as any);
+        app.fillSlot(stateRound);
 
-        stateRoundResult = new TestState();
+        stateRoundResult = new TestState(TestProtocol.RoundResult as any);
 
         app.toState(TestProtocol.Start); // Начальное состояние
     });
@@ -108,7 +108,7 @@ describe("Application", () => {
 
     it("Move to another state by event", () => {
         const event:IAppEvent = new AppEvent(TestProtocol.Main);
-        app.onEvent(event);
+        app.proceedEvent(event);
         assert.equal(app.currentState.slot, TestProtocol.Main);
     });
 
@@ -119,7 +119,7 @@ describe("Application", () => {
 
     it("Move to flow state by event", () => {
         const event:IAppEvent = new AppEvent(TestProtocol.StartRound);
-        app.onEvent(event);
+        app.proceedEvent(event);
         assert.equal(app.currentState, stateRound);
     });
 

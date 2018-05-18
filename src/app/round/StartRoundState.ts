@@ -37,7 +37,7 @@ export class StartRoundState extends AppState implements IAppState {
     private immediatelyQuitState:QuitRoundState;
 
     constructor() {
-        super();
+        super(Protocol.StartRound);
 
         this.singleRoundState = new SingleRoundState();
         this.singleResultScreenState = new SingleResultScreenState();
@@ -46,17 +46,17 @@ export class StartRoundState extends AppState implements IAppState {
 
     public activate(event:IAppEvent) {
         // TODO: Выбор режима
-        this.app.fillSlot(Protocol.Round, this.singleRoundState);
-        this.app.fillSlot(Protocol.RoundResult, this.singleResultScreenState);
-        this.app.fillSlot(Protocol.QuitRound, this.immediatelyQuitState);
+        this.app.fillSlot(this.singleRoundState);
+        this.app.fillSlot(this.singleResultScreenState);
+        this.app.fillSlot(this.immediatelyQuitState);
 
         event.slot = Protocol.Round;
-        this.app.onEvent(event);
+        this.app.proceedEvent(event);
     }
 
     public exit() {
         this.app.clearSlot(Protocol.Round);
         this.app.clearSlot(Protocol.RoundResult);
-        this.app.clearSlot(Protocol.QuitRound);
+        this.app.clearSlot(Protocol.RoundQuit);
     }
 }

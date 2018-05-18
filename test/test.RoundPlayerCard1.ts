@@ -75,7 +75,7 @@ describe("RoundPlayer", () => {
         assert.equal(card.getCell(CellType.ServiceFinalScore).value, 0);
     });
 
-    it("Fill number", () => {
+    it("FillCell number", () => {
         roundPlayer.throwDice();
         roundPlayer.fillCell(CellType.Ones);
 

@@ -20,7 +20,7 @@ export class TerminalCardView extends ATerminalView {
         super(x, y);
 
         this.model = model;
-        this.model.setActiveCard(index);
+        this.model.selectCard(index);
         this.card = this.model.getCard();
 
         this.keyForType = keyForType;

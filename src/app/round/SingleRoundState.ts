@@ -29,6 +29,10 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
     private controller:SingleRoundController;
     private model:SingleRound;
 
+    constructor() {
+        super(Protocol.Round);
+    }
+
     public init() {
         const view = (this.app as ClientApplication).viewFactory.createRoundView();
         this.controller = new SingleRoundController(this, view);
@@ -67,11 +71,11 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
     }
 
     public finishRound() {
-        this.app.onExitEvent(new FinishRoundEvent(this.model));
+        this.app.proceedExitToEvent(new FinishRoundEvent(this.model));
     }
 
     public quitRound() {
-        this.app.toState(Protocol.QuitRound);
+        this.app.toState(Protocol.RoundQuit);
     }
 
     private createCard(factory:CardCellsFactory) {

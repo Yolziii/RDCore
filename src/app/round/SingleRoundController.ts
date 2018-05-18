@@ -76,7 +76,7 @@ export class SingleRoundController implements IRoundObserver {
 
     public selectCard(index:number) {
         if (this.model.activeCardIndex !== index) {
-            this.model.setActiveCard(index);
+            this.model.selectCard(index);
         }
     }
 
@@ -102,7 +102,7 @@ export class SingleRoundController implements IRoundObserver {
                 this.onPlayerThrow();
                 break;
 
-            case RoundEventType.Fill:
+            case RoundEventType.FillCell:
                 this.onPlayerFill();
                 break;
         }

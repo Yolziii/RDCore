@@ -26,7 +26,7 @@ export class SingleRound implements IRound {
         return this.player.getCard();
     }
 
-    public setActivePlayer(index:number) {/**/}
+    public selectPlayer(index:number) {/**/}
 
     public get finished() {
         return this.player.finished;
@@ -45,11 +45,12 @@ export class SingleRound implements IRound {
     public freeDie(index:number) {return this.player.freeDie(index);}
 
     public throwDice() {this.player.throwDice();}
+    public setThrowedDice(dice:IDice) {this.player.setThrowedDice(dice);}
     public fillCell(type:CellType) {
         this.player.fillCell(type);
     }
 
-    public setActiveCard(index:number) {this.player.setActiveCard(index);}
+    public selectCard(index:number) {this.player.selectCard(index);}
     public get activeCardIndex() {return this.player.activeCardIndex;}
 
     public get score() {return this.player.score;}
