@@ -5,19 +5,29 @@ import {CellType} from "../../../model/coreGameplay/Cells";
 import {IDice} from "../../../model/coreGameplay/Dices";
 import {ICard} from "../../../model/coreGameplay/Cards";
 import {RoundFillCellAppEvent, RoundIndexAppEvent} from "./StatesAnsEvents";
+import {IRoundState} from "../SingleRoundState";
 
 /**
  * Заместитель локальной модели раунда, запрашивает разрешение на все меняющие модель операции у сервера
  */
-export class ClientSingleRoundState extends ClientSideAppState implements IRound {
+export class ClientSingleRoundState extends ClientSideAppState implements IRound, IRoundState {
     private localModel:IRound;
 
-    constructor(appServer:IRemoteApplication, model:IRound) {0
+    constructor(appServer:IRemoteApplication, model:IRound) {
         super(Protocol.Round, appServer);
         this.localModel = model;
     }
 
-    // TODO: События, за которые отвевает сам стейт - вынести в интерфейс, с укоторым взаимодействует контроллер
+    // ------------------------------------------------------------------
+    // IRoundState implementation
+    // ------------------------------------------------------------------
+    public finishRound() {
+        // TODO:
+    }
+
+    public quitRound() {
+        // TODO:
+    }
 
     // ------------------------------------------------------------------
     // Меняющие модели методы делегируем серверу

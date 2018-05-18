@@ -83,7 +83,7 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
             factory,
 
             CellType.Ones,
-            /*CellType.Twos,
+            CellType.Twos,
             CellType.Threes,
             CellType.Fours,
             CellType.Fives,
@@ -97,7 +97,7 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
             CellType.LargeStraight,
             CellType.RoyalDice,
             CellType.Chance,
-            CellType.ServiceBottomPoints,*/
+            CellType.ServiceBottomPoints,
             CellType.ServiceFinalScore
         );
     }
