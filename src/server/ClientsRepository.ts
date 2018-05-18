@@ -1,16 +1,21 @@
 import {IDictionary} from "../util/Dictionaries";
-import {Application} from "../app/Application";
+import {Application, ClientMirrorApplication} from "../app/Application";
 import {ClientConnection} from "./ClientConnection";
+import {Protocol} from "../app/Protocol";
+import {ServerWaitState} from "../app/mainScreen/ServerWaitState";
 
 export class ClientsRepository {
     private lastClientNumber:number = 0;
-    private clients:IDictionary<Application> = {};
+    private clients:IDictionary<ClientMirrorApplication> = {};
     private connections:ClientConnection[] = [];
 
     public createClient():number {
         this.lastClientNumber++;
 
-        const clientApp:Application = new Application();
+        const clientApp:ClientMirrorApplication = new ClientMirrorApplication();
+
+        clientApp.fillSlot(new ServerWaitState());
+
         this.clients[this.lastClientNumber] = clientApp;
 
         return this.lastClientNumber;
@@ -20,7 +25,7 @@ export class ClientsRepository {
         return clientNumber in this.clients;
     }
 
-    public getClient(clientNumber:number):Application {
+    public getClient(clientNumber:number):ClientMirrorApplication {
         return this.clients[clientNumber];
     }
 }

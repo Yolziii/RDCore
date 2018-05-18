@@ -12,5 +12,10 @@ export enum Protocol {
     RoundFreeDie = 113,
     RoundSelectCard = 114,
     RoundSelectPlayer = 115,
-    RoundFillCell = 116
+    RoundFillCell = 116,
+
+    // --------------------------------------------------
+    // Слоты на стороне сервера
+    // --------------------------------------------------
+    WaitForClient = -1
 }

@@ -14,7 +14,7 @@ export interface IRemoteApplication {
      * @param {Protocol} slot Идентификатор состояния
      * @param {IAppEvent} event Параметры перехода, которіе передаются состоянию при активации
      */
-    toState(slot:Protocol, event:IAppEvent);
+    toState(slot:Protocol);
 
     /**
      * Переходит в описанное событием состояние
@@ -27,7 +27,7 @@ export interface IRemoteApplication {
      * @param {Protocol} slot
      * @param {IAppEvent} event
      */
-    exitToState(slot:Protocol, event:IAppEvent);
+    exitToState(slot:Protocol);
 
     /**
      * Выходит из текущего состояние и переходит в описанное событием состояние
@@ -50,6 +50,12 @@ export interface IApplication extends IRemoteApplication {
 
     /** Освобождает указанный слот состояния */
     clearSlot(slot:Protocol);
+
+    /**
+     * Возвращает состояние в указанном слоте
+     * @param {Protocol} slot
+     */
+    getState(slot:Protocol);
 }
 
 export interface IClientApplication {
@@ -86,7 +92,7 @@ export class Application implements IApplication {
         return this._currentState;
     }
 
-    public toState(slot:number, event:IAppEvent = null) {
+    public toState(slot:number, event:IAppEvent = null) { // TODO: Вынести реализцаю в отдельный внутренний метод
         if (this.slots[slot] === undefined) {
             // TODO: Debug message UNREGISTERED_SLOT
             return;
@@ -126,10 +132,10 @@ export class Application implements IApplication {
         this.toState(event.slot, event);
     }
 
-    public exitToState(slot:number, event:IAppEvent=null) {
+    public exitToState(slot:number) {
         this.exit(this._currentState);
         this._currentState = null;
-        this.toState(slot, event);
+        this.toState(slot);
     }
 
     public proceedExitToEvent(event:IAppEvent) {
@@ -141,6 +147,14 @@ export class Application implements IApplication {
     public exitToPreviousState() {
         const state:IAppState = this.stack[this.stack.length-1];
         this.toState(state.slot);
+    }
+
+    public getState(slot:Protocol):IAppState {
+        const state = this.slots[slot];
+        if (state == null) {
+            // TODO: Exception
+        }
+        return state;
     }
 
     private exit(state:IAppState) {
@@ -166,10 +180,12 @@ export class Application implements IApplication {
 
 export class ClientApplication extends Application implements IClientApplication {
     private _viewFactory:IViewFactory;
+    private _appServer:IRemoteApplication;
 
-    constructor(viewFactory:IViewFactory) {
+    constructor(viewFactory:IViewFactory, appServer:IRemoteApplication) {
         super();
         this._viewFactory = viewFactory;
+        this._appServer = appServer;
     }
 
     public get viewFactory():IViewFactory {
@@ -177,16 +193,20 @@ export class ClientApplication extends Application implements IClientApplication
     }
 }
 
-export class ServerApplication extends Application {
-    private connection:ClientConnection;
+/** Зеркало клиента на строне сервера */
+export class ClientMirrorApplication extends Application {
+    private _connection:ClientConnection;
 
-    constructor(connection:ClientConnection) {
-        super();
-        this.connection = connection;
+    public linkConnection(connection:ClientConnection) {
+        this._connection = connection;
+    }
+
+    public get connection():ClientConnection {
+        return this._connection;
     }
 }
 
-export interface IAppEvent {
+export interface IAppEvent extends ISerializable {
     slot: number;
 }
 
@@ -212,7 +232,7 @@ export class AppEvent implements IAppEvent, ISerializable {
     }
 }
 
-export interface IAppState {
+export interface IAppState extends IDeserializer {
     /** Приложение, для которого состояние было создано */
     readonly app:Application;
 

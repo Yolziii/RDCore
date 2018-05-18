@@ -33,7 +33,7 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
     }
 
     public throwDice() {
-        this.appServer.toState(Protocol.RoundThrowDice, null);
+        this.appServer.toState(Protocol.RoundThrowDice);
     }
 
     public setThrowedDice(dice:IDice) { /* Ничего не делаем, все сделает ClientSetThrowedDiceState */}

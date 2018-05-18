@@ -3,7 +3,8 @@ import * as express from "express";
 import * as SocketIO from "socket.io";
 import {ClientsRepository} from "./ClientsRepository";
 import {ClientConnection} from "./ClientConnection";
-import {Application} from "../app/Application";
+import {Application, ClientMirrorApplication, IApplication} from "../app/Application";
+import {Protocol} from "../app/Protocol";
 const log = console.log;
 
 export class ServerTransport {
@@ -31,9 +32,13 @@ export class ServerTransport {
         const self = this;
         this.socketIo.on("connect", (socket: SocketIO.Socket) => {
             const clientNumber = self.clients.createClient();
-            const client:Application = self.clients.getClient(clientNumber);
+
+            const client:ClientMirrorApplication = self.clients.getClient(clientNumber);
             const connection = new ClientConnection(socket, clientNumber, client);
             self.connections.push(connection);
+
+            client.linkConnection(connection);
+            client.toState(Protocol.WaitForClient);
 
             // TODO: Хранить/восстанавливать сессии, реконнект с других девайсов, подключение к существующей игре
         });

@@ -1,43 +1,77 @@
 import * as SocketIO from "socket.io";
-import {Application} from "../app/Application";
+import {Application, IAppEvent, IAppState, IRemoteApplication} from "../app/Application";
+import {Protocol} from "../app/Protocol";
 
 const log = console.log;
 
-export class ClientConnection {
-    private socket:SocketIO.Socket;
+export class ClientConnection implements IRemoteApplication {
+    private clientSocket:SocketIO.Socket;
     private clientNumber:number;
-    private client:Application;
+    private appMirror:Application;
 
     constructor(socket:SocketIO.Socket, clientNumber:number, client:Application) {
-        this.socket = socket;
+        this.clientSocket = socket;
         this.clientNumber = clientNumber;
-        this.client = client;
+        this.appMirror = client;
 
         log("Connected client #%s.", clientNumber);
 
-        this.socket.on("message", (m: any) => {
-            log("[client #%s message): %s", clientNumber, JSON.stringify(m));
-            // this.io.emit("message", m);
+        this.clientSocket.on("disconnect", this.onDisconnected);
+
+        this.clientSocket.on("toState", (slot) => {
+            this.appMirror.toState(slot);
         });
 
-        this.socket.on("disconnect", () => {
-            log("Client #%s disconnected", clientNumber);
+        this.clientSocket.on("proceedEvent", (eventSJON: any) => {
+            const state:IAppState = this.appMirror.getState(eventSJON.slot);
+            const event:IAppEvent = state.fromJSON(eventSJON);
+            this.appMirror.proceedEvent(event);
+        });
+
+        this.clientSocket.on("exitToState", (slot) => {
+            this.appMirror.exitToState(slot);
+        });
+
+        this.clientSocket.on("proceedExitToEvent", (eventSJON: any) => {
+            const state:IAppState = this.appMirror.getState(eventSJON.slot);
+            const event:IAppEvent = state.fromJSON(eventSJON);
+            this.appMirror.proceedExitToEvent(event);
+        });
+
+        this.clientSocket.on("exitToPreviousState", () => {
+            this.appMirror.exitToPreviousState();
         });
     }
 
-    public sendMessage(data:any) {
-
+    public toState(slot:Protocol) {
+        this.clientSocket.emit("toState", slot);
     }
 
-    private onMessage(m:any):void {
+    public proceedEvent(event:IAppEvent) {
+        this.clientSocket.emit("proceedEvent", event.toJSON());
+    }
 
+    public exitToState(slot:Protocol) {
+        this.clientSocket.emit("exitToState", slot);
+    }
+
+    public proceedExitToEvent(event:IAppEvent) {
+        this.clientSocket.emit("proceedExitToEvent", event.toJSON());
+    }
+
+    public exitToPreviousState() {
+        this.clientSocket.emit("exitToPreviousState");
+    }
+
+    public get id():number {
+        return this.clientNumber;
     }
 
     private onReconnected():void {
-
+        // TODO: Восстанавливать состояние клиента
     }
 
     private onDisconnected():void {
-
+        log("Client #%s disconnected", this.clientNumber);
     }
 }

@@ -9,6 +9,6 @@ export class ServerSingleRoundState extends AppState {
     public exit() {
         this.app.clearSlot(Protocol.RoundSetThrowedDice);
         this.app.clearSlot(Protocol.RoundHoldDie);
-        this.app.clearSlot();
+        //this.app.clearSlot();
     }
 }
