@@ -7,7 +7,7 @@ import {Application, ClientMirrorApplication, IApplication} from "../app/Applica
 import {Protocol} from "../app/Protocol";
 import {ServerWaitState} from "../app/mainScreen/ServerWaitState";
 import {ServerStartSingleRound} from "../app/round/remote/ServerStartSingleRound";
-const log = console.log;
+import {Logger} from "../util/Logger";
 
 export class ServerTransport {
     private eapp: express.Application;
@@ -28,7 +28,7 @@ export class ServerTransport {
 
     public listen() {
         this.server.listen(this.port, () => {
-            log("Running server on port %s", this.port);
+            Logger.info("Running server on port %s", this.port);
         });
 
         const self = this;

@@ -4,6 +4,7 @@ import {RDErrorCode} from "../model/RDErrorCode";
 import RDError from "../model/RDError";
 import {IViewFactory} from "../client/IViewFactory";
 import {ClientConnection} from "../server/ClientConnection";
+import {Logger} from "../util/Logger";
 
 /**
  * APT
@@ -97,14 +98,14 @@ export class Application implements IApplication {
 
     public toState(slot:number, event:IAppEvent = null) { // TODO: Вынести реализцаю в отдельный внутренний метод
         if (this.slots[slot] === undefined) {
-            (console).log(`Unknown state for slot ${slot}!`);
+            Logger.warning(`Unknown state for slot ${slot}!`);
             // TODO: Debug message UNREGISTERED_SLOT
             return;
         }
 
         const targetState: IAppState = this.slots[slot];
         if (this.currentState === targetState) {
-            (console).log("slot: " + slot);
+            Logger.error(`State for slot %s is already active!`, slot);
             throw new RDError(RDErrorCode.STATE_ALREADY_ACTIVE, `State for slot ${slot} is already active!`);
         }
 
@@ -125,14 +126,14 @@ export class Application implements IApplication {
             }
             this._currentState = targetState;
 
-            (console).log("<wakeup> for: " + Protocol[slot]);
+            Logger.info("<wakeup> for: " + Protocol[slot]);
             targetState.wakeup(event);
         } else {
             this.holdActive(targetState.doesPutActiveToSleep);
 
             this._currentState = targetState;
 
-            (console).log("<activate> for: " + Protocol[slot]);
+            Logger.info("<activate> for: " + Protocol[slot]);
             targetState.activate(event);
         }
     }
