@@ -9,8 +9,6 @@ export interface IRoundView {
 
     activate(model:IRound);
     draw();
-    sleep();
-    wakeup();
     exit();
 
     enableThrowButton();
@@ -41,14 +39,6 @@ export class SingleRoundController implements IRoundObserver {
         this.model.addObserver(this);
     }
 
-    public sleep() {
-        this.view.sleep();
-    }
-
-    public wakeup() {
-        this.view.wakeup();
-    }
-
     public exit() {
         this.view.exit();
         this.model.removeObserver(this);
@@ -62,7 +52,7 @@ export class SingleRoundController implements IRoundObserver {
     }
 
     public fillCell(type:CellType) {
-        if (!this.model.dice.isFull) {
+        if (!this.model.getMixedDice().isFull) {
             return;
         }
 

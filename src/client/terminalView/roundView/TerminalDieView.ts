@@ -57,6 +57,10 @@ export class TerminalDieView extends ATerminalView {
             this.line(chalk.gray("- - -"));
             this.line(chalk.gray("- - -"));
             this.line(chalk.gray("- - -"));
+        } else if (this.die.type === DieType.Unknown) {
+            this.line(chalk.gray("- - -"));
+            this.line(chalk.gray("- - -"));
+            this.line(chalk.gray("- - -"));
         } else if (this.die.type === DieType.Joker) {
             this.line(chalk.bgBlueBright.black("     "));
             this.line(chalk.bgBlueBright.black(" <J> "));

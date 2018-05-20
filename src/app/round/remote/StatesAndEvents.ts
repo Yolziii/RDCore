@@ -137,8 +137,8 @@ export class ClientRoundHoldDieState extends ClientSideAppState {
 
     public activate(event:RoundIndexAppEvent) {
         if (this.model.canHoldDie(event.index)) {
-            this.app.exitToPreviousState();
             this.model.holdDie(event.index);
+            this.app.exitToPreviousState();
         } else {
             // TODO: Исключение + запрашивать у сервера полное обновление состояния
         }
@@ -191,8 +191,8 @@ export class ClientRoundFreeDieState extends ClientSideAppState {
 
     public activate(event:RoundIndexAppEvent) {
         if (this.model.canFreeDie(event.index)) {
-            this.app.exitToPreviousState();
             this.model.freeDie(event.index);
+            this.app.exitToPreviousState();
         } else {
             // TODO: Исключение + запрашивать у сервера полное обновление состояния
         }
@@ -241,8 +241,8 @@ export class ClientRoundSelectCardState extends ClientSideAppState {
     }
 
     public activate(event:RoundIndexAppEvent) {
-        this.app.exitToPreviousState();
         this.model.selectCard(event.index);
+        this.app.exitToPreviousState();
     }
 }
 
@@ -282,8 +282,8 @@ export class ClientRoundSelectPlayerState extends ClientSideAppState {
     }
 
     public activate(event:RoundIndexAppEvent) {
-        this.app.exitToPreviousState();
         this.model.selectPlayer(event.index);
+        this.app.exitToPreviousState();
     }
 }
 
@@ -293,6 +293,12 @@ export class RoundFillCellAppEvent extends AppEvent {
     constructor(cellType:CellType) {
         super(Protocol.RoundFillCell);
         this.cellType = cellType;
+    }
+
+    public toJSON(): any {
+        const json = Object.assign({}, this);
+        json.cellType = CellType[this.cellType];
+        return json;
     }
 }
 
@@ -323,6 +329,12 @@ export class ServerRoundFillCellState extends ServerSideAppState implements IRou
             this.app.exitToPreviousState();
         }
     }
+
+    public fromJSON(json: any): AppEventSetThrowedDice {
+        const event = Object.create(AppEventSetThrowedDice.prototype);
+        event.cellType = json.cellType as CellType;
+        return Object.assign(event, json);
+    }
 }
 
 /** Заполняет указанную карточку по просьбе сервера */
@@ -338,7 +350,13 @@ export class ClientRoundFillCellState extends ClientSideAppState {
     }
 
     public activate(event:RoundFillCellAppEvent) {
-        this.app.exitToPreviousState();
         this.model.fillCell(event.cellType);
+        this.app.exitToPreviousState();
+    }
+
+    public fromJSON(json: any): AppEventSetThrowedDice {
+        const event = Object.create(AppEventSetThrowedDice.prototype);
+        event.cellType = json.cellType as CellType;
+        return Object.assign(event, json);
     }
 }

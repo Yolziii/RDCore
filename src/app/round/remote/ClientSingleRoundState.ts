@@ -75,12 +75,9 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
         this.controller.activate(this);
     }
 
-    public sleep() {
-        this.controller.sleep();
-    }
-
-    public wakeup() {
-        this.controller.wakeup();
+    public exit() {
+        this.appServer.toState(Protocol.WaitForClient);
+        this.controller.exit();
     }
 
     // ------------------------------------------------------------------
@@ -131,13 +128,13 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
     public get totalPlayers():number {return this.localModel.totalPlayers;}
     public get score():number {return this.localModel.score;}
     public get throwsLeft(): number {return this.localModel.throwsLeft;}
-    public get dice():IDice {return this.localModel.dice;}
     public get throwed():IDice {return this.localModel.throwed;}
     public get holded():IDice {return this.localModel.holded;}
     public get totalCards():number {return this.localModel.totalCards;}
     public get activeCardIndex():number {return this.localModel.activeCardIndex;}
     public get finished():boolean {return this.localModel.finished;}
 
+    public getMixedDice():IDice {return this.localModel.getMixedDice();}
     public getPlayer():IRoundPlayer {return this.localModel.getPlayer();}
     public canHoldDie(index:number) {return this.localModel.canHoldDie(index);}
     public canFreeDie(index:number) {return this.localModel.canFreeDie(index);}

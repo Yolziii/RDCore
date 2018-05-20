@@ -78,8 +78,8 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
         this.controller.activate(this.model);
     }
 
-    public sleep() {
-        this.controller.sleep();
+    public exit() {
+        this.controller.exit();
     }
 
     public finishRound() {

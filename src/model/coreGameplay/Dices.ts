@@ -40,12 +40,12 @@ export class Dice implements IDice {
         return Object.assign(event, json);
     }
 
-    protected dice: IDie[] = [];
-    protected maxDies: number;
+    private dice: IDie[] = [];
+    private _length: number;
 
     constructor(...dice: IDie[]) {
-        this.maxDies = Config.DefaultDiceSize;
-        for (let i = 0; i < this.maxDies; i++) {
+        this._length = Config.DefaultDiceSize;
+        for (let i = 0; i < this._length; i++) {
             if (i < dice.length) {
                 this.dice[i] = dice[i];
             } else {
@@ -59,14 +59,14 @@ export class Dice implements IDice {
     }
 
     public get length(): number {
-        return this.maxDies;
+        return this._length;
     }
 
     // TODO: changeLength(newLength:number)
 
     public get total(): number {
         let res = 0;
-        for (let i = 0; i < this.maxDies; i++) {
+        for (let i = 0; i < this._length; i++) {
             if (this.dice[i] !== NullDie) {
                 res++;
             }
@@ -75,7 +75,7 @@ export class Dice implements IDice {
     }
 
     public get isFull(): boolean {
-        for (let i = 0; i < this.maxDies; i++) {
+        for (let i = 0; i < this._length; i++) {
             if (this.dice[i] === NullDie) {
                 return false;
             }
@@ -91,7 +91,7 @@ export class Dice implements IDice {
 
     public hasAt(index): boolean {
         const die: IDie = this.dice[index];
-        return !(die === NullDie);
+        return (die.type !== DieType.Unknown);
     }
 
     public getFrom(index): IDie {
@@ -114,7 +114,7 @@ export class Dice implements IDice {
             this.dice[index] = die;
         } else {
             let finded = false;
-            for (let i = 0; i < this.maxDies; i++) {
+            for (let i = 0; i < this._length; i++) {
                 if (this.dice[i] !== NullDie) {
                     continue;
                 }
@@ -131,10 +131,8 @@ export class Dice implements IDice {
     }
 
     public clear() {
-        for (let i = 0; i < this.maxDies; i++) {
-            if (this.hasAt(i)) {
-                this.popFrom(i);
-            }
+        for (let i = 0; i < this._length; i++) {
+            this.dice[i] = NullDie;
         }
     }
 }

@@ -1,7 +1,4 @@
-import {
-    IResultScreenController, IResultScreenView,
-    SingleResultScreenController
-} from "../../app/resultScreen/SingleResultScreenController";
+import {IResultScreenController, IResultScreenView} from "../../app/resultScreen/SingleResultScreenController";
 
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");

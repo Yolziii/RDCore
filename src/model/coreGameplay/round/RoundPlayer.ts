@@ -1,5 +1,6 @@
 import {
-    IRoundObserver, IRoundObserverSubject, IRoundPlayer, RoundEvent, RoundEventIndex, RoundEventThrowedDice,
+    IRoundObserver, IRoundObserverSubject, IRoundPlayer, RoundEvent, RoundEventFillCell, RoundEventIndex,
+    RoundEventThrowedDice,
     RoundEventType
 } from "./Rounds";
 import {ICard} from "../Cards";
@@ -51,7 +52,7 @@ export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
         return this._holdedDice;
     }
 
-    public get dice():IDice {
+    public getMixedDice():IDice {
         this._mixedDice.clear();
         for (let i=0; i<Config.DefaultDiceSize; i++) {  // TODO: Возможность изменения количества собираемых и учитываемых костей
             if (this._holdedDice.hasAt(i)) {
@@ -89,13 +90,13 @@ export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
     }
 
     public fillCell(type:CellType) {
-        this._currentCard.fillCell(type, this.dice);
+        this._currentCard.fillCell(type, this.getMixedDice());
         this._throwsLeft = Config.DefaultThrows; // TODO: Возможность изменения количества попыток
 
         this._throwedDice.clear();
         this._holdedDice.clear();
 
-        this.dispatch(new RoundEvent(RoundEventType.FillCell));
+        this.dispatch(new RoundEventFillCell(RoundEventType.FillCell, type));
     }
 
     public throwDice() {

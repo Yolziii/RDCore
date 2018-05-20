@@ -1,6 +1,6 @@
 import {IViewFactory} from "../../src/client/IViewFactory";
 import {IMainScreenView, MainScreenController} from "../../src/app/mainScreen/MainScreenController";
-import {IRoundView, RoundController} from "../../src/app/round/SingleRoundController";
+import {IRoundView, SingleRoundController} from "../../src/app/round/SingleRoundController";
 import {IRound} from "../../src/model/coreGameplay/round/Rounds";
 import {IResultScreenController, IResultScreenView} from "../../src/app/resultScreen/SingleResultScreenController";
 
@@ -28,7 +28,7 @@ export class MockMainScreenView implements IMainScreenView {
 }
 
 export class MockRoundView implements  IRoundView {
-    public init(controller:RoundController) {/**/}
+    public init(controller:SingleRoundController) {/**/}
 
     public activate(model:IRound) {/**/}
     public draw() {/**/}
@@ -44,4 +44,5 @@ export class MockRoundView implements  IRoundView {
 export class MockResultScreenView implements IResultScreenView {
     public  init(controller:IResultScreenController) {/**/}
     public activate(model) {/**/}
+    public sleep() {/**/}
 }

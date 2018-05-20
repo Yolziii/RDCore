@@ -1,10 +1,10 @@
 import {AppEvent, ClientSideAppState, IAppState, IRemoteApplication} from "../Application";
-import {SingleResultScreenState} from "../resultScreen/SingleResultScreenState";
 import {Protocol} from "../Protocol";
 import {SingleRoundState} from "./SingleRoundState";
 import {QuitRoundState} from "./QuitRoundState";
 import {ClientSingleRoundState} from "./remote/ClientSingleRoundState";
 import {RoundMode} from "./RoundMode";
+import {SingleResultScreenState} from "../resultScreen/SingleResultScreenState";
 
 export interface IStartRoundEventParams {
     mode:RoundMode;

@@ -7,9 +7,6 @@ export interface IRoundPlayer extends IRoundObserverSubject {
     /** Сколько бросков осталось у игрока */
     readonly throwsLeft: number;
 
-    /** Текущая комбинация костей (миск из собранных и брошенных костей) */
-    readonly dice:IDice;
-
     /** Кости, брошенные игроком последний раз */
     readonly throwed:IDice;
 
@@ -27,6 +24,9 @@ export interface IRoundPlayer extends IRoundObserverSubject {
 
     /** Очков во всех карточках игрока */
     readonly score:number;
+
+    /** Текущая комбинация костей (миск из собранных и брошенных костей) */
+    getMixedDice():IDice;
 
     /** Может ли игрок сохранить текущую кость */
     canHoldDie(index:number);

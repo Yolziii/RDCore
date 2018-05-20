@@ -145,5 +145,4 @@ describe("RoundPlayer", () => {
         roundPlayer.throwDice();
         assert.equal(observer.throwed, true);
     });
-
 });

@@ -2,6 +2,8 @@ import * as assert from "assert";
 import "mocha";
 import {AppEvent, Application, AppState, ClientApplication, IAppEvent} from "../src/app/Application";
 import {MockViewFactory} from "./mocks/mock.View";
+import {ClientEventPrototypes} from "../src/client/ClientEventPrototypes";
+import {MockRemoteApplicvation} from "./mocks/MockRemoteApplicvation";
 
 describe("Application", () => {
     enum TestProtocol {
@@ -54,7 +56,7 @@ describe("Application", () => {
     let app:Application;
     beforeEach(() => {
 
-        app = new ClientApplication(new MockViewFactory());
+        app = new ClientApplication(ClientEventPrototypes, new MockViewFactory(), new MockRemoteApplicvation());
 
         stateStart = new TestState(TestProtocol.Start as any);
         app.fillSlot(stateStart);
