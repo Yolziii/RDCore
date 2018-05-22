@@ -5,12 +5,21 @@ import {TerminalViewFactory} from "./client/terminalView/TerminalViewFactory";
 import {StartRoundState} from "./app/round/StartRoundState";
 import {ClientTransport} from "./client/ClientTransport";
 import {ClientEventPrototypes} from "./client/ClientEventPrototypes";
-import {ConsoleLogger, FileLogger, Logger, LogLevel} from "./util/Logger";
+import {StreamLogger, Logger, LogLevel} from "./util/Logger";
+
+// tslint:disable:no-var-requires
+const fs = require("fs");
+
+// tslint:disable: no-bitwise
 
 // To read this file use this in PowerShell:
 // Get-Content client.log -Wait -Tail 30
-const fileLogger = new FileLogger("./client.log");
-fileLogger.setLevel(LogLevel.Error & LogLevel.Warning);
+
+const logStream = fs.createWriteStream("./client.log");
+logStream.once("open", (fd) => {/**/});
+
+const fileLogger = new StreamLogger(logStream);
+// fileLogger.setLevel(LogLevel.Error | LogLevel.Warning | LogLevel.Info);
 Logger.add(fileLogger);
 
 const remoteServer = new ClientTransport("http://127.0.0.1");

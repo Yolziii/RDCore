@@ -1,7 +1,6 @@
 import chalk from "chalk";
 // tslint:disable:no-var-requires
 const util = require("util");
-const fs = require("fs");
 
 // tslint:disable: no-bitwise
 
@@ -12,7 +11,7 @@ export const enum LogLevel {
     Debug = 8,
 }
 
-const consoles:ILogger[] = [];
+let consoles:ILogger[] = [];
 
 export interface ILogger {
     setLevel(level:LogLevel);
@@ -32,6 +31,10 @@ function format(message:string, args:any) {
 export const Logger = {
     add(logger: ILogger) {
         consoles.push(logger);
+    },
+
+    clear() {
+        consoles = [];
     },
 
     info(message: string, ...args) {
@@ -59,13 +62,13 @@ export const Logger = {
     }
 };
 
-export class FileLogger implements ILogger {
+export class StreamLogger implements ILogger {
     private logLevel;
     private stream;
 
-    constructor(pathToFile:string) {
-        this.stream = fs.createWriteStream(pathToFile);
-        this.stream.once("open", (fd) => {/**/});
+    constructor(logStream) {
+        this.logLevel = LogLevel.Debug | LogLevel.Info | LogLevel.Warning | LogLevel.Error;
+        this.stream = logStream;
     }
 
     public setLevel(level:LogLevel) {
@@ -74,31 +77,31 @@ export class FileLogger implements ILogger {
 
     public warning(message:string) {
         if ((this.logLevel & LogLevel.Warning) !== LogLevel.Warning) {
-            // return;
+            return;
         }
 
-        this.stream.write(message + "\n");
+        this.stream.write(chalk.yellow(message) + "\n");
     }
 
     public debug(message:string) {
         if ((this.logLevel & LogLevel.Debug) !== LogLevel.Debug) {
-            // return;
+            return;
         }
 
-        this.stream.write(message + "\n");
+        this.stream.write(chalk.gray(message) + "\n");
     }
 
     public error(message:string) {
         if ((this.logLevel & LogLevel.Error) !== LogLevel.Error) {
-            // return;
+            return;
         }
 
-        this.stream.write(message + "\n");
+        this.stream.write(chalk.red(message) + "\n");
     }
 
     public info(message:string) {
         if ((this.logLevel & LogLevel.Info) !== LogLevel.Info) {
-            // return;
+            return;
         }
 
         this.stream.write(message + "\n");
@@ -109,7 +112,7 @@ export class ConsoleLogger implements ILogger {
     private logLevel;
 
     constructor() {
-        this.logLevel = 1 & 2 & 4 & 8;
+        this.logLevel = LogLevel.Debug | LogLevel.Info | LogLevel.Warning | LogLevel.Error;
     }
 
     public setLevel(level:LogLevel) {
@@ -118,7 +121,7 @@ export class ConsoleLogger implements ILogger {
 
     public warning(message:string) {
         if ((this.logLevel & LogLevel.Warning) !== LogLevel.Warning) {
-            // return;
+            return;
         }
 
         (console).log(chalk.yellow(message));
@@ -126,15 +129,15 @@ export class ConsoleLogger implements ILogger {
 
     public debug(message:string) {
         if ((this.logLevel & LogLevel.Debug) !== LogLevel.Debug) {
-            // return;
+            return;
         }
 
-        (console).log(message);
+        (console).log(chalk.gray(message));
     }
 
     public error(message:string) {
         if ((this.logLevel & LogLevel.Error) !== LogLevel.Error) {
-            // return;
+            return;
         }
 
         (console).log(chalk.red(message));
@@ -142,7 +145,7 @@ export class ConsoleLogger implements ILogger {
 
     public info(message:string) {
         if ((this.logLevel & LogLevel.Info) !== LogLevel.Info) {
-            // return;
+            return;
         }
 
         (console).log(message);

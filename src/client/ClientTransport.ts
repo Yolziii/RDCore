@@ -32,13 +32,13 @@ export class ClientTransport implements IRemoteApplication {
         });
 
         this.serverSocket.on("toState", (slot) => {
-            Logger.info(`-> [toState] ${slot}`);
+            Logger.debug(`-> [toState] ${slot}`);
 
             this.app.toState(slot);
         });
 
         this.serverSocket.on("proceedEvent", (eventSJON: any) => {
-            Logger.info(`-> [proceedEvent] ${JSON.stringify(eventSJON)}`);
+            Logger.debug(`-> [proceedEvent] ${JSON.stringify(eventSJON)}`);
 
             const state:IAppState = this.app.getState(eventSJON.slot);
             const event:IAppEvent = state.fromJSON(eventSJON);
@@ -46,13 +46,13 @@ export class ClientTransport implements IRemoteApplication {
         });
 
         this.serverSocket.on("exitToState", (slot) => {
-            Logger.info(`-> [exitToState] ${slot}`);
+            Logger.debug(`-> [exitToState] ${slot}`);
 
             this.app.exitToState(slot);
         });
 
         this.serverSocket.on("proceedExitToEvent", (eventSJON: any) => {
-            Logger.info(`-> [proceedExitToEvent] ${JSON.stringify(eventSJON)}`);
+            Logger.debug(`-> [proceedExitToEvent] ${JSON.stringify(eventSJON)}`);
 
             const state:IAppState = this.app.getState(eventSJON.slot);
             const event:IAppEvent = state.fromJSON(eventSJON);
@@ -60,27 +60,27 @@ export class ClientTransport implements IRemoteApplication {
         });
 
         this.serverSocket.on("exitToPreviousState", () => {
-            Logger.info(`-> [exitToPreviousState]`);
+            Logger.debug(`-> [exitToPreviousState]`);
 
             this.app.exitToPreviousState();
         });
     }
 
     public toState(slot:Protocol) {
-        Logger.info(`[toState] ${slot} ->`);
+        Logger.debug(`[toState] ${slot} ->`);
 
         this.serverSocket.emit("toState", slot);
     }
 
     public proceedEvent(event:IAppEvent) {
         const json = event.toJSON();
-        Logger.info(`[proceedEvent] ${JSON.stringify(json)} ->`);
+        Logger.debug(`[proceedEvent] ${JSON.stringify(json)} ->`);
 
         this.serverSocket.emit("proceedEvent", json);
     }
 
     public exitToState(slot:Protocol) {
-        Logger.info(`[exitToState] ${slot} ->`);
+        Logger.debug(`[exitToState] ${slot} ->`);
 
         this.serverSocket.emit("exitToState", slot);
     }
@@ -88,13 +88,13 @@ export class ClientTransport implements IRemoteApplication {
     public proceedExitToEvent(event:IAppEvent) {
         const json = event.toJSON();
 
-        Logger.info(`[proceedExitToEvent] ${JSON.stringify(json)} ->`);
+        Logger.debug(`[proceedExitToEvent] ${JSON.stringify(json)} ->`);
 
         this.serverSocket.emit("proceedExitToEvent", json);
     }
 
     public exitToPreviousState() {
-        Logger.info(`[exitToPreviousState] -> `);
+        Logger.debug(`[exitToPreviousState] -> `);
 
         this.serverSocket.emit("exitToPreviousState");
     }
