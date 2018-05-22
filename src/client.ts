@@ -1,14 +1,15 @@
-import {MainScreenState} from "./client/statesClient/MainScreenState";
-import {TerminalViewFactory} from "./client/terminalView/TerminalViewFactory";
-import {StartRoundState} from "./client/statesClient/round/StartRoundState";
-import {ClientTransport} from "./client/ClientTransport";
-import {ClientEventPrototypes} from "./client/ClientEventPrototypes";
+
 import {Logger} from "./util/logger/Logger";
-import {ClientPlayerAuthenticationState} from "./client/statesClient/ClientPlayerAuthenticationState";
 import {IPlayer} from "./app/IPlayer";
-import {ClientApplication} from "./client/ClientApplication";
 import {Slot} from "./app/Slot";
 import {StreamLogger} from "./util/logger/StreamLogger";
+import {TerminalViewFactory} from "./app/client/terminalView/TerminalViewFactory";
+import {ClientTransport} from "./app/client/ClientTransport";
+import {ClientEventPrototypes} from "./app/client/ClientEventPrototypes";
+import {ClientApplication} from "./app/client/ClientApplication";
+import {ClientPlayerAuthenticationState} from "./app/client/statesClient/ClientPlayerAuthenticationState";
+import {MainScreenState} from "./app/client/statesClient/MainScreenState";
+import {StartRoundState} from "./app/client/statesClient/round/StartRoundState";
 
 // tslint:disable:no-var-requires
 const commander = require("commander");

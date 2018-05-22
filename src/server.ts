@@ -1,4 +1,4 @@
-import {ServerTransport} from "./server/ServerTransport";
+import {ServerTransport} from "./app/server/ServerTransport";
 import {Logger} from "./util/logger/Logger";
 import {ConsoleLogger} from "./util/logger/ConsoleLogger";
 import {LogLevel} from "./util/logger/LogLevel";

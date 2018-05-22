@@ -1,4 +1,4 @@
-import {IViewFactory} from "../client/IViewFactory";
+import {IViewFactory} from "./client/IViewFactory";
 
 /**
  * Приложение клиента (у которого есть представление)
