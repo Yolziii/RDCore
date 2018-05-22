@@ -1,9 +1,9 @@
 import {AppState, IAppState} from "../Application";
-import {Protocol} from "../Protocol";
+import {Slot} from "../Protocol";
 
 export class QuitRoundState extends AppState implements IAppState {
     constructor() {
-        super(Protocol.RoundQuit);
+        super(Slot.RoundQuit);
     }
 
     public get doesPutActiveToSleep() {
@@ -11,6 +11,6 @@ export class QuitRoundState extends AppState implements IAppState {
     }
 
     public activate() {
-        this.app.toState(Protocol.StartApplication);
+        this.app.toState(Slot.StartingClient);
     }
 }

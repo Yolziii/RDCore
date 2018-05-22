@@ -5,7 +5,7 @@ import {ATerminalView} from "./ATerminalView";
 export class TerminalLoggerView  extends ATerminalView{
     private string
 
-    public log(str) {
+    public logStateMethod(str) {
 
     }
 }

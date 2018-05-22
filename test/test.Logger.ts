@@ -6,8 +6,6 @@ import chalk from "chalk";
 // tslint:disable:no-var-requires
 const MemoryStream = require("memory-stream");
 
-// tslint:disable: no-bitwise
-
 describe("Logger", () => {
     describe("LogLevel", () => {
         it("bit operation", () => {
@@ -32,7 +30,7 @@ describe("Logger", () => {
             console.log = backUpConsoleLog;
         });
 
-        it("console.log itself", () => {
+        it("console.logStateMethod itself", () => {
            (console).log("test");
            assert.equal(output, "test");
         });

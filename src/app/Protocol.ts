@@ -1,5 +1,6 @@
-export enum Protocol {
-    StartApplication = 1,
+export enum Slot {
+    StartingClient = 1,
+    MainScreen = 2,
 
     StartRound = 100,
     Round = 101,
@@ -18,5 +19,7 @@ export enum Protocol {
     // Слоты на стороне сервера
     // --------------------------------------------------
     WaitForClient = -1,
+    PlayerAuthentication = -2,
+
     ConfirmStartServerRound = -100,
 }

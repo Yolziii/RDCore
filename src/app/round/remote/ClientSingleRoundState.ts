@@ -1,5 +1,5 @@
 import {ClientApplication, ClientSideAppState, IRemoteApplication} from "../../Application";
-import {Protocol} from "../../Protocol";
+import {Slot} from "../../Protocol";
 import {IRound, IRoundObserver, IRoundPlayer} from "../../../model/coreGameplay/round/Rounds";
 import {CellType} from "../../../model/coreGameplay/Cells";
 import {IDice} from "../../../model/coreGameplay/Dices";
@@ -35,7 +35,7 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
     private clientFillCellState:ClientRoundFillCellState;
 
     constructor(appServer:IRemoteApplication) {
-        super(Protocol.Round, appServer);
+        super(Slot.Round, appServer);
     }
 
     public init() {
@@ -76,7 +76,7 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
     }
 
     public exit() {
-        this.appServer.toState(Protocol.WaitForClient);
+        this.appServer.toState(Slot.WaitForClient);
         this.controller.exit();
     }
 
@@ -88,30 +88,30 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
     }
 
     public quitRound() {
-        this.app.toState(Protocol.RoundQuit);
+        this.app.toState(Slot.RoundQuit);
     }
 
     // ------------------------------------------------------------------
     // Меняющие модели методы делегируем серверу
     // ------------------------------------------------------------------
     public holdDie(index:number) {
-        const event  = new RoundIndexAppEvent(Protocol.RoundHoldDie, index);
+        const event  = new RoundIndexAppEvent(Slot.RoundHoldDie, index);
         this.appServer.proceedEvent(event);
     }
 
     public freeDie(index:number) {
-        const event  = new RoundIndexAppEvent(Protocol.RoundFreeDie, index);
+        const event  = new RoundIndexAppEvent(Slot.RoundFreeDie, index);
         this.appServer.proceedEvent(event);
     }
 
     public throwDice() {
-        this.appServer.toState(Protocol.RoundThrowDice);
+        this.appServer.toState(Slot.RoundThrowDice);
     }
 
     public setThrowedDice(dice:IDice) { /* Ничего не делаем, все сделает ClientSetThrowedDiceState */}
 
     public selectCard(index:number) {
-        const event  = new RoundIndexAppEvent(Protocol.RoundSelectCard, index);
+        const event  = new RoundIndexAppEvent(Slot.RoundSelectCard, index);
         this.appServer.proceedEvent(event);
     }
 

@@ -7,7 +7,7 @@ import {
     RoundEventType
 } from "../../../model/coreGameplay/round/Rounds";
 import {Dice, IDice} from "../../../model/coreGameplay/Dices";
-import {Protocol} from "../../Protocol";
+import {Slot} from "../../Protocol";
 import {CellType} from "../../../model/coreGameplay/Cells";
 
 /** Описывает брошенные игроком кости */
@@ -15,7 +15,7 @@ export class AppEventSetThrowedDice extends AppEvent {
     public dice:IDice;
 
     constructor(dice:IDice) {
-        super(Protocol.RoundSetThrowedDice);
+        super(Slot.RoundSetThrowedDice);
         this.dice = dice;
     }
 
@@ -33,7 +33,7 @@ export class ServerRoundThrowDiceState extends ServerSideAppState implements IRo
     private model:IRound;
 
     constructor(clientApp:IRemoteApplication) {
-        super(Protocol.RoundThrowDice, clientApp);
+        super(Slot.RoundThrowDice, clientApp);
     }
 
     public linkModel(model:IRound) {
@@ -62,7 +62,7 @@ export class ClientSetThrowedDiceState extends AppState implements IDeserializer
     private model:IRound;
 
     constructor() {
-        super(Protocol.RoundSetThrowedDice);
+        super(Slot.RoundSetThrowedDice);
     }
 
     public linkModel(model:IRound) {
@@ -85,7 +85,7 @@ export class ClientSetThrowedDiceState extends AppState implements IDeserializer
 export class RoundIndexAppEvent extends AppEvent {
     public index:number;
 
-    constructor(slot:Protocol, index:number) {
+    constructor(slot:Slot, index:number) {
         super(slot);
         this.index = index;
     }
@@ -96,7 +96,7 @@ export class ServerRoundHoldDieState extends ServerSideAppState implements IRoun
     private model:IRound;
 
     constructor(appClient:IRemoteApplication) {
-        super(Protocol.RoundHoldDie, appClient);
+        super(Slot.RoundHoldDie, appClient);
     }
 
     public linkModel(model:IRound) {
@@ -116,7 +116,7 @@ export class ServerRoundHoldDieState extends ServerSideAppState implements IRoun
         if (event.type === RoundEventType.Hold) {
             this.model.removeObserver(this);
 
-            const appEvent = new RoundIndexAppEvent(Protocol.RoundHoldDie, event.index);
+            const appEvent = new RoundIndexAppEvent(Slot.RoundHoldDie, event.index);
             this.appClient.proceedEvent(appEvent);
             this.app.exitToPreviousState();
         }
@@ -128,7 +128,7 @@ export class ClientRoundHoldDieState extends ClientSideAppState {
     private model:IRound;
 
     constructor(appServer:IRemoteApplication) {
-        super(Protocol.RoundHoldDie, appServer);
+        super(Slot.RoundHoldDie, appServer);
     }
 
     public linkModel(model:IRound) {
@@ -150,7 +150,7 @@ export class ServerRoundFreeDieState extends ServerSideAppState implements IRoun
     private model:IRound;
 
     constructor(appClient:IRemoteApplication) {
-        super(Protocol.RoundFreeDie, appClient);
+        super(Slot.RoundFreeDie, appClient);
     }
 
     public linkModel(model:IRound) {
@@ -170,7 +170,7 @@ export class ServerRoundFreeDieState extends ServerSideAppState implements IRoun
         if (event.type === RoundEventType.Free) {
             this.model.removeObserver(this);
 
-            const appEvent = new RoundIndexAppEvent(Protocol.RoundFreeDie, event.index);
+            const appEvent = new RoundIndexAppEvent(Slot.RoundFreeDie, event.index);
             this.appClient.proceedEvent(appEvent);
             this.app.exitToPreviousState();
         }
@@ -182,7 +182,7 @@ export class ClientRoundFreeDieState extends ClientSideAppState {
     private model:IRound;
 
     constructor(appServer:IRemoteApplication) {
-        super(Protocol.RoundFreeDie, appServer);
+        super(Slot.RoundFreeDie, appServer);
     }
 
     public linkModel(model:IRound) {
@@ -204,7 +204,7 @@ export class ServerRoundSelectCardState extends ServerSideAppState implements IR
     private model:IRound;
 
     constructor(appClient:IRemoteApplication) {
-        super(Protocol.RoundSelectCard, appClient);
+        super(Slot.RoundSelectCard, appClient);
     }
 
     public linkModel(model:IRound) {
@@ -220,7 +220,7 @@ export class ServerRoundSelectCardState extends ServerSideAppState implements IR
         if (event.type === RoundEventType.SelectCard) {
             this.model.removeObserver(this);
 
-            const appEvent = new RoundIndexAppEvent(Protocol.RoundSelectCard, event.index);
+            const appEvent = new RoundIndexAppEvent(Slot.RoundSelectCard, event.index);
             this.appClient.proceedEvent(appEvent);
 
             this.app.exitToPreviousState();
@@ -233,7 +233,7 @@ export class ClientRoundSelectCardState extends ClientSideAppState {
     private model:IRound;
 
     constructor(appServer:IRemoteApplication) {
-        super(Protocol.RoundSelectCard, appServer);
+        super(Slot.RoundSelectCard, appServer);
     }
 
     public linkModel(model:IRound) {
@@ -251,7 +251,7 @@ export class ServerRoundSelectPlayerState extends ServerSideAppState implements 
     private model:IRound;
 
     constructor(appClient:IRemoteApplication, model:IRound) {
-        super(Protocol.RoundSelectPlayer, appClient);
+        super(Slot.RoundSelectPlayer, appClient);
         this.model = model;
     }
 
@@ -264,7 +264,7 @@ export class ServerRoundSelectPlayerState extends ServerSideAppState implements 
         if (event.type === RoundEventType.SelectPlayer) {
             this.model.removeObserver(this);
 
-            const appEvent = new RoundIndexAppEvent(Protocol.RoundSelectPlayer, event.index);
+            const appEvent = new RoundIndexAppEvent(Slot.RoundSelectPlayer, event.index);
             this.appClient.proceedEvent(appEvent);
 
             this.app.exitToPreviousState();
@@ -277,7 +277,7 @@ export class ClientRoundSelectPlayerState extends ClientSideAppState {
     private model:IRound;
 
     constructor(appServer:IRemoteApplication, model:IRound) {
-        super(Protocol.RoundSelectPlayer, appServer);
+        super(Slot.RoundSelectPlayer, appServer);
         this.model = model;
     }
 
@@ -291,7 +291,7 @@ export class RoundFillCellAppEvent extends AppEvent {
     public cellType:CellType;
 
     constructor(cellType:CellType) {
-        super(Protocol.RoundFillCell);
+        super(Slot.RoundFillCell);
         this.cellType = cellType;
     }
 
@@ -307,7 +307,7 @@ export class ServerRoundFillCellState extends ServerSideAppState implements IRou
     private model:IRound;
 
     constructor(appClient:IRemoteApplication) {
-        super(Protocol.RoundFillCell, appClient);
+        super(Slot.RoundFillCell, appClient);
     }
 
     public linkModel(model:IRound) {
@@ -342,7 +342,7 @@ export class ClientRoundFillCellState extends ClientSideAppState {
     private model:IRound;
 
     constructor(appServer:IRemoteApplication) {
-        super(Protocol.RoundFillCell, appServer);
+        super(Slot.RoundFillCell, appServer);
     }
 
     public linkModel(model:IRound) {

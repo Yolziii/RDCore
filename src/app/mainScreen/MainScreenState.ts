@@ -1,6 +1,6 @@
 import {AppState, ClientApplication} from "../Application";
 import {MainScreenController} from "./MainScreenController";
-import {Protocol} from "../Protocol";
+import {Slot} from "../Protocol";
 import {StartRoundEvent} from "../round/StartRoundState";
 import {RoundMode} from "../round/RoundMode";
 
@@ -8,7 +8,7 @@ export class MainScreenState extends AppState {
     private controller:MainScreenController;
 
     constructor() {
-        super(Protocol.StartApplication);
+        super(Slot.StartingClient);
     }
 
     public init() {

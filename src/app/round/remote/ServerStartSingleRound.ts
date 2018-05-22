@@ -1,5 +1,5 @@
 import {IRemoteApplication, ServerSideAppState} from "../../Application";
-import {Protocol} from "../../Protocol";
+import {Slot} from "../../Protocol";
 import {StartRoundEvent} from "../StartRoundState";
 import {
     ServerRoundFillCellState,
@@ -26,7 +26,7 @@ export class ServerStartSingleRound extends ServerSideAppState {
     private fillCellState:ServerRoundFillCellState;
 
     constructor(clientApp:IRemoteApplication) {
-        super(Protocol.ConfirmStartServerRound, clientApp);
+        super(Slot.ConfirmStartServerRound, clientApp);
     }
 
     public init() {
@@ -60,15 +60,15 @@ export class ServerStartSingleRound extends ServerSideAppState {
         this.selectCardState.linkModel(this.model);
         this.fillCellState.linkModel(this.model);
 
-        event.slot = Protocol.Round;
+        event.slot = Slot.Round;
         this.appClient.proceedEvent(event);
     }
 
     public exit() {
-        /*this.app.clearSlot(Protocol.RoundThrowDice);
-        this.app.clearSlot(Protocol.RoundHoldDie);
-        this.app.clearSlot(Protocol.RoundFreeDie);
-        this.app.clearSlot(Protocol.RoundSelectCard);
-        this.app.clearSlot(Protocol.RoundFillCell);*/
+        /*this.app.clearSlot(Slot.RoundThrowDice);
+        this.app.clearSlot(Slot.RoundHoldDie);
+        this.app.clearSlot(Slot.RoundFreeDie);
+        this.app.clearSlot(Slot.RoundSelectCard);
+        this.app.clearSlot(Slot.RoundFillCell);*/
     }
 }

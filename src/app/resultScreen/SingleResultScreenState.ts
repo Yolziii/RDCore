@@ -1,13 +1,13 @@
 import {AppState, ClientApplication} from "../Application";
 import {SingleResultScreenController} from "./SingleResultScreenController";
 import {FinishRoundEvent} from "../round/SingleRoundState";
-import {Protocol} from "../Protocol";
+import {Slot} from "../Protocol";
 
 export class SingleResultScreenState extends AppState {
     private controller:SingleResultScreenController;
 
     constructor() {
-        super(Protocol.RoundResult);
+        super(Slot.RoundResult);
     }
 
     public activate(event:FinishRoundEvent) {
@@ -20,6 +20,6 @@ export class SingleResultScreenState extends AppState {
     }
 
     public closeScreen() {
-        this.app.toState(Protocol.StartApplication);
+        this.app.toState(Slot.StartingClient);
     }
 }

@@ -12,7 +12,8 @@
         "no-trailing-whitespace": false,
         "variable-name": false,
         "max-line-length": false,
-        "trailing-comma": false
+        "trailing-comma": false,
+        "no-bitwise": false
     },
     "rulesDirectory": []
 }

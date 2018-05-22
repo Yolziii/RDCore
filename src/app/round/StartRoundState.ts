@@ -1,5 +1,5 @@
 import {AppEvent, ClientSideAppState, IAppState, IRemoteApplication} from "../Application";
-import {Protocol} from "../Protocol";
+import {Slot} from "../Protocol";
 import {SingleRoundState} from "./SingleRoundState";
 import {QuitRoundState} from "./QuitRoundState";
 import {ClientSingleRoundState} from "./remote/ClientSingleRoundState";
@@ -16,7 +16,7 @@ export class StartRoundEvent extends AppEvent implements IStartRoundEventParams 
     public withJokers:boolean = false;
 
     constructor(params:IStartRoundEventParams) {
-        super(Protocol.StartRound);
+        super(Slot.StartRound);
         this.mode = params.mode;
         if (params.withJokers != null) {
             this.withJokers = params.withJokers;
@@ -32,7 +32,7 @@ export class StartRoundState extends ClientSideAppState implements IAppState {
     private clientSingleRound: ClientSingleRoundState;
 
     constructor(appServer:IRemoteApplication) {
-        super(Protocol.StartRound, appServer);
+        super(Slot.StartRound, appServer);
 
         this.singleRoundState = new SingleRoundState();
         this.singleResultScreenState = new SingleResultScreenState();
@@ -49,7 +49,7 @@ export class StartRoundState extends ClientSideAppState implements IAppState {
                 this.app.fillSlot(this.singleResultScreenState);
                 this.app.fillSlot(this.immediatelyQuitState);
 
-                event.slot = Protocol.Round; // Подменяем получателя события
+                event.slot = Slot.Round; // Подменяем получателя события
                 this.app.proceedEvent(event);
                 break;
 
@@ -58,21 +58,21 @@ export class StartRoundState extends ClientSideAppState implements IAppState {
                 this.app.fillSlot(this.singleResultScreenState);
                 this.app.fillSlot(this.immediatelyQuitState);
 
-                event.slot = Protocol.ConfirmStartServerRound; // Подменяем получателя события
+                event.slot = Slot.ConfirmStartServerRound; // Подменяем получателя события
                 this.appServer.proceedEvent(event);
                 break;
         }
     }
 
     public exit() {
-        this.app.clearSlot(Protocol.Round);
-        this.app.clearSlot(Protocol.RoundResult);
-        this.app.clearSlot(Protocol.RoundQuit);
+        this.app.clearSlot(Slot.Round);
+        this.app.clearSlot(Slot.RoundResult);
+        this.app.clearSlot(Slot.RoundQuit);
 
-        this.app.clearSlot(Protocol.RoundSetThrowedDice);
-        this.app.clearSlot(Protocol.RoundHoldDie);
-        this.app.clearSlot(Protocol.RoundFreeDie);
-        this.app.clearSlot(Protocol.RoundSelectCard);
-        this.app.clearSlot(Protocol.RoundFillCell);
+        this.app.clearSlot(Slot.RoundSetThrowedDice);
+        this.app.clearSlot(Slot.RoundHoldDie);
+        this.app.clearSlot(Slot.RoundFreeDie);
+        this.app.clearSlot(Slot.RoundSelectCard);
+        this.app.clearSlot(Slot.RoundFillCell);
     }
 }

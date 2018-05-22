@@ -1,4 +1,4 @@
-import {Protocol} from "./Protocol";
+import {Slot} from "./Protocol";
 import {IDictionary, IDictionaryInt} from "../util/Dictionaries";
 import {RDErrorCode} from "../model/RDErrorCode";
 import RDError from "../model/RDError";
@@ -12,10 +12,10 @@ import {Logger} from "../util/Logger";
 export interface IRemoteApplication {
     /**
      * Переходит в указанное состояние
-     * @param {Protocol} slot Идентификатор состояния
+     * @param {Slot} slot Идентификатор состояния
      * @param {IAppEvent} event Параметры перехода, которіе передаются состоянию при активации
      */
-    toState(slot:Protocol);
+    toState(slot:Slot);
 
     /**
      * Переходит в описанное событием состояние
@@ -25,10 +25,10 @@ export interface IRemoteApplication {
 
     /**
      * Выходит из текущего активного состояния и переходит в указанное
-     * @param {Protocol} slot
+     * @param {Slot} slot
      * @param {IAppEvent} event
      */
-    exitToState(slot:Protocol);
+    exitToState(slot:Slot);
 
     /**
      * Выходит из текущего состояние и переходит в описанное событием состояние
@@ -50,13 +50,13 @@ export interface IApplication extends IRemoteApplication {
     fillSlot(state: IAppState);
 
     /** Освобождает указанный слот состояния */
-    clearSlot(slot:Protocol);
+    clearSlot(slot:Slot);
 
     /**
      * Возвращает состояние в указанном слоте
-     * @param {Protocol} slot
+     * @param {Slot} slot
      */
-    getState(slot:Protocol);
+    getState(slot:Slot);
 }
 
 export interface IClientApplication {
@@ -126,14 +126,14 @@ export class Application implements IApplication {
             }
             this._currentState = targetState;
 
-            Logger.info("<wakeup> for: " + Protocol[slot]);
+            this.logStateMethod("wakeup", slot);
             targetState.wakeup(event);
         } else {
             this.holdActive(targetState.doesPutActiveToSleep);
 
             this._currentState = targetState;
 
-            Logger.info("<activate> for: " + Protocol[slot]);
+            this.logStateMethod("active", slot);
             targetState.activate(event);
         }
     }
@@ -159,7 +159,7 @@ export class Application implements IApplication {
         this.toState(state.slot);
     }
 
-    public getState(slot:Protocol):IAppState {
+    public getState(slot:Slot):IAppState {
         const state = this.slots[slot];
         if (state == null) {
             // TODO: Exception
@@ -167,11 +167,15 @@ export class Application implements IApplication {
         return state;
     }
 
-    public prototypeFor(slot:Protocol):any {
+    public prototypeFor(slot:Slot):any {
         if (this.eventPrototypes[slot] == null) {
             throw new RDError(RDErrorCode.UNDEFINED, `Unknown prototype for slot ${slot}`);
         }
         return this.eventPrototypes[slot];
+    }
+
+    protected logStateMethod(method:string, slot:Slot) {
+        Logger.info("<activate> for: " + Slot[slot]);
     }
 
     private exit(state:IAppState, newOne:IAppState=null) {
@@ -221,6 +225,10 @@ export class ClientMirrorApplication extends Application {
     public get connection():ClientConnection {
         return this._connection;
     }
+
+    protected logStateMethod(method:string, slot:Slot) {
+        Logger.info("(" + this.connection.id + ") <" +method + "> for: " + Slot[slot]);
+    }
 }
 
 export interface IAppEvent extends ISerializable {
@@ -254,7 +262,7 @@ export interface IAppState extends IDeserializer {
     readonly app:Application;
 
     /** Слот состояния приложения, в который будет помещено состояние */
-    readonly slot:Protocol;
+    readonly slot:Slot;
 
     /** Должен ли переход в это состояние приводить к приостановке текущего состояния */
     readonly doesPutActiveToSleep:boolean;
@@ -282,10 +290,10 @@ export interface IAppState extends IDeserializer {
 }
 
 export class AppState implements IAppState, IDeserializer {
-    protected _slot:Protocol;
+    protected _slot:Slot;
     protected _app:Application;
 
-    constructor(slot:Protocol) {
+    constructor(slot:Slot) {
         this._slot = slot;
     }
 
@@ -293,7 +301,7 @@ export class AppState implements IAppState, IDeserializer {
         this._app = app;
     }
 
-    public get slot():Protocol {
+    public get slot():Slot {
         return this._slot;
     }
 
@@ -329,7 +337,7 @@ export class AppState implements IAppState, IDeserializer {
 export class ClientSideAppState extends AppState {
     protected appServer:IRemoteApplication;
 
-    constructor(slot:Protocol, appServer:IRemoteApplication) {
+    constructor(slot:Slot, appServer:IRemoteApplication) {
         super(slot);
         this.appServer = appServer;
     }
@@ -339,7 +347,7 @@ export class ClientSideAppState extends AppState {
 export class ServerSideAppState extends AppState {
     protected appClient:IRemoteApplication;
 
-    constructor(slot:Protocol, appClient:IRemoteApplication) {
+    constructor(slot:Slot, appClient:IRemoteApplication) {
         super(slot);
         this.appClient = appClient;
     }

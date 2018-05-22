@@ -1,7 +1,7 @@
 import {AppEvent, AppState, ClientApplication, IAppState} from "../Application";
 import {IRound} from "../../model/coreGameplay/round/Rounds";
 import {JokerThrower, Thrower} from "../../model/coreGameplay/round/Thrower";
-import {Protocol} from "../Protocol";
+import {Slot} from "../Protocol";
 import {SingleRound} from "../../model/coreGameplay/round/SingleRound";
 import {RoundPlayer} from "../../model/coreGameplay/round/RoundPlayer";
 import {SingleRoundController} from "./SingleRoundController";
@@ -22,7 +22,7 @@ export class FinishRoundEvent extends AppEvent {
     public readonly model:IRound;
 
     constructor(model:IRound) {
-        super(Protocol.RoundResult);
+        super(Slot.RoundResult);
         this.model = model;
     }
 }
@@ -37,7 +37,7 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
     private cellsX3Factory:ICardCellsFactory;
 
     constructor() {
-        super(Protocol.Round);
+        super(Slot.Round);
     }
 
     public init() {
@@ -69,8 +69,10 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
                 this.cardFactory.createCard(this.cellsX3Factory)
             );
         } else if (event.mode === RoundMode.SingleRound) {
-            const card = this.cardFactory.createCard(this.cellsFactory);
-            player = new RoundPlayer(thrower, card);
+            player = new RoundPlayer(
+                thrower,
+                this.cardFactory.createCard(this.cellsFactory)
+            );
         }
 
         this.model = new SingleRound(player);
@@ -87,6 +89,6 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
     }
 
     public quitRound() {
-        this.app.toState(Protocol.RoundQuit);
+        this.app.toState(Slot.RoundQuit);
     }
 }

@@ -1,93 +1,121 @@
-import * as SocketIO from "socket.io";
-import {Application, IAppEvent, IAppState, IRemoteApplication} from "../app/Application";
-import {Protocol} from "../app/Protocol";
+import {IAppEvent, IApplication, IAppState, IRemoteApplication} from "../app/Application";
+import {Slot} from "../app/Protocol";
 import {Logger} from "../util/Logger";
 
-export class ClientConnection implements IRemoteApplication {
-    private clientSocket:SocketIO.Socket;
-    private clientNumber:number;
-    private appMirror:Application;
+export interface ISocket {
+    on(message:string, handler);
+    removeAllListeners(message:string);
+    emit(message:string, params?);
+}
 
-    constructor(socket:SocketIO.Socket, clientNumber:number, client:Application) {
+export class ClientConnection implements IRemoteApplication {
+    private clientSocket:ISocket;
+    private clientId:string;
+    private appMirror:IApplication;
+
+    constructor(socket:ISocket, client:IApplication) {
         this.clientSocket = socket;
-        this.clientNumber = clientNumber;
         this.appMirror = client;
 
-        Logger.info("Connected client #%s.", clientNumber);
-
-        this.clientSocket.on("disconnect", this.onDisconnected);
-
-        this.clientSocket.on("toState", (slot) => {
-            Logger.info(`-> [toState] ${slot}`);
-            this.appMirror.toState(slot);
-        });
-
-        this.clientSocket.on("proceedEvent", (eventSJON) => {
-            Logger.info(`-> [proceedEvent] ${JSON.stringify(eventSJON)}`);
-
-            const state:IAppState = this.appMirror.getState(eventSJON.slot);
-            const event:IAppEvent = state.fromJSON(eventSJON);
-            this.appMirror.proceedEvent(event);
-        });
-
-        this.clientSocket.on("exitToState", (slot) => {
-            Logger.info(`-> [exitToState] ${slot}`);
-
-            this.appMirror.exitToState(slot);
-        });
-
-        this.clientSocket.on("proceedExitToEvent", (eventSJON) => {
-            Logger.info(`-> [proceedExitToEvent] ${JSON.stringify(eventSJON)}`);
-
-            const state:IAppState = this.appMirror.getState(eventSJON.slot);
-            const event:IAppEvent = state.fromJSON(eventSJON);
-            this.appMirror.proceedExitToEvent(event);
-        });
-
-        this.clientSocket.on("exitToPreviousState", () => {
-            Logger.info(`-> [exitToPreviousState]`);
-            this.appMirror.exitToPreviousState();
-        });
+        Logger.info("Connected client");
+        this.linkCurrentSocket();
     }
 
-    public toState(slot:Protocol) {
-        Logger.info(`[toState] ${slot} ->`);
+    public linkClientId(id:string) {
+        Logger.info("New client id: %s", id);
+        this.clientId = id;
+    }
+
+    public changeSocket(socket:ISocket) {
+        Logger.warning("Client #%s changed connection", this.id);
+        this.unlinkCurrentSocket();
+        this.linkCurrentSocket();
+    }
+
+    public get id():string {
+        return this.clientId;
+    }
+
+    public toState(slot:Slot) {
+        Logger.debug(`[toState] ${slot} -> (${this.clientId})`);
         this.clientSocket.emit("toState", slot);
     }
 
     public proceedEvent(event:IAppEvent) {
         const json = event.toJSON();
 
-        Logger.info(`[proceedEvent] ${JSON.stringify(json)} ->`);
+        Logger.debug(`[proceedEvent] ${JSON.stringify(json)} -> (${this.clientId})`);
         this.clientSocket.emit("proceedEvent", json);
     }
 
-    public exitToState(slot:Protocol) {
-        Logger.info(`[exitToState] ${slot} ->`);
+    public exitToState(slot:Slot) {
+        Logger.debug(`[exitToState] ${slot} -> (${this.clientId})`);
         this.clientSocket.emit("exitToState", slot);
     }
 
     public proceedExitToEvent(event:IAppEvent) {
         const json = event.toJSON();
 
-        Logger.info(`[proceedExitToEvent] ${JSON.stringify(json)} ->`);
+        Logger.debug(`[proceedExitToEvent] ${JSON.stringify(json)} -> (${this.clientId})`);
         this.clientSocket.emit("proceedExitToEvent", json);
     }
 
     public exitToPreviousState() {
-        Logger.info(`[exitToPreviousState] -> `);
+        Logger.debug(`[exitToPreviousState] -> (${this.clientId})`);
         this.clientSocket.emit("exitToPreviousState");
     }
 
-    public get id():number {
-        return this.clientNumber;
+    private linkCurrentSocket() {
+        const self = this;
+
+        this.clientSocket.on("disconnect", () => {
+            Logger.warning("Client #%s disconnected", self.clientId);
+        });
+
+        this.clientSocket.on("toState", (slot) => {
+            Logger.debug(`(${self.clientId}) -> [toState] ${slot}`);
+            self.appMirror.toState(slot);
+        });
+
+        this.clientSocket.on("proceedEvent", (eventSJON) => {
+            Logger.debug(`(${self.clientId}) -> [proceedEvent] ${JSON.stringify(eventSJON)}`);
+
+            const state:IAppState = self.appMirror.getState(eventSJON.slot);
+            const event:IAppEvent = state.fromJSON(eventSJON);
+            self.appMirror.proceedEvent(event);
+        });
+
+        this.clientSocket.on("exitToState", (slot) => {
+            Logger.debug(`(${self.clientId}) -> [exitToState] ${slot}`);
+
+            self.appMirror.exitToState(slot);
+        });
+
+        this.clientSocket.on("proceedExitToEvent", (eventSJON) => {
+            Logger.debug(`(${self.clientId}) -> [proceedExitToEvent] ${JSON.stringify(eventSJON)}`);
+
+            const state:IAppState = self.appMirror.getState(eventSJON.slot);
+            const event:IAppEvent = state.fromJSON(eventSJON);
+            self.appMirror.proceedExitToEvent(event);
+        });
+
+        this.clientSocket.on("exitToPreviousState", () => {
+            Logger.debug(`(${self.clientId}) -> [exitToPreviousState]`);
+            self.appMirror.exitToPreviousState();
+        });
+    }
+
+    private unlinkCurrentSocket() {
+        this.clientSocket.removeAllListeners("disconnect");
+        this.clientSocket.removeAllListeners("toState");
+        this.clientSocket.removeAllListeners("proceedEvent");
+        this.clientSocket.removeAllListeners("exitToState");
+        this.clientSocket.removeAllListeners("proceedExitToEvent");
+        this.clientSocket.removeAllListeners("exitToPreviousState");
     }
 
     private onReconnected():void {
         // TODO: Восстанавливать состояние клиента
     }
 
-    private onDisconnected():void {
-        Logger.warning("Client #%s disconnected", this.clientNumber);
-    }
 }

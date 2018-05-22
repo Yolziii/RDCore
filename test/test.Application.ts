@@ -132,7 +132,7 @@ describe("Application", () => {
 
     /*it("Last state in parent", () => {
         app.toState(TestProtocol.StartRound);
-        assert.equal(app.currentState.hasParent(TestProtocol.StartApplication), true);
+        assert.equal(app.currentState.hasParent(TestProtocol.StartingClient), true);
     });*/
 
     it("clearSlot()", () => {

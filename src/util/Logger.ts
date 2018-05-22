@@ -2,8 +2,6 @@ import chalk from "chalk";
 // tslint:disable:no-var-requires
 const util = require("util");
 
-// tslint:disable: no-bitwise
-
 export const enum LogLevel {
     Error = 1,
     Warning = 2,
