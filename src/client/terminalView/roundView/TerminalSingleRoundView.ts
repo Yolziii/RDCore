@@ -3,18 +3,22 @@ import {ATerminalView} from "../ATerminalView";
 // tslint:disable-next-line:no-var-requires
 const ansiEsc = require("ansi-escapes");
 
-import {IRound, IRoundObserver, RoundEvent} from "../../../model/coreGameplay/round/Rounds";
 import chalk from "chalk";
-import {IDictionary} from "../../../util/Dictionaries";
-import {CellType} from "../../../model/coreGameplay/Cells";
 import {TerminalThrowButton} from "./TerminalThrowButton";
 import {IKeyListener, TerminalAppView} from "../TerminalAppView";
 import {TerminalDieView} from "./TerminalDieView";
 import {Config} from "../../../model/Config";
-import {DieType, IDice} from "../../../model/coreGameplay/Dices";
-import {IRoundView, SingleRoundController} from "../../../app/round/SingleRoundController";
+import {SingleRoundController} from "../../controllers/round/SingleRoundController";
 import {TerminalQuitButton} from "./TerminalQuitButton";
 import {TerminalCardView} from "./TerminalCardView";
+import {IRoundView} from "../../controllers/round/IRoundView";
+import {CellType} from "../../../model/coreGameplay/cells/CellType";
+import {DieType} from "../../../model/coreGameplay/dice/DieType";
+import {IDice} from "../../../model/coreGameplay/dice/IDice";
+import {IRound} from "../../../model/coreGameplay/round/IRound";
+import {IRoundObserver} from "../../../model/coreGameplay/round/IRoundObserver";
+import {RoundEvent} from "../../../model/coreGameplay/round/events/RoundEvent";
+import {IDictionary} from "../../../util/IDictionary";
 
 const keyForType:IDictionary<string> = {
     [CellType.Ones]: "1",

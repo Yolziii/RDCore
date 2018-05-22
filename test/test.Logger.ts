@@ -1,7 +1,10 @@
 import * as assert from "assert";
 import "mocha";
-import {ConsoleLogger, Logger, LogLevel, StreamLogger} from "../src/util/Logger";
 import chalk from "chalk";
+import {LogLevel} from "../src/util/logger/LogLevel";
+import {ConsoleLogger} from "../src/util/logger/ConsoleLogger";
+import {StreamLogger} from "../src/util/logger/StreamLogger";
+import {Logger} from "../src/util/logger/Logger";
 
 // tslint:disable:no-var-requires
 const MemoryStream = require("memory-stream");

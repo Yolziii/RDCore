@@ -1,6 +1,7 @@
 import {ATerminalView} from "../ATerminalView";
-import {DieType, IDie} from "../../../model/coreGameplay/Dices";
 import chalk from "chalk";
+import {IDie} from "../../../model/coreGameplay/dice/IDie";
+import {DieType} from "../../../model/coreGameplay/dice/DieType";
 
 export class TerminalDieView extends ATerminalView {
     private die:IDie;

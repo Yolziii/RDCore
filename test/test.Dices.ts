@@ -1,9 +1,12 @@
 import * as assert from "assert";
 import "mocha";
-import {IDie, Dice, DieType, IDice} from "../src/model/coreGameplay/Dices";
 import {Config} from "../src/model/Config";
 import {RDErrorCode} from "../src/model/RDErrorCode";
 import RDError from "../src/model/RDError";
+import {IDie} from "../src/model/coreGameplay/dice/IDie";
+import {DieType} from "../src/model/coreGameplay/dice/DieType";
+import {IDice} from "../src/model/coreGameplay/dice/IDice";
+import {Dice} from "../src/model/coreGameplay/dice/Dice";
 
 describe("Dices", () => {
     function die1(): IDie {

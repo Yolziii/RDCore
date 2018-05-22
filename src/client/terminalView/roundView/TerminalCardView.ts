@@ -1,10 +1,11 @@
 import {ATerminalView} from "../ATerminalView";
-import {CellType, ICell} from "../../../model/coreGameplay/Cells";
 import {TermninalCellView} from "./TerminalCellView";
-import {ICard} from "../../../model/coreGameplay/Cards";
-import {IRound} from "../../../model/coreGameplay/round/Rounds";
-import {IDictionary} from "../../../util/Dictionaries";
 import chalk from "chalk";
+import {CellType} from "../../../model/coreGameplay/cells/CellType";
+import {ICell} from "../../../model/coreGameplay/cells/ICell";
+import {IRound} from "../../../model/coreGameplay/round/IRound";
+import {ICard} from "../../../model/coreGameplay/Card";
+import {IDictionary} from "../../../util/IDictionary";
 
 const cardKeys = ["f1", "f2", "f3"];
 

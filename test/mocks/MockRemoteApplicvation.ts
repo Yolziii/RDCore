@@ -1,5 +1,6 @@
-import {IAppEvent, IRemoteApplication} from "../../src/app/Application";
-import {Slot} from "../../src/app/Protocol";
+import {IRemoteApplication} from "../../src/app/IRemoteApplication";
+import {Slot} from "../../src/app/Slot";
+import {IAppEvent} from "../../src/app/IAppEvent";
 
 export class MockRemoteApplicvation implements IRemoteApplication {
     public toState(slot:Slot) {/**/}

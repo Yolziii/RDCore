@@ -1,13 +1,18 @@
 import * as assert from "assert";
 import "mocha";
-import {IRoundObserver, RoundEvent, RoundEventType} from "../src/model/coreGameplay/round/Rounds";
-import {Card, ICard} from "../src/model/coreGameplay/Cards";
-import {CellType} from "../src/model/coreGameplay/Cells";
 import {Config} from "../src/model/Config";
 import {Thrower} from "../src/model/coreGameplay/round/Thrower";
-import {Dice, DieType, IDice, IDie} from "../src/model/coreGameplay/Dices";
 import {RoundPlayer} from "../src/model/coreGameplay/round/RoundPlayer";
-import {CardCellsFactory} from "../src/model/coreGameplay/round/CardCellFactories";
+import {IDie} from "../src/model/coreGameplay/dice/IDie";
+import {Dice} from "../src/model/coreGameplay/dice/Dice";
+import {IDice} from "../src/model/coreGameplay/dice/IDice";
+import {Card, ICard} from "../src/model/coreGameplay/Card";
+import {DefaultCardCellsFactory} from "../src/model/coreGameplay/round/cardCellFactories/DefaultCardCellsFactory";
+import {CellType} from "../src/model/coreGameplay/cells/CellType";
+import {DieType} from "../src/model/coreGameplay/dice/DieType";
+import {IRoundObserver} from "../src/model/coreGameplay/round/IRoundObserver";
+import {RoundEvent} from "../src/model/coreGameplay/round/events/RoundEvent";
+import {RoundEventType} from "../src/model/coreGameplay/round/RoundEventType";
 
 describe("RoundPlayer", () => {
     let DIE1:IDie;
@@ -26,7 +31,7 @@ describe("RoundPlayer", () => {
 
     beforeEach(() => {
         const card:ICard = new Card(
-            new CardCellsFactory(),
+            new DefaultCardCellsFactory(),
             CellType.Ones,
             CellType.RoyalDice,
             CellType.ServiceFinalScore

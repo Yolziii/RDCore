@@ -2,13 +2,13 @@ import { createServer, Server } from "http";
 import * as express from "express";
 import * as SocketIO from "socket.io";
 import {ClientConnection} from "./ClientConnection";
-import {ClientMirrorApplication} from "../app/Application";
-import {Slot} from "../app/Protocol";
-import {ServerWaitState} from "../app/mainScreen/ServerWaitState";
-import {ServerStartSingleRound} from "../app/round/remote/ServerStartSingleRound";
-import {Logger} from "../util/Logger";
+import {ServerWaitState} from "./statesServer/ServerWaitState";
+import {ServerStartSingleRound} from "./statesServer/round/ServerStartSingleRound";
+import {Logger} from "../util/logger/Logger";
 import {ServerEventPrototypes} from "./ServerEventPrototypes";
-import {ServerPlayerAuthentification} from "../app/mainScreen/ServerPlayerAuthentification";
+import {ServerPlayerAuthentification} from "./statesServer/ServerPlayerAuthentification";
+import {ClientMirrorApplication} from "./ClientMirrorApplication";
+import {Slot} from "../app/Slot";
 
 export class ServerTransport {
     private eapp: express.Application;

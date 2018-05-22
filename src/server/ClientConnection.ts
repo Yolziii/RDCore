@@ -1,6 +1,9 @@
-import {IAppEvent, IApplication, IAppState, IRemoteApplication} from "../app/Application";
-import {Slot} from "../app/Protocol";
-import {Logger} from "../util/Logger";
+import {Logger} from "../util/logger/Logger";
+import {IRemoteApplication} from "../app/IRemoteApplication";
+import {ILocalApplication} from "../app/ILocalApplication";
+import {Slot} from "../app/Slot";
+import {IAppEvent} from "../app/IAppEvent";
+import {IAppState} from "../app/IAppState";
 
 export interface ISocket {
     on(message:string, handler);
@@ -9,11 +12,11 @@ export interface ISocket {
 }
 
 export class ClientConnection implements IRemoteApplication {
-    private clientSocket:ISocket;
-    private clientId:string;
-    private appMirror:IApplication;
+    private clientSocket: ISocket;
+    private clientId: string;
+    private appMirror: ILocalApplication;
 
-    constructor(socket:ISocket, client:IApplication) {
+    constructor(socket: ISocket, client: ILocalApplication) {
         this.clientSocket = socket;
         this.appMirror = client;
 
@@ -21,7 +24,7 @@ export class ClientConnection implements IRemoteApplication {
         this.linkCurrentSocket();
     }
 
-    public linkClientId(id:string) {
+    public linkClientId(id: string) {
         Logger.info("New client id: %s", id);
         this.clientId = id;
     }
@@ -117,5 +120,4 @@ export class ClientConnection implements IRemoteApplication {
     private onReconnected():void {
         // TODO: Восстанавливать состояние клиента
     }
-
 }

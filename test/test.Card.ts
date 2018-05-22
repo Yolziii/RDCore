@@ -1,9 +1,12 @@
 import * as assert from "assert";
 import "mocha";
-import {CellType, IPlayableCell} from "../src/model/coreGameplay/Cells";
-import {ICard, Card} from "../src/model/coreGameplay/Cards";
-import {Dice, IDie, DieType} from "../src/model/coreGameplay/Dices";
-import {CardCellsFactory} from "../src/model/coreGameplay/round/CardCellFactories";
+import {Card, ICard} from "../src/model/coreGameplay/Card";
+import {IPlayableCell} from "../src/model/coreGameplay/cells/IPlayableCell";
+import {CellType} from "../src/model/coreGameplay/cells/CellType";
+import {DefaultCardCellsFactory} from "../src/model/coreGameplay/round/cardCellFactories/DefaultCardCellsFactory";
+import {IDie} from "../src/model/coreGameplay/dice/IDie";
+import {DieType} from "../src/model/coreGameplay/dice/DieType";
+import {Dice} from "../src/model/coreGameplay/dice/Dice";
 
 describe("Card", () => {
     let card: ICard;
@@ -12,7 +15,7 @@ describe("Card", () => {
     let cellTwos: IPlayableCell;
 
     beforeEach(() => {
-        card = new Card(new CardCellsFactory(), CellType.Ones, CellType.Twos, CellType.ServiceFinalScore);
+        card = new Card(new DefaultCardCellsFactory(), CellType.Ones, CellType.Twos, CellType.ServiceFinalScore);
         cellOnes = card.getCellPlayable(CellType.Ones);
         cellTwos = card.getCellPlayable(CellType.Twos);
     });

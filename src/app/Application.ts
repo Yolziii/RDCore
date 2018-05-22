@@ -1,73 +1,16 @@
-import {Slot} from "./Protocol";
-import {IDictionary, IDictionaryInt} from "../util/Dictionaries";
 import {RDErrorCode} from "../model/RDErrorCode";
 import RDError from "../model/RDError";
-import {IViewFactory} from "../client/IViewFactory";
-import {ClientConnection} from "../server/ClientConnection";
-import {Logger} from "../util/Logger";
-
-/**
- * APT
- */
-export interface IRemoteApplication {
-    /**
-     * Переходит в указанное состояние
-     * @param {Slot} slot Идентификатор состояния
-     * @param {IAppEvent} event Параметры перехода, которіе передаются состоянию при активации
-     */
-    toState(slot:Slot);
-
-    /**
-     * Переходит в описанное событием состояние
-     * @param {IAppEvent} event
-     */
-    proceedEvent(event:IAppEvent);
-
-    /**
-     * Выходит из текущего активного состояния и переходит в указанное
-     * @param {Slot} slot
-     * @param {IAppEvent} event
-     */
-    exitToState(slot:Slot);
-
-    /**
-     * Выходит из текущего состояние и переходит в описанное событием состояние
-     * @param {IAppEvent} event
-     */
-    proceedExitToEvent(event:IAppEvent);
-
-    /**
-     * Выходит из текущего состояния и возвращается к предыдущему
-     */
-    exitToPreviousState();
-}
-
-export interface IApplication extends IRemoteApplication {
-    /** Текущее состояние */
-    readonly currentState:IAppState;
-
-    /** Заполняет указанный слот указанным состоянием */
-    fillSlot(state: IAppState);
-
-    /** Освобождает указанный слот состояния */
-    clearSlot(slot:Slot);
-
-    /**
-     * Возвращает состояние в указанном слоте
-     * @param {Slot} slot
-     */
-    getState(slot:Slot);
-}
-
-export interface IClientApplication {
-    /** Фабрика, создающая представления */
-    readonly viewFactory:IViewFactory;
-}
+import {Logger} from "../util/logger/Logger";
+import {ILocalApplication} from "./ILocalApplication";
+import {IAppEvent} from "./IAppEvent";
+import {IAppState} from "./IAppState";
+import {Slot} from "./Slot";
+import {IDictionaryInt} from "../util/IDictionaryInt";
 
 /**
  * Каркас для приложений проекта (клиента, сервера, утилит и тестовых окружений)
  */
-export class Application implements IApplication {
+export class Application implements ILocalApplication {
     private _currentState:IAppState = null;
 
     private slots:IDictionaryInt<IAppState> = {};
@@ -178,7 +121,7 @@ export class Application implements IApplication {
         Logger.info("<activate> for: " + Slot[slot]);
     }
 
-    private exit(state:IAppState, newOne:IAppState=null) {
+    private exit(state:IAppState) {
         state.sleep();
         state.exit();
 
@@ -196,159 +139,5 @@ export class Application implements IApplication {
             this._currentState.sleep();
         }
         this.stack.push(this._currentState);
-    }
-}
-
-export class ClientApplication extends Application implements IClientApplication {
-    private _viewFactory:IViewFactory;
-    private _appServer:IRemoteApplication;
-
-    constructor(eventPrototypes:any, viewFactory:IViewFactory, appServer:IRemoteApplication) {
-        super(eventPrototypes);
-        this._viewFactory = viewFactory;
-        this._appServer = appServer;
-    }
-
-    public get viewFactory():IViewFactory {
-        return this._viewFactory;
-    }
-}
-
-/** Зеркало клиента на строне сервера */
-export class ClientMirrorApplication extends Application {
-    private _connection:ClientConnection;
-
-    public linkConnection(connection:ClientConnection) {
-        this._connection = connection;
-    }
-
-    public get connection():ClientConnection {
-        return this._connection;
-    }
-
-    protected logStateMethod(method:string, slot:Slot) {
-        Logger.info("(" + this.connection.id + ") <" +method + "> for: " + Slot[slot]);
-    }
-}
-
-export interface IAppEvent extends ISerializable {
-    slot: number;
-}
-
-export interface ISerializable {
-    /** Сериализует объект в JSON */
-    toJSON(): any;
-}
-
-export interface IDeserializer {
-    /** Десериализует объект из JSON'a */
-    fromJSON(json: any): any;
-}
-
-export class AppEvent implements IAppEvent, ISerializable {
-    public slot:number;
-
-    constructor(slot:number) {
-        this.slot = slot;
-    }
-
-    public toJSON() {
-        return Object.assign({}, this);
-    }
-}
-
-export interface IAppState extends IDeserializer {
-    /** Приложение, для которого состояние было создано */
-    readonly app:Application;
-
-    /** Слот состояния приложения, в который будет помещено состояние */
-    readonly slot:Slot;
-
-    /** Должен ли переход в это состояние приводить к приостановке текущего состояния */
-    readonly doesPutActiveToSleep:boolean;
-
-    /** Определяет, должно ли приложение очистить слот после выхода из состочния  */
-    readonly clearSlotAfterExit:boolean;
-
-    /** Привязывает состояние к слоту и приложению */
-    linkApplication(app:Application);
-
-    /** Инициализирует состояние до его активации */
-    init();
-
-    /** Активирует состояние и добавляет его в стек текущих состояний */
-    activate(event:IAppEvent);
-
-    /** Выходит из состояние и освобождает его ресурсы */
-    exit();
-
-    /** Приостанавливает состояние, но оставляет его в стеке текущих состояний */
-    sleep();
-
-    /** Снова делает активным приостановленное ранее состояние */
-    wakeup(event:IAppEvent);
-}
-
-export class AppState implements IAppState, IDeserializer {
-    protected _slot:Slot;
-    protected _app:Application;
-
-    constructor(slot:Slot) {
-        this._slot = slot;
-    }
-
-    public linkApplication(app:Application) {
-        this._app = app;
-    }
-
-    public get slot():Slot {
-        return this._slot;
-    }
-
-    public get app():Application {
-        return this._app;
-    }
-
-    public sleep() {/**/}
-
-    public wakeup() {/**/}
-
-    public activate(event:IAppEvent = null) {/**/}
-
-    public exit() {/**/}
-
-    public init() {/**/}
-
-    public get clearSlotAfterExit() {
-        return false;
-    }
-
-    public get doesPutActiveToSleep() {
-        return true;
-    }
-
-    public fromJSON(json: any): AppEvent {
-        const event = Object.create(this.app.prototypeFor(json.slot));
-        return Object.assign(event, json);
-    }
-}
-
-/** Состояние клиента, которое должно взаимодействовать с сервером */
-export class ClientSideAppState extends AppState {
-    protected appServer:IRemoteApplication;
-
-    constructor(slot:Slot, appServer:IRemoteApplication) {
-        super(slot);
-        this.appServer = appServer;
-    }
-}
-
-/** Состояние сервера, которое должно взаимодействовать с клиентом */
-export class ServerSideAppState extends AppState {
-    protected appClient:IRemoteApplication;
-
-    constructor(slot:Slot, appClient:IRemoteApplication) {
-        super(slot);
-        this.appClient = appClient;
     }
 }

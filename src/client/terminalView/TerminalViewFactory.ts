@@ -1,10 +1,10 @@
 import {IViewFactory} from "../IViewFactory";
-import {IMainScreenView} from "../../app/mainScreen/MainScreenController";
 import {TerminalMainScreenView} from "./TerminalMainScreenView";
 import {TerminalSingleRoundView} from "./roundView/TerminalSingleRoundView";
 import {TerminalRoundResutScreenView} from "./TerminalRoundResutScreenView";
-import {IRoundView} from "../../app/round/SingleRoundController";
-import {IResultScreenView} from "../../app/resultScreen/SingleResultScreenController";
+import {IRoundView} from "../controllers/round/IRoundView";
+import {IResultScreenView} from "../controllers/resultScreen/IResultScreenView";
+import {IMainScreenView} from "../controllers/IMainScreenView";
 
 export class TerminalViewFactory implements IViewFactory {
     public createMainScreenView():IMainScreenView {

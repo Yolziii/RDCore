@@ -1,13 +1,17 @@
-import {
-    IRoundObserver, IRoundObserverSubject, IRoundPlayer, RoundEvent, RoundEventFillCell, RoundEventIndex,
-    RoundEventThrowedDice,
-    RoundEventType
-} from "./Rounds";
-import {ICard} from "../Cards";
 import {Thrower} from "./Thrower";
-import {Dice, IDice} from "../Dices";
 import {Config} from "../../Config";
-import {CellType} from "../Cells";
+import {CellType} from "../cells/CellType";
+import {Dice} from "../dice/Dice";
+import {IDice} from "../dice/IDice";
+import {IRoundObserverSubject} from "./IRoundObserverSubject";
+import {IRoundPlayer} from "./IRoundPlayer";
+import {ICard} from "../Card";
+import {IRoundObserver} from "./IRoundObserver";
+import {RoundEventType} from "./RoundEventType";
+import {RoundEventIndex} from "./events/RoundEventIndex";
+import {RoundEventFillCell} from "./events/RoundEventFillCell";
+import {RoundEventThrowedDice} from "./events/RoundEventThrowedDice";
+import {RoundEvent} from "./events/RoundEvent";
 
 export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
     private _cards:ICard[] = [];

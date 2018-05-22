@@ -1,10 +1,10 @@
-import {
-    IRound, IRoundPlayer, IRoundObserver
-} from "./Rounds";
-import {ICard} from "../Cards";
-import {IDice} from "../Dices";
-import {CellType} from "../Cells";
 import {RoundPlayer} from "./RoundPlayer";
+import {CellType} from "../cells/CellType";
+import {IDice} from "../dice/IDice";
+import {IRound} from "./IRound";
+import {IRoundPlayer} from "./IRoundPlayer";
+import {ICard} from "../Card";
+import {IRoundObserver} from "./IRoundObserver";
 
 export class SingleRound implements IRound {
     public readonly totalPlayers:number = 1;

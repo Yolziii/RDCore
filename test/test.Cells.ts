@@ -1,18 +1,30 @@
 import * as assert from "assert";
 import "mocha";
-import {Dice, IDie, DieType, JokerDie} from "../src/model/coreGameplay/Dices";
-import {
-    Bonus63Cell, BonusRoyalCell, BottomPointsCell, CellType,
-    ChanceCell, FinalScoreCell, FullHouseCell, IPlayableCell, IServiceCell, KindCell, MultiplierCellDecorator,
-    NumberCell, RoyalDiceCell,
-    StraightCell,
-    TopPointsCell,
-    TotalBonusesCell,
-    TotalNumbersCell, TotalNumbersWithBonusCell,
-} from "../src/model/coreGameplay/Cells";
+import {DieType} from "../src/model/coreGameplay/dice/DieType";
+import {IDie} from "../src/model/coreGameplay/dice/IDie";
+import {Dice} from "../src/model/coreGameplay/dice/Dice";
+import {IPlayableCell} from "../src/model/coreGameplay/cells/IPlayableCell";
+import {CellType} from "../src/model/coreGameplay/cells/CellType";
+import {NumberCell} from "../src/model/coreGameplay/cells/playable/NumberCell";
+import {JokerDie} from "../src/model/coreGameplay/dice/JokerDie";
+import {RoyalDiceCell} from "../src/model/coreGameplay/cells/playable/RoyalDiceCell";
 import {Config} from "../src/model/Config";
-import {ICard, Card} from "../src/model/coreGameplay/Cards";
-import {CardCellsFactory} from "../src/model/coreGameplay/round/CardCellFactories";
+import {ChanceCell} from "../src/model/coreGameplay/cells/playable/ChanceCell";
+import {KindCell} from "../src/model/coreGameplay/cells/playable/KindCell";
+import {FullHouseCell} from "../src/model/coreGameplay/cells/playable/FullHouseCell";
+import {StraightCell} from "../src/model/coreGameplay/cells/playable/StraightCell";
+import {Card, ICard} from "../src/model/coreGameplay/Card";
+import {DefaultCardCellsFactory} from "../src/model/coreGameplay/round/cardCellFactories/DefaultCardCellsFactory";
+import {TotalNumbersCell} from "../src/model/coreGameplay/cells/service/TotalNumbersCell";
+import {IServiceCell} from "../src/model/coreGameplay/cells/IServiceCell";
+import {Bonus63Cell} from "../src/model/coreGameplay/cells/service/Bonus63Cell";
+import {TotalNumbersWithBonusCell} from "../src/model/coreGameplay/cells/service/TotalNumbersWithBonusCell";
+import {TopPointsCell} from "../src/model/coreGameplay/cells/service/TopPointsCell";
+import {BottomPointsCell} from "../src/model/coreGameplay/cells/service/BottomPointsCell";
+import {BonusRoyalCell} from "../src/model/coreGameplay/cells/service/BonusRoyalCell";
+import {TotalBonusesCell} from "../src/model/coreGameplay/cells/service/TotalBonusesCell";
+import {FinalScoreCell} from "../src/model/coreGameplay/cells/service/FinalScoreCell";
+import {MultiplierCellDecorator} from "../src/model/coreGameplay/cells/decorators/MultiplierCellDecorator";
 
 describe("Cells", () => {
     const die1: IDie = {type: DieType.Value, value: 1};
@@ -345,7 +357,7 @@ describe("Cells", () => {
 
         beforeEach(() => {
             card = new Card(
-                new CardCellsFactory(),
+                new DefaultCardCellsFactory(),
 
                 CellType.Ones,
                 CellType.Twos,

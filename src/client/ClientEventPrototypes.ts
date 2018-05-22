@@ -1,7 +1,9 @@
-import {Slot} from "../app/Protocol";
-import {StartRoundEvent} from "../app/round/StartRoundState";
-import {AppEventSetThrowedDice, RoundFillCellAppEvent, RoundIndexAppEvent} from "../app/round/remote/StatesAndEvents";
-import {AppEventPlayerAuthentication} from "../app/mainScreen/ServerPlayerAuthentification";
+import {Slot} from "../app/Slot";
+import {AppEventPlayerAuthentication} from "../events/AppEventPlayerAuthentication";
+import {StartRoundEvent} from "../events/round/StartRoundEvent";
+import {AppEventSetThrowedDice} from "../events/round/AppEventSetThrowedDice";
+import {RoundFillCellAppEvent} from "../events/round/RoundFillCellAppEvent";
+import {RoundIndexAppEvent} from "../events/round/RoundIndexAppEvent";
 
 export const ClientEventPrototypes = {
     [Slot.Round]: StartRoundEvent.prototype,

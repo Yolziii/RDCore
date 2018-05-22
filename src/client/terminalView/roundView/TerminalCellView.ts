@@ -1,6 +1,9 @@
 import {ATerminalView} from "../ATerminalView";
 import chalk from "chalk";
-import {CellType, ICell, IPlayableCell, IServiceCell} from "../../../model/coreGameplay/Cells";
+import {ICell} from "../../../model/coreGameplay/cells/ICell";
+import {IServiceCell} from "../../../model/coreGameplay/cells/IServiceCell";
+import {IPlayableCell} from "../../../model/coreGameplay/cells/IPlayableCell";
+import {CellType} from "../../../model/coreGameplay/cells/CellType";
 
 export class TermninalCellView extends ATerminalView {
     private cell: ICell;

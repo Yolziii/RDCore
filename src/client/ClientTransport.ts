@@ -1,18 +1,21 @@
 import * as SocketIO from "socket.io-client";
-import {IAppEvent, IApplication, IAppState, IRemoteApplication} from "../app/Application";
-import {Slot} from "../app/Protocol";
-import {Logger} from "../util/Logger";
+import {Logger} from "../util/logger/Logger";
+import {IRemoteApplication} from "../app/IRemoteApplication";
+import {ILocalApplication} from "../app/ILocalApplication";
+import {IAppState} from "../app/IAppState";
+import {IAppEvent} from "../app/IAppEvent";
+import {Slot} from "../app/Slot";
 
 export class ClientTransport implements IRemoteApplication {
     private serverSocket: SocketIOClient.Socket;
     private serverUrl: string;
-    private app:IApplication;
+    private app:ILocalApplication;
 
     constructor(serverUrl:string) {
         this.serverUrl = serverUrl;
     }
 
-    public linkApplication(app:IApplication) {
+    public linkApplication(app:ILocalApplication) {
         this.app = app;
     }
 

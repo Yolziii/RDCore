@@ -1,12 +1,14 @@
-import {ClientApplication} from "./app/Application";
-import {Slot} from "./app/Protocol";
-import {MainScreenState} from "./app/mainScreen/MainScreenState";
+import {MainScreenState} from "./client/statesClient/MainScreenState";
 import {TerminalViewFactory} from "./client/terminalView/TerminalViewFactory";
-import {StartRoundState} from "./app/round/StartRoundState";
+import {StartRoundState} from "./client/statesClient/round/StartRoundState";
 import {ClientTransport} from "./client/ClientTransport";
 import {ClientEventPrototypes} from "./client/ClientEventPrototypes";
-import {StreamLogger, Logger} from "./util/Logger";
-import {ClientPlayerAuthentication} from "./app/mainScreen/ServerPlayerAuthentification";
+import {Logger} from "./util/logger/Logger";
+import {ClientPlayerAuthenticationState} from "./client/statesClient/ClientPlayerAuthenticationState";
+import {IPlayer} from "./app/IPlayer";
+import {ClientApplication} from "./client/ClientApplication";
+import {Slot} from "./app/Slot";
+import {StreamLogger} from "./util/logger/StreamLogger";
 
 // tslint:disable:no-var-requires
 const commander = require("commander");
@@ -29,7 +31,7 @@ commander
     .option("-u, --user [string]", "JSON file with user params")
     .parse(process.argv);
 
-let user = {
+let user:IPlayer = {
     name: "Default User"
 };
 
@@ -49,14 +51,12 @@ const app:ClientApplication = new ClientApplication(ClientEventPrototypes, viewF
 
 remoteServer.linkApplication(app);
 
-app.fillSlot(new ClientPlayerAuthentication(user, remoteServer));
+app.fillSlot(new ClientPlayerAuthenticationState(user, remoteServer));
 app.fillSlot(new MainScreenState());
 app.fillSlot(new StartRoundState(remoteServer));
 
 app.toState(Slot.PlayerAuthentication);
 
 (function wait() {
-    if (true) {
-        setTimeout(wait, 1000);
-    }
+    setTimeout(wait, 1000);
 })();

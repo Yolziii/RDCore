@@ -1,5 +1,9 @@
-import {Dice, DieType, IDice, IDie, JokerDie} from "../Dices";
-import {IRoundPlayer} from "./Rounds";
+import {IDice} from "../dice/IDice";
+import {Dice} from "../dice/Dice";
+import {IDie} from "../dice/IDie";
+import {DieType} from "../dice/DieType";
+import {JokerDie} from "../dice/JokerDie";
+import {IRoundPlayer} from "./IRoundPlayer";
 
 export class Thrower {
     private player: IRoundPlayer;

@@ -1,9 +1,13 @@
 import * as assert from "assert";
 import "mocha";
-import {AppEvent, Application, AppState, ClientApplication, IAppEvent} from "../src/app/Application";
+import {Application} from "../src/app/Application";
 import {MockViewFactory} from "./mocks/mock.View";
 import {ClientEventPrototypes} from "../src/client/ClientEventPrototypes";
 import {MockRemoteApplicvation} from "./mocks/MockRemoteApplicvation";
+import {AppState} from "../src/app/AppState";
+import {IAppEvent} from "../src/app/IAppEvent";
+import {ClientApplication} from "../src/client/ClientApplication";
+import {AppEvent} from "../src/app/AppEvent";
 
 describe("Application", () => {
     enum TestProtocol {

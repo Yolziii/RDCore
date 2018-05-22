@@ -1,6 +1,6 @@
-import {IMainScreenView} from "../app/mainScreen/MainScreenController";
-import {IRoundView} from "../app/round/SingleRoundController";
-import {IResultScreenView} from "../app/resultScreen/SingleResultScreenController";
+import {IRoundView} from "./controllers/round/IRoundView";
+import {IResultScreenView} from "./controllers/resultScreen/IResultScreenView";
+import {IMainScreenView} from "./controllers/IMainScreenView";
 
 export interface IViewFactory {
     createMainScreenView():IMainScreenView;
