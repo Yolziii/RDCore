@@ -1,5 +1,10 @@
+import RDError from "../RDError";
+import {RDErrorCode} from "../RDErrorCode";
+
 export class PDie {
     private _faces:number;
+
+    private allCombinations = {};
 
     public constructor(faces:number) {
         this._faces = faces;
@@ -21,7 +26,12 @@ export class PDie {
      * @returns {number} 0-1
      */
     public oneOfFacesProbability(...faces:number[]):number {
-        // TODO: Проверять список граней на уникальность
+        for (let i = 0; i<faces.length; i++) {
+            if (faces.indexOf(faces[i], i+1) !== -1) {
+                throw new RDError(RDErrorCode.NOT_UNIQ_DIE);
+            }
+        }
+
         let probability = 0;
         for (const face of faces) {
             probability += this.faceProbability(face);
@@ -30,7 +40,13 @@ export class PDie {
         return probability;
     }
 
-    public templateProbability2(...template:string[]):number {
+    /**
+     * Вероятность выпадания комбинации, соответствущей указанному шаблону.
+     * Каждый элемент шаблона может бить или конкретным числом или частью регулярного выражения, описывающим одно число
+     * @param {string} template
+     * @returns {number}
+     */
+    public templateProbability(...template:string[]):number {
         // Составляем словарь уникальных символов
         const words:string[] = [];
         const faces:number[] = [];
@@ -47,9 +63,11 @@ export class PDie {
                 faces.push(+word);
                 continue;
             }
-            if (words.indexOf(word) === -1) {
-                words.push(word);
+            if (words.indexOf(word) !== -1) {
+                throw new RDError(RDErrorCode.NOT_UNIQ_DIE_TEMPLATE);
             }
+
+            words.push(word);
         }
 
         // Если в шаблоне не нашлось символов для замены, то просто возвращаем вероятность для комбинации
@@ -57,30 +75,23 @@ export class PDie {
             return this.allProbability(faces);
         }
 
-        const templateCombination = [];
+        // Составляем проверочные регулярные выражения
+        const initialOrder = [];
         for (let i = 0; i < template.length; i++) {
-            templateCombination.push(i);
+            initialOrder.push(i);
         }
-        const allTemplateCombinations = calculateCombinations(templateCombination);
+        const allOrders = combineDice(initialOrder);
         const regexps = [];
-        for (const tc of allTemplateCombinations) {
+        for (const regOrder of allOrders) {
             let reg = "";
-            for (const i of tc) {
+            for (const i of regOrder) {
                 reg += regs[i];
             }
             regexps.push(new RegExp(reg,"im"));
         }
 
-        // Генерируем все возможные комбинации для указанного количества костей
-        const combs:number[][] = findCombinationsWithRepetitions(6, template.length);
-        const allCombinations:number[][] = [];
-        for (const comb of combs) {
-            const newCombs = calculateCombinations(comb);
-            for (const newComb of newCombs) {
-                add(newComb, allCombinations);
-            }
-        }
-
+        // Сравниваем каждую комбинацию с получившимися шаблонами
+        const allCombinations = this.getAllCombinations(template.length);
         let total = 0;
         for (const comb of allCombinations) {
             let find = false;
@@ -100,7 +111,7 @@ export class PDie {
             total++;
         }
 
-        return Math.pow(this.faceProbability(1), template.length) * total;
+        return total / allCombinations.length;
     }
 
     /**
@@ -112,13 +123,30 @@ export class PDie {
     }
 
     private allProbability(faces:number[]):number {
-        const totalCombs = calculateCombinations(faces).length;
+        const totalCombs = combineDice(faces).length;
         return Math.pow(this.faceProbability(1), faces.length) * totalCombs;
+    }
+
+    private getAllCombinations(totalDies:number):number[][] {
+        if (this.allCombinations[totalDies] == null) {
+            const candidates:number[][] = generateRepeatedDices(6, totalDies);
+            const combinations:number[][] = [];
+            for (const comb of candidates) {
+                const newCombs = combineDice(comb);
+                for (const newComb of newCombs) {
+                    add(newComb, combinations);
+                }
+            }
+
+            this.allCombinations[totalDies] = combinations;
+        }
+        return this.allCombinations[totalDies];
     }
 }
 
 let facts:number[] = [];
-let combinations:number[][] = [];
+let combinedDices:number[][] = [];
+let repeatedDices:number[][] = [];
 
 function fact(n):number {
     if (n === 0 || n === 1) {
@@ -185,56 +213,54 @@ function sortNumbers(a:number, b:number):number {
  * Возвращает все комбинации указанных граней
  * @returns {number[][]}
  */
-export const calculateCombinations = function(faces:number[]):number[][] {
+export const combineDice = function(faces:number[]):number[][] {
     const sortedFaces = faces.sort(this.sortNumbers);
 
     facts = [];
-    combinations = [sortedFaces];
+    combinedDices = [sortedFaces];
 
     for (let i = 0; i < fact(sortedFaces.length); i++) {
-        add(permutation(i, sortedFaces.slice(0)), combinations);
+        add(permutation(i, sortedFaces.slice(0)), combinedDices);
     }
 
-    return combinations;
+    return combinedDices;
 };
 
-function nextSet(a:number[], n:number, m:number) {
+function next(set:number[], n:number, m:number) {
     let j:number = m - 1;
-    while (j >= 0 && a[j] === n) {
+    while (j >= 0 && set[j] === n) {
         j--;
     }
     if (j < 0) {
         return false;
     }
-    if (a[j] >= n) {
+    if (set[j] >= n) {
         j--;
     }
-    a[j]++;
+    set[j]++;
     if (j === m - 1) {
         return true;
     }
     for (let k = j + 1; k < m; k++) {
-        a[k] = 1;
+        set[k] = 1;
     }
     return true;
 }
 
-let findedCombinations:number[][] = [];
-
-function findCombinationsWithRepetitions(n:number, m:number) {
-    const a:number[] = [];
-    findedCombinations = [];
+function generateRepeatedDices(n:number, m:number) {
+    const set:number[] = [];
+    repeatedDices = [];
 
     const h:number = n > m ? n : m;
     for (let i = 0; i < h; i++) {
-        a[i] = 1;
+        set[i] = 1;
     }
 
-    add(a, findedCombinations, m);
+    add(set, repeatedDices, m);
 
-    while (nextSet(a, n, m)) {
-        add(a, findedCombinations, m);
+    while (next(set, n, m)) {
+        add(set, repeatedDices, m);
     }
 
-    return findedCombinations;
+    return repeatedDices;
 }
