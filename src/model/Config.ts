@@ -1,4 +1,5 @@
 export let Config = {
+    DefaultDiceFaces: 6,
     DefaultDiceSize: 5,
     DefaultThrows: 3,
 

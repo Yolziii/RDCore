@@ -4,6 +4,9 @@ import {combineDice, PDie} from "../src/model/probability/PDie";
 import {round} from "../src/model/probability/round";
 import RDError from "../src/model/RDError";
 import {RDErrorCode} from "../src/model/RDErrorCode";
+import {NumberCellProbability} from "../src/model/probability/NumberCellProbability";
+import {Dice} from "../src/model/coreGameplay/dice/Dice";
+import {DieType} from "../src/model/coreGameplay/dice/DieType";
 
 describe("Probability", () => {
     describe("One die", () => {
@@ -65,7 +68,7 @@ describe("Probability", () => {
         });
     });
 
-    describe("Combinations", () => {
+    describe("Combine dice", () => {
         it("Combinations of 1-1", () => {
             assert.deepEqual(combineDice([1, 1]), [[1,1]]);
         });
@@ -153,6 +156,115 @@ describe("Probability", () => {
             } catch(e) {
                 assert.equal((e as RDError).code, RDErrorCode.NOT_UNIQ_DIE_TEMPLATE);
             }
+        });
+    });
+
+    describe("Combination, accomodation", () => {
+        it("Accomodation", () => {
+            const die:PDie = new PDie(6);
+
+            assert.equal(die.accomodation(1), 6);
+            assert.equal(die.accomodation(2), 30);
+            assert.equal(die.accomodation(3), 120);
+            assert.equal(die.accomodation(4), 360);
+            assert.equal(die.accomodation(5), 720);
+        });
+
+        it("Repeated accomodation", () => {
+            const die:PDie = new PDie(6);
+
+            assert.equal(die.repeatedAccomodation(1), 6);
+            assert.equal(die.repeatedAccomodation(2), 36);
+            assert.equal(die.repeatedAccomodation(3), 216);
+            assert.equal(die.repeatedAccomodation(4), 1296);
+            assert.equal(die.repeatedAccomodation(5), 7776);
+        });
+
+        it("Combinations", () => {
+            const die:PDie = new PDie(6);
+            assert.equal(die.combinations(1), 6);
+            assert.equal(die.combinations(2), 15);
+            assert.equal(die.combinations(3), 20);
+            assert.equal(die.combinations(4), 15);
+            assert.equal(die.combinations(5), 6);
+            assert.equal(die.combinations(6), 1);
+        });
+
+        it("Combinations with repetition", () => {
+            const die:PDie = new PDie(6);
+            assert.equal(die.repeatedCombinations(1), 6);
+            assert.equal(die.repeatedCombinations(2), 21);
+            assert.equal(die.repeatedCombinations(3), 56);
+            assert.equal(die.repeatedCombinations(4), 126);
+            assert.equal(die.repeatedCombinations(5), 252);
+            assert.equal(die.repeatedCombinations(6), 462);
+        });
+    });
+
+    describe("Bernulli method", () => {
+        it("Probability of 1-1", () => {
+            const die:PDie = new PDie(6);
+            const p = 1/6; // Вероятность выпадения единицы - 1/6
+            const n = 2; // Бросаем 2 кубика
+            const k = 2; // Единица долджна выпасть 2 раза
+
+            assert.equal(round(die.bernulliMethod(p, n, k)), round(1/36));
+        });
+
+        it("Probability of 1-1-1-1-X", () => {
+            const die:PDie = new PDie(6);
+            const p = 1/6; // вероятность события для одной кости
+            const n = 5; // бросков кубика
+            const k = 4; // сколько раз должно повториться событие
+
+            assert.equal(round(die.bernulliMethod(p, n, k)), round(25/7776));
+            // assert.equal(round(die.templateProbability("1", "1", "1", "1", "[23456]")), round(25/7776));
+        });
+
+        it("Probability of !6-!6-!6", () => {
+            const die:PDie = new PDie(6);
+            const p = 5/6; // вероятность события для одной кости
+            const n = 3; // бросков кубика
+            const k = 3; // сколько раз должно повториться событие
+
+            assert.equal(round(die.bernulliMethod(p, n, k)), round(125/216));
+            // assert.equal(die.templateProbability("a|[12345]", "b|[12345]", "c|[12345]"), 125/216);
+        });
+    });
+
+    describe("NumberCellProbability", () => {
+        const fiveNumbersProbability = new PDie(6).bernulliMethod(1/6, 5, 3);
+        const threeNumbersProbability = new PDie(6).bernulliMethod(1/6, 3, 3);
+        const dieOne = {type: DieType.Value, value:1};
+
+        it("Probability of ones (5)", () => {
+            const pcell = new NumberCellProbability(1);
+
+            const dice:Dice = new Dice();
+            assert.equal(pcell.probability(dice, 3), fiveNumbersProbability * 3);
+            // assert.equal(new PDie(6).templateProbability("1", "1", "1", "b|[23456]"),  new PDie(6).bernulliMethod(1/6, 4, 3));
+        });
+
+        it("Probability of ones (3)", () => {
+            const pcell = new NumberCellProbability(1);
+
+            const dice:Dice = new Dice(dieOne, dieOne);
+            assert.equal(pcell.probability(dice, 3), threeNumbersProbability * 3);
+            assert.equal(new PDie(6).templateProbability("1", "1", "1"), threeNumbersProbability);
+        });
+
+        it("Probability of ones (1)", () => {
+            const pcell = new NumberCellProbability(1);
+
+            const dice:Dice = new Dice(dieOne, dieOne, dieOne, dieOne);
+            assert.equal(pcell.probability(dice, 3), 1/6 * 3);
+        });
+
+        it("Probability of ones 0)", () => {
+            const pcell = new NumberCellProbability(1);
+
+            const dice:Dice = new Dice(dieOne, dieOne, dieOne, dieOne, dieOne);
+            assert.equal(pcell.probability(dice, 3), 1);
         });
     });
 });
