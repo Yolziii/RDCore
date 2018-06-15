@@ -7,6 +7,8 @@ import {RDErrorCode} from "../src/model/RDErrorCode";
 import {NumberCellProbability} from "../src/model/probability/NumberCellProbability";
 import {Dice} from "../src/model/coreGameplay/dice/Dice";
 import {DieType} from "../src/model/coreGameplay/dice/DieType";
+import {RoyalDiceCellProbability} from "../src/model/probability/RoyalDiceCellProbability";
+import {JokerDie} from "../src/model/coreGameplay/dice/JokerDie";
 
 describe("Probability", () => {
     describe("One die", () => {
@@ -240,31 +242,88 @@ describe("Probability", () => {
         it("Probability of ones (5)", () => {
             const pcell = new NumberCellProbability(1);
 
-            const dice:Dice = new Dice();
-            assert.equal(pcell.probability(dice, 3), fiveNumbersProbability * 3);
+            pcell.calculate(new Dice(), 3);
+            assert.equal(pcell.probability(), fiveNumbersProbability * 3);
             // assert.equal(new PDie(6).templateProbability("1", "1", "1", "b|[23456]"),  new PDie(6).bernulliMethod(1/6, 4, 3));
         });
 
         it("Probability of ones (3)", () => {
             const pcell = new NumberCellProbability(1);
 
-            const dice:Dice = new Dice(dieOne, dieOne);
-            assert.equal(pcell.probability(dice, 3), threeNumbersProbability * 3);
+            pcell.calculate(new Dice(dieOne, dieOne), 3);
+            assert.equal(pcell.probability(), threeNumbersProbability * 3);
             assert.equal(new PDie(6).templateProbability("1", "1", "1"), threeNumbersProbability);
+        });
+
+        it("Probability of ones (3) with Joker", () => {
+            const pcell = new NumberCellProbability(1);
+
+            pcell.calculate(new Dice(dieOne, JokerDie), 3);
+            assert.equal(pcell.probability(), threeNumbersProbability * 3);
+        });
+
+        it("Recommended dies", () => {
+            const pcell = new NumberCellProbability(1);
+            pcell.calculate(new Dice(dieOne, JokerDie), 3);
+
+            const toHold = pcell.recommendedCombinations()[0];
+            assert.equal(toHold.total, 2);
+            assert.equal(toHold.getFrom(0).value, 1);
+            assert.equal(toHold.getFrom(1).type, DieType.Joker);
         });
 
         it("Probability of ones (1)", () => {
             const pcell = new NumberCellProbability(1);
-
-            const dice:Dice = new Dice(dieOne, dieOne, dieOne, dieOne);
-            assert.equal(pcell.probability(dice, 3), 1/6 * 3);
+            pcell.calculate(new Dice(dieOne, dieOne, dieOne, dieOne), 3);
+            assert.equal(pcell.probability(), 1/6 * 3);
         });
 
         it("Probability of ones 0)", () => {
             const pcell = new NumberCellProbability(1);
+            pcell.calculate(new Dice(dieOne, dieOne, dieOne, dieOne, dieOne), 3);
+            assert.equal(pcell.probability(), 1);
+        });
+    });
 
-            const dice:Dice = new Dice(dieOne, dieOne, dieOne, dieOne, dieOne);
-            assert.equal(pcell.probability(dice, 3), 1);
+    describe("RoyalDiceCellProbability", () => {
+        const dieOne = {type: DieType.Value, value:1};
+        const dieTwo = {type: DieType.Value, value:2};
+
+        it("Probability of ones (5)", () => {
+            const pcell = new RoyalDiceCellProbability();
+            pcell.calculate(new Dice(), 3);
+            assert.equal(pcell.probability(), 3/7776);
+        });
+
+        it("Probability of ones (4)", () => {
+            const pcell = new RoyalDiceCellProbability();
+            pcell.calculate(new Dice(dieOne, dieTwo), 3);
+            assert.equal(pcell.probability(), 3/1296);
+        });
+
+        it("Probability of ones (0)", () => {
+            const pcell = new RoyalDiceCellProbability();
+            pcell.calculate(new Dice(dieOne, dieOne, dieOne, dieOne, dieOne), 3);
+            assert.equal(pcell.probability(), 1);
+        });
+
+        it("Recommended dies", () => {
+            const pcell = new RoyalDiceCellProbability();
+
+            pcell.calculate(new Dice(dieOne, dieTwo, JokerDie), 3);
+            const dices = pcell.recommendedCombinations();
+
+            assert.equal(dices.length, 2);
+
+            const die1 = dices[0];
+            assert.equal(die1.total, 2);
+            assert.equal(die1.getFrom(0).value, 1);
+            assert.equal(die1.getFrom(1).type, DieType.Joker);
+
+            const die2 = dices[1];
+            assert.equal(die2.total, 2);
+            assert.equal(die2.getFrom(0).value, 1);
+            assert.equal(die2.getFrom(1).type, DieType.Joker);
         });
     });
 });
