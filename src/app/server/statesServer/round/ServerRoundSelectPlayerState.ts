@@ -1,5 +1,5 @@
 import {ServerSideAppState} from "../../../ServerSideAppState";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {RoundIndexAppEvent} from "../../../events/round/RoundIndexAppEvent";
 import {IRemoteApplication} from "../../../IRemoteApplication";
 import {IRoundObserver} from "../../../../model/coreGameplay/round/IRoundObserver";
@@ -12,7 +12,7 @@ export class ServerRoundSelectPlayerState extends ServerSideAppState implements 
     private model:IRound;
 
     constructor(appClient:IRemoteApplication, model:IRound) {
-        super(Slot.RoundSelectPlayer, appClient);
+        super(StateSlot.RoundSelectPlayer, appClient);
         this.model = model;
     }
 
@@ -25,7 +25,7 @@ export class ServerRoundSelectPlayerState extends ServerSideAppState implements 
         if (event.type === RoundEventType.SelectPlayer) {
             this.model.removeObserver(this);
 
-            const appEvent = new RoundIndexAppEvent(Slot.RoundSelectPlayer, event.index);
+            const appEvent = new RoundIndexAppEvent(StateSlot.RoundSelectPlayer, event.index);
             this.appClient.proceedEvent(appEvent);
 
             this.app.exitToPreviousState();

@@ -1,4 +1,4 @@
-import {Slot} from "./Slot";
+import {StateSlot} from "./StateSlot";
 import {IAppEvent} from "./IAppEvent";
 
 /**
@@ -7,9 +7,9 @@ import {IAppEvent} from "./IAppEvent";
 export interface IRemoteApplication {
     /**
      * Переходит в указанное состояние
-     * @param {Slot} slot Идентификатор состояния
+     * @param {StateSlot} slot Идентификатор состояния
      */
-    toState(slot:Slot);
+    toState(slot:StateSlot);
 
     /**
      * Переходит в описанное событием состояние
@@ -19,9 +19,9 @@ export interface IRemoteApplication {
 
     /**
      * Выходит из текущего активного состояния и переходит в указанное
-     * @param {Slot} slot
+     * @param {StateSlot} slot
      */
-    exitToState(slot:Slot);
+    exitToState(slot:StateSlot);
 
     /**
      * Выходит из текущего состояние и переходит в описанное событием состояние

@@ -14,7 +14,7 @@ import {IRound} from "../../../../model/coreGameplay/round/IRound";
 import {ICardFactory} from "../../../../model/coreGameplay/round/cardFactories/ICardFactory";
 import {ICardCellsFactory} from "../../../../model/coreGameplay/round/cardCellFactories/ICardCellsFactory";
 import {IRemoteApplication} from "../../../IRemoteApplication";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {StandardCardFactory} from "../../../../model/coreGameplay/round/cardFactories/StandardCardFactory";
 import {DefaultCardCellsFactory} from "../../../../model/coreGameplay/round/cardCellFactories/DefaultCardCellsFactory";
 import {LazyThrower, Thrower} from "../../../../model/coreGameplay/round/Thrower";
@@ -43,7 +43,7 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
     private clientFillCellState:ClientRoundFillCellState;
 
     constructor(appServer:IRemoteApplication) {
-        super(Slot.Round, appServer);
+        super(StateSlot.Round, appServer);
     }
 
     public init() {
@@ -84,7 +84,7 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
     }
 
     public exit() {
-        this.appServer.toState(Slot.WaitForClient);
+        this.appServer.toState(StateSlot.WaitForClient);
         this.controller.exit();
     }
 
@@ -96,30 +96,30 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
     }
 
     public quitRound() {
-        this.app.toState(Slot.RoundQuit);
+        this.app.toState(StateSlot.RoundQuit);
     }
 
     // ------------------------------------------------------------------
     // Меняющие модели методы делегируем серверу
     // ------------------------------------------------------------------
     public holdDie(index:number) {
-        const event  = new RoundIndexAppEvent(Slot.RoundHoldDie, index);
+        const event  = new RoundIndexAppEvent(StateSlot.RoundHoldDie, index);
         this.appServer.proceedEvent(event);
     }
 
     public freeDie(index:number) {
-        const event  = new RoundIndexAppEvent(Slot.RoundFreeDie, index);
+        const event  = new RoundIndexAppEvent(StateSlot.RoundFreeDie, index);
         this.appServer.proceedEvent(event);
     }
 
     public throwDice() {
-        this.appServer.toState(Slot.RoundThrowDice);
+        this.appServer.toState(StateSlot.RoundThrowDice);
     }
 
     public setThrowedDice(dice:IDice) { /* Ничего не делаем, все сделает ClientSetThrowedDiceState */}
 
     public selectCard(index:number) {
-        const event  = new RoundIndexAppEvent(Slot.RoundSelectCard, index);
+        const event  = new RoundIndexAppEvent(StateSlot.RoundSelectCard, index);
         this.appServer.proceedEvent(event);
     }
 
@@ -136,6 +136,7 @@ export class ClientSingleRoundState extends ClientSideAppState implements IRound
     public get totalPlayers():number {return this.localModel.totalPlayers;}
     public get score():number {return this.localModel.score;}
     public get throwsLeft(): number {return this.localModel.throwsLeft;}
+    public get diceSize():number {return this.localModel.diceSize;}
     public get throwed():IDice {return this.localModel.throwed;}
     public get holded():IDice {return this.localModel.holded;}
     public get totalCards():number {return this.localModel.totalCards;}

@@ -35,6 +35,7 @@ export class Thrower {
     }
 
     protected dieFactory(): IDie {
+        // return {type: DieType.Value, value: 6};
         const random = Math.floor(Math.random() * 6) + 1;
         const die = {type: DieType.Value, value: random};
         return die;

@@ -1,5 +1,5 @@
 import {ServerSideAppState} from "../../../ServerSideAppState";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {IRemoteApplication} from "../../../IRemoteApplication";
 import {AppEventSetThrowedDice} from "../../../events/round/AppEventSetThrowedDice";
 import {IRoundObserver} from "../../../../model/coreGameplay/round/IRoundObserver";
@@ -14,7 +14,7 @@ export class ServerRoundThrowDiceState extends ServerSideAppState implements IRo
     private model:IRound;
 
     constructor(clientApp:IRemoteApplication) {
-        super(Slot.RoundThrowDice, clientApp);
+        super(StateSlot.RoundThrowDice, clientApp);
     }
 
     public linkModel(model:IRound) {

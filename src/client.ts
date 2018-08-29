@@ -1,7 +1,7 @@
 
 import {Logger} from "./util/logger/Logger";
 import {IPlayer} from "./app/IPlayer";
-import {Slot} from "./app/Slot";
+import {StateSlot} from "./app/StateSlot";
 import {StreamLogger} from "./util/logger/StreamLogger";
 import {TerminalViewFactory} from "./app/client/terminalView/TerminalViewFactory";
 import {ClientTransport} from "./app/client/ClientTransport";
@@ -17,7 +17,7 @@ const fs = require("fs");
 
 // -------------------------------------------------------
 // To read this file use this in PowerShell:
-// Get-Content client.logStateMethod -Wait -Tail 30
+// Get-Content client.log -Wait -Tail 30
 
 const logStream = fs.createWriteStream("./client.log");
 logStream.once("open", (fd) => {/**/});
@@ -56,7 +56,7 @@ app.fillSlot(new ClientPlayerAuthenticationState(user, remoteServer));
 app.fillSlot(new MainScreenState());
 app.fillSlot(new StartRoundState(remoteServer));
 
-app.toState(Slot.PlayerAuthentication);
+app.toState(StateSlot.PlayerAuthentication);
 
 (function wait() {
     setTimeout(wait, 1000);

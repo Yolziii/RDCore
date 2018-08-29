@@ -2,7 +2,7 @@ import {RoundFillCellAppEvent} from "../../../events/round/RoundFillCellAppEvent
 import {ClientSideAppState} from "../../../ClientSideAppState";
 import {IRound} from "../../../../model/coreGameplay/round/IRound";
 import {IRemoteApplication} from "../../../IRemoteApplication";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {AppEventSetThrowedDice} from "../../../events/round/AppEventSetThrowedDice";
 import {CellType} from "../../../../model/coreGameplay/cells/CellType";
 
@@ -12,7 +12,7 @@ export class ClientRoundFillCellState extends ClientSideAppState {
     private model:IRound;
 
     constructor(appServer:IRemoteApplication) {
-        super(Slot.RoundFillCell, appServer);
+        super(StateSlot.RoundFillCell, appServer);
     }
 
     public linkModel(model:IRound) {

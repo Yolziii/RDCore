@@ -7,7 +7,7 @@ import {StartRoundEvent} from "../../../events/round/StartRoundEvent";
 import {IAppState} from "../../../IAppState";
 import {ClientSideAppState} from "../../../ClientSideAppState";
 import {IRemoteApplication} from "../../../IRemoteApplication";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 
 export class StartRoundState extends ClientSideAppState implements IAppState {
     private singleRoundState: SingleRoundState;
@@ -17,7 +17,7 @@ export class StartRoundState extends ClientSideAppState implements IAppState {
     private clientSingleRound: ClientSingleRoundState;
 
     constructor(appServer:IRemoteApplication) {
-        super(Slot.StartRound, appServer);
+        super(StateSlot.StartRound, appServer);
 
         this.singleRoundState = new SingleRoundState();
         this.singleResultScreenState = new SingleResultScreenState();
@@ -34,7 +34,7 @@ export class StartRoundState extends ClientSideAppState implements IAppState {
                 this.app.fillSlot(this.singleResultScreenState);
                 this.app.fillSlot(this.immediatelyQuitState);
 
-                event.slot = Slot.Round; // Подменяем получателя события
+                event.slot = StateSlot.Round; // Подменяем получателя события
                 this.app.proceedEvent(event);
                 break;
 
@@ -43,21 +43,21 @@ export class StartRoundState extends ClientSideAppState implements IAppState {
                 this.app.fillSlot(this.singleResultScreenState);
                 this.app.fillSlot(this.immediatelyQuitState);
 
-                event.slot = Slot.ConfirmStartServerRound; // Подменяем получателя события
+                event.slot = StateSlot.ConfirmStartServerRound; // Подменяем получателя события
                 this.appServer.proceedEvent(event);
                 break;
         }
     }
 
     public exit() {
-        this.app.clearSlot(Slot.Round);
-        this.app.clearSlot(Slot.RoundResult);
-        this.app.clearSlot(Slot.RoundQuit);
+        this.app.clearSlot(StateSlot.Round);
+        this.app.clearSlot(StateSlot.RoundResult);
+        this.app.clearSlot(StateSlot.RoundQuit);
 
-        this.app.clearSlot(Slot.RoundSetThrowedDice);
-        this.app.clearSlot(Slot.RoundHoldDie);
-        this.app.clearSlot(Slot.RoundFreeDie);
-        this.app.clearSlot(Slot.RoundSelectCard);
-        this.app.clearSlot(Slot.RoundFillCell);
+        this.app.clearSlot(StateSlot.RoundSetThrowedDice);
+        this.app.clearSlot(StateSlot.RoundHoldDie);
+        this.app.clearSlot(StateSlot.RoundFreeDie);
+        this.app.clearSlot(StateSlot.RoundSelectCard);
+        this.app.clearSlot(StateSlot.RoundFillCell);
     }
 }

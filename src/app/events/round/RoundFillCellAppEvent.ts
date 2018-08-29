@@ -1,4 +1,4 @@
-import {Slot} from "../../Slot";
+import {StateSlot} from "../../StateSlot";
 import {AppEvent} from "../../AppEvent";
 import {CellType} from "../../../model/coreGameplay/cells/CellType";
 
@@ -7,7 +7,7 @@ export class RoundFillCellAppEvent extends AppEvent {
     public cellType:CellType;
 
     constructor(cellType:CellType) {
-        super(Slot.RoundFillCell);
+        super(StateSlot.RoundFillCell);
         this.cellType = cellType;
     }
 

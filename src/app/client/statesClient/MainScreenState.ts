@@ -3,13 +3,13 @@ import {RoundMode} from "../controllers/round/RoundMode";
 import {ClientApplication} from "../ClientApplication";
 import {StartRoundEvent} from "../../events/round/StartRoundEvent";
 import {AppState} from "../../AppState";
-import {Slot} from "../../Slot";
+import {StateSlot} from "../../StateSlot";
 
 export class MainScreenState extends AppState {
     private controller:MainScreenController;
 
     constructor() {
-        super(Slot.MainScreen);
+        super(StateSlot.MainScreen);
     }
 
     public init() {
@@ -22,7 +22,7 @@ export class MainScreenState extends AppState {
     }
 
     public sleep() {
-        this.controller.sleep();
+        this. controller.sleep();
     }
 
     public toSinglePlayer() {

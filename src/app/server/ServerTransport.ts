@@ -8,7 +8,7 @@ import {Logger} from "../../util/logger/Logger";
 import {ServerEventPrototypes} from "./ServerEventPrototypes";
 import {ServerPlayerAuthentification} from "./statesServer/ServerPlayerAuthentification";
 import {ClientMirrorApplication} from "./ClientMirrorApplication";
-import {Slot} from "../Slot";
+import {StateSlot} from "../StateSlot";
 
 export class ServerTransport {
     private eapp: express.Application;
@@ -42,7 +42,7 @@ export class ServerTransport {
             self.connections.push(connection);
 
             client.linkConnection(connection);
-            client.toState(Slot.WaitForClient);
+            client.toState(StateSlot.WaitForClient);
 
             // TODO: Хранить/восстанавливать сессии, реконнект с других девайсов, подключение к существующей игре
         });

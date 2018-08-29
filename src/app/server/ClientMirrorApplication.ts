@@ -1,6 +1,6 @@
 import {Application} from "../Application";
 import {Logger} from "../../util/logger/Logger";
-import {Slot} from "../Slot";
+import {StateSlot} from "../StateSlot";
 import {ClientConnection} from "./ClientConnection";
 
 /** Зеркало клиента на строне сервера */
@@ -15,7 +15,7 @@ export class ClientMirrorApplication extends Application {
         return this._connection;
     }
 
-    protected logStateMethod(method:string, slot:Slot) {
-        Logger.info("(" + this.connection.id + ") <" +method + "> for: " + Slot[slot]);
+    protected logStateMethod(method:string, slot:StateSlot) {
+        Logger.info("(" + this.connection.id + ") <" +method + "> for: " + StateSlot[slot]);
     }
 }

@@ -1,16 +1,12 @@
 import {AppState} from "../../../AppState";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 
 export class QuitRoundState extends AppState {
     constructor() {
-        super(Slot.RoundQuit);
-    }
-
-    public get doesPutActiveToSleep() {
-        return false;
+        super(StateSlot.RoundQuit);
     }
 
     public activate() {
-        this.app.toState(Slot.MainScreen);
+        this.app.toState(StateSlot.MainScreen);
     }
 }

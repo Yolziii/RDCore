@@ -1,4 +1,4 @@
-import {Slot} from "./Slot";
+import {StateSlot} from "./StateSlot";
 import {IAppState} from "./IAppState";
 import {IRemoteApplication} from "./IRemoteApplication";
 
@@ -13,11 +13,11 @@ export interface ILocalApplication extends IRemoteApplication {
     fillSlot(state: IAppState);
 
     /** Освобождает указанный слот состояния */
-    clearSlot(slot:Slot);
+    clearSlot(slot:StateSlot);
 
     /**
      * Возвращает состояние в указанном слоте
-     * @param {Slot} slot
+     * @param {StateSlot} slot
      */
-    getState(slot:Slot);
+    getState(slot:StateSlot);
 }

@@ -1,7 +1,7 @@
 import {Application} from "./Application";
 import {IDeserializer} from "./IDeserializer";
 import {IAppEvent} from "./IAppEvent";
-import {Slot} from "./Slot";
+import {StateSlot} from "./StateSlot";
 
 /**
  * Стейт, в котором может находится приложение
@@ -11,7 +11,7 @@ export interface IAppState extends IDeserializer {
     readonly app:Application;
 
     /** Слот состояния приложения, в который будет помещено состояние */
-    readonly slot:Slot;
+    readonly slot:StateSlot;
 
     /** Должен ли переход в это состояние приводить к приостановке текущего состояния */
     readonly doesPutActiveToSleep:boolean;

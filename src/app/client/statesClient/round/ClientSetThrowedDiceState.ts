@@ -1,7 +1,7 @@
 import {AppState} from "../../../AppState";
 import {IDeserializer} from "../../../IDeserializer";
 import {IRound} from "../../../../model/coreGameplay/round/IRound";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {AppEventSetThrowedDice} from "../../../events/round/AppEventSetThrowedDice";
 import {Dice} from "../../../../model/coreGameplay/dice/Dice";
 
@@ -10,7 +10,7 @@ export class ClientSetThrowedDiceState extends AppState implements IDeserializer
     private model:IRound;
 
     constructor() {
-        super(Slot.RoundSetThrowedDice);
+        super(StateSlot.RoundSetThrowedDice);
     }
 
     public linkModel(model:IRound) {

@@ -1,7 +1,7 @@
 import {AppEventSetThrowedDice} from "../../../events/round/AppEventSetThrowedDice";
 import {ServerSideAppState} from "../../../ServerSideAppState";
 import {RoundFillCellAppEvent} from "../../../events/round/RoundFillCellAppEvent";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {IRemoteApplication} from "../../../IRemoteApplication";
 import {CellType} from "../../../../model/coreGameplay/cells/CellType";
 import {IRoundObserver} from "../../../../model/coreGameplay/round/IRoundObserver";
@@ -14,7 +14,7 @@ export class ServerRoundFillCellState extends ServerSideAppState implements IRou
     private model:IRound;
 
     constructor(appClient:IRemoteApplication) {
-        super(Slot.RoundFillCell, appClient);
+        super(StateSlot.RoundFillCell, appClient);
     }
 
     public linkModel(model:IRound) {

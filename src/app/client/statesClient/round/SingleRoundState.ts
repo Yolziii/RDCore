@@ -9,7 +9,7 @@ import {IAppState} from "../../../IAppState";
 import {SingleRound} from "../../../../model/coreGameplay/round/SingleRound";
 import {ICardFactory} from "../../../../model/coreGameplay/round/cardFactories/ICardFactory";
 import {ICardCellsFactory} from "../../../../model/coreGameplay/round/cardCellFactories/ICardCellsFactory";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {StandardCardFactory} from "../../../../model/coreGameplay/round/cardFactories/StandardCardFactory";
 import {DefaultCardCellsFactory} from "../../../../model/coreGameplay/round/cardCellFactories/DefaultCardCellsFactory";
 import {MultiplierCardCellsFactory} from "../../../../model/coreGameplay/round/cardCellFactories/MultiplierCardCellsFactory";
@@ -26,7 +26,7 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
     private cellsX3Factory:ICardCellsFactory;
 
     constructor() {
-        super(Slot.Round);
+        super(StateSlot.Round);
     }
 
     public init() {
@@ -73,11 +73,15 @@ export class SingleRoundState extends AppState implements IAppState, IRoundState
         this.controller.exit();
     }
 
+    public sleep() {
+        this.controller.exit();
+    }
+
     public finishRound() {
         this.app.proceedExitToEvent(new FinishRoundEvent(this.model));
     }
 
     public quitRound() {
-        this.app.toState(Slot.RoundQuit);
+        this.app.toState(StateSlot.RoundQuit);
     }
 }

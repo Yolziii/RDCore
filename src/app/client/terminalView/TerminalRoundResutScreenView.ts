@@ -47,7 +47,7 @@ export class TerminalRoundResutScreenView extends ATerminalView implements IResu
         this.startDraw();
 
         this.line("You finished the round!");
-        this.line("нour score: " + this.model.score);
+        this.line("Your score: " + this.model.score);
 
         this.x = 18;
         this.y = 15;

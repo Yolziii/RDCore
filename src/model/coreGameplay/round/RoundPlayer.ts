@@ -12,6 +12,7 @@ import {RoundEventIndex} from "./events/RoundEventIndex";
 import {RoundEventFillCell} from "./events/RoundEventFillCell";
 import {RoundEventThrowedDice} from "./events/RoundEventThrowedDice";
 import {RoundEvent} from "./events/RoundEvent";
+import {Logger} from "../../../util/logger/Logger";
 
 export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
     private _cards:ICard[] = [];
@@ -42,6 +43,10 @@ export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
 
     public get throwsLeft(): number {
         return this._throwsLeft;
+    }
+
+    public get diceSize():number {
+        return Config.DefaultDiceSize;
     }
 
     public get activeCardIndex():number {
@@ -94,6 +99,7 @@ export class RoundPlayer implements IRoundPlayer, IRoundObserverSubject {
     }
 
     public fillCell(type:CellType) {
+        Logger.info(`fillCell(${type})`);
         this._currentCard.fillCell(type, this.getMixedDice());
         this._throwsLeft = Config.DefaultThrows; // TODO: Возможность изменения количества попыток
 

@@ -33,6 +33,7 @@ export class SingleRound implements IRound {
     }
 
     public get throwsLeft(): number {return this.player.throwsLeft;}
+    public get diceSize():number {return this.player.diceSize;}
     public getMixedDice():IDice {return this.player.getMixedDice();}
 
     public get throwed():IDice {return this.player.throwed;}

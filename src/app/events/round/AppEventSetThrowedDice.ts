@@ -1,4 +1,4 @@
-import {Slot} from "../../Slot";
+import {StateSlot} from "../../StateSlot";
 import {AppEvent} from "../../AppEvent";
 import {IDice} from "../../../model/coreGameplay/dice/IDice";
 
@@ -7,7 +7,7 @@ export class AppEventSetThrowedDice extends AppEvent {
     public dice:IDice;
 
     constructor(dice:IDice) {
-        super(Slot.RoundSetThrowedDice);
+        super(StateSlot.RoundSetThrowedDice);
         this.dice = dice;
     }
 

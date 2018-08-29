@@ -1,4 +1,4 @@
-export enum Slot {
+export enum StateSlot {
     StartingClient = 1,
     MainScreen = 2,
 

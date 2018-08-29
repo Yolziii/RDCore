@@ -2,17 +2,17 @@ import {Application} from "./Application";
 import {IDeserializer} from "./IDeserializer";
 import {IAppEvent} from "./IAppEvent";
 import {IAppState} from "./IAppState";
-import {Slot} from "./Slot";
+import {StateSlot} from "./StateSlot";
 import {AppEvent} from "./AppEvent";
 
 /**
  * Базовый класс для всех стейтов приложения
  */
 export class AppState implements IAppState, IDeserializer {
-    protected _slot:Slot;
+    protected _slot:StateSlot;
     protected _app:Application;
 
-    constructor(slot:Slot) {
+    constructor(slot:StateSlot) {
         this._slot = slot;
     }
 
@@ -20,7 +20,7 @@ export class AppState implements IAppState, IDeserializer {
         this._app = app;
     }
 
-    public get slot():Slot {
+    public get slot():StateSlot {
         return this._slot;
     }
 

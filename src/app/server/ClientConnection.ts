@@ -1,7 +1,7 @@
 import {Logger} from "../../util/logger/Logger";
 import {IRemoteApplication} from "../IRemoteApplication";
 import {ILocalApplication} from "../ILocalApplication";
-import {Slot} from "../Slot";
+import {StateSlot} from "../StateSlot";
 import {IAppEvent} from "../IAppEvent";
 import {IAppState} from "../IAppState";
 
@@ -39,7 +39,7 @@ export class ClientConnection implements IRemoteApplication {
         return this.clientId;
     }
 
-    public toState(slot:Slot) {
+    public toState(slot:StateSlot) {
         Logger.debug(`[toState] ${slot} -> (${this.clientId})`);
         this.clientSocket.emit("toState", slot);
     }
@@ -51,7 +51,7 @@ export class ClientConnection implements IRemoteApplication {
         this.clientSocket.emit("proceedEvent", json);
     }
 
-    public exitToState(slot:Slot) {
+    public exitToState(slot:StateSlot) {
         Logger.debug(`[exitToState] ${slot} -> (${this.clientId})`);
         this.clientSocket.emit("exitToState", slot);
     }

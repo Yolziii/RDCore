@@ -1,12 +1,12 @@
 import {AppEvent} from "../AppEvent";
 import {IPlayer} from "../IPlayer";
-import {Slot} from "../Slot";
+import {StateSlot} from "../StateSlot";
 
 export class AppEventPlayerAuthentication extends AppEvent {
     public player:IPlayer;
 
     constructor(player:IPlayer) {
-        super(Slot.PlayerAuthentication);
+        super(StateSlot.PlayerAuthentication);
         this.player = player;
     }
 }

@@ -3,7 +3,7 @@ import {SingleRound} from "../../../../model/coreGameplay/round/SingleRound";
 import {RoundPlayer} from "../../../../model/coreGameplay/round/RoundPlayer";
 import {ServerSideAppState} from "../../../ServerSideAppState";
 import {IRemoteApplication} from "../../../IRemoteApplication";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {ServerRoundThrowDiceState} from "./ServerRoundThrowDiceState";
 import {ServerRoundHoldDieState} from "./ServerRoundHoldDieState";
 import {ServerRoundFreeDieState} from "./ServerRoundFreeDieState";
@@ -29,7 +29,7 @@ export class ServerStartSingleRound extends ServerSideAppState {
     private fillCellState:ServerRoundFillCellState;
 
     constructor(clientApp:IRemoteApplication) {
-        super(Slot.ConfirmStartServerRound, clientApp);
+        super(StateSlot.ConfirmStartServerRound, clientApp);
     }
 
     public init() {
@@ -63,15 +63,15 @@ export class ServerStartSingleRound extends ServerSideAppState {
         this.selectCardState.linkModel(this.model);
         this.fillCellState.linkModel(this.model);
 
-        event.slot = Slot.Round;
+        event.slot = StateSlot.Round;
         this.appClient.proceedEvent(event);
     }
 
     public exit() {
-        /*this.app.clearSlot(Slot.RoundThrowDice);
-        this.app.clearSlot(Slot.RoundHoldDie);
-        this.app.clearSlot(Slot.RoundFreeDie);
-        this.app.clearSlot(Slot.RoundSelectCard);
-        this.app.clearSlot(Slot.RoundFillCell);*/
+        /*this.app.clearSlot(StateSlot.RoundThrowDice);
+        this.app.clearSlot(StateSlot.RoundHoldDie);
+        this.app.clearSlot(StateSlot.RoundFreeDie);
+        this.app.clearSlot(StateSlot.RoundSelectCard);
+        this.app.clearSlot(StateSlot.RoundFillCell);*/
     }
 }

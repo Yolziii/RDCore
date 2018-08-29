@@ -89,7 +89,6 @@ describe("RoundPlayer", () => {
 
         const playerCard = roundPlayer.getCard();
         assert.equal(playerCard.getCell(CellType.ServiceFinalScore).value, 5);
-
     });
 
     it("canHoldDie()", () => {

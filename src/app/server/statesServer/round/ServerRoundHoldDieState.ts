@@ -1,5 +1,5 @@
 import {ServerSideAppState} from "../../../ServerSideAppState";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {RoundIndexAppEvent} from "../../../events/round/RoundIndexAppEvent";
 import {IRemoteApplication} from "../../../IRemoteApplication";
 import {IRoundObserver} from "../../../../model/coreGameplay/round/IRoundObserver";
@@ -12,7 +12,7 @@ export class ServerRoundHoldDieState extends ServerSideAppState implements IRoun
     private model:IRound;
 
     constructor(appClient:IRemoteApplication) {
-        super(Slot.RoundHoldDie, appClient);
+        super(StateSlot.RoundHoldDie, appClient);
     }
 
     public linkModel(model:IRound) {
@@ -32,7 +32,7 @@ export class ServerRoundHoldDieState extends ServerSideAppState implements IRoun
         if (event.type === RoundEventType.Hold) {
             this.model.removeObserver(this);
 
-            const appEvent = new RoundIndexAppEvent(Slot.RoundHoldDie, event.index);
+            const appEvent = new RoundIndexAppEvent(StateSlot.RoundHoldDie, event.index);
             this.appClient.proceedEvent(appEvent);
             this.app.exitToPreviousState();
         }

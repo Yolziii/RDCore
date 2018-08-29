@@ -1,5 +1,5 @@
 import {ServerSideAppState} from "../../../ServerSideAppState";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 import {RoundIndexAppEvent} from "../../../events/round/RoundIndexAppEvent";
 import {IRemoteApplication} from "../../../IRemoteApplication";
 import {IRoundObserver} from "../../../../model/coreGameplay/round/IRoundObserver";
@@ -12,7 +12,7 @@ export class ServerRoundSelectCardState extends ServerSideAppState implements IR
     private model:IRound;
 
     constructor(appClient:IRemoteApplication) {
-        super(Slot.RoundSelectCard, appClient);
+        super(StateSlot.RoundSelectCard, appClient);
     }
 
     public linkModel(model:IRound) {
@@ -28,7 +28,7 @@ export class ServerRoundSelectCardState extends ServerSideAppState implements IR
         if (event.type === RoundEventType.SelectCard) {
             this.model.removeObserver(this);
 
-            const appEvent = new RoundIndexAppEvent(Slot.RoundSelectCard, event.index);
+            const appEvent = new RoundIndexAppEvent(StateSlot.RoundSelectCard, event.index);
             this.appClient.proceedEvent(appEvent);
 
             this.app.exitToPreviousState();

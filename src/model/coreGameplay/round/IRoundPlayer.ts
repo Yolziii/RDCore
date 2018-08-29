@@ -11,6 +11,9 @@ export interface IRoundPlayer extends IRoundObserverSubject {
     /** Кости, брошенные игроком последний раз */
     readonly throwed:IDice;
 
+    /** Сколько слотов есть у игрока для сбора кубиков */
+    readonly diceSize:number;
+
     /** Кости, собранные игроком */
     readonly holded:IDice;
 

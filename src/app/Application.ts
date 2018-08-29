@@ -4,7 +4,7 @@ import {Logger} from "../util/logger/Logger";
 import {ILocalApplication} from "./ILocalApplication";
 import {IAppEvent} from "./IAppEvent";
 import {IAppState} from "./IAppState";
-import {Slot} from "./Slot";
+import {StateSlot} from "./StateSlot";
 import {IDictionaryInt} from "../util/IDictionaryInt";
 
 /**
@@ -102,7 +102,7 @@ export class Application implements ILocalApplication {
         this.toState(state.slot);
     }
 
-    public getState(slot:Slot):IAppState {
+    public getState(slot:StateSlot):IAppState {
         const state = this.slots[slot];
         if (state == null) {
             // TODO: Exception
@@ -110,15 +110,15 @@ export class Application implements ILocalApplication {
         return state;
     }
 
-    public prototypeFor(slot:Slot):any {
+    public prototypeFor(slot:StateSlot):any {
         if (this.eventPrototypes[slot] == null) {
             throw new RDError(RDErrorCode.UNDEFINED, `Unknown prototype for slot ${slot}`);
         }
         return this.eventPrototypes[slot];
     }
 
-    protected logStateMethod(method:string, slot:Slot) {
-        Logger.info("<activate> for: " + Slot[slot]);
+    protected logStateMethod(method:string, slot:StateSlot) {
+        Logger.info("<activate> for: " + StateSlot[slot]);
     }
 
     private exit(state:IAppState) {

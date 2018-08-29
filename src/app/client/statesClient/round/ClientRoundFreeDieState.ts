@@ -2,14 +2,14 @@ import {RoundIndexAppEvent} from "../../../events/round/RoundIndexAppEvent";
 import {ClientSideAppState} from "../../../ClientSideAppState";
 import {IRound} from "../../../../model/coreGameplay/round/IRound";
 import {IRemoteApplication} from "../../../IRemoteApplication";
-import {Slot} from "../../../Slot";
+import {StateSlot} from "../../../StateSlot";
 
 /** Освобождает кость с указанным индексом по запросу сервера */
 export class ClientRoundFreeDieState extends ClientSideAppState {
     private model:IRound;
 
     constructor(appServer:IRemoteApplication) {
-        super(Slot.RoundFreeDie, appServer);
+        super(StateSlot.RoundFreeDie, appServer);
     }
 
     public linkModel(model:IRound) {
